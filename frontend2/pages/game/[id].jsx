@@ -23,6 +23,7 @@ const Game = () => {
     const [rightCards, setRightCards] = useState([]);
     const [game, setGame] = useState(null);
     const [addAlert, setAddAlert] = useState("");
+    const [turn, setTurn] = useState(true);
 
 
     const { address, isConnected } = useAccount()
@@ -48,6 +49,7 @@ const Game = () => {
     }
 
     async function updatePosition(card_id, position) {
+        setTurn(false)
         const response = await fetch(`${`http://localhost:3000/api/v1/update_position?address=${address}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
@@ -81,6 +83,28 @@ const Game = () => {
                 setAddAlert("")
             }, 3000);
         }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?address=${address}`}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        updateBoard();
+
+
+        fetchComputerDeck();
+
+        if (computerResponse.ok) {
+            const responseComputer = await computerResponse.json();
+            setAddAlert(responseComputer.message);
+            setTimeout(() => {
+                setAddAlert("")
+            }, 3000);
+        }
+        setTurn(true)
     }
 
     async function quitGame() {
@@ -148,19 +172,23 @@ const Game = () => {
     }, []);
 
     const handleCardClick = (card) => {
-        setSelectedCard(card);
+        if (turn) {
+            setSelectedCard(card);
+        }
     };
 
     const handleTileClick = (index) => {
-        if (selectedCard !== null && board[index] === false) {
-            const updatedBoard = [...board];
-            updatedBoard[index] = selectedCard;
-            setBoard(updatedBoard);
-            setSelectedCard(null);
-            updatePosition(selectedCard.id, index)
-            // Retirer la carte utilisée du côté correspondant
-            const updatedLeftCards = leftCards.filter((card) => card.id !== selectedCard.id)
-            setLeftCards(updatedLeftCards);
+        if (turn) {
+            if (selectedCard !== null && board[index] === false) {
+                const updatedBoard = [...board];
+                updatedBoard[index] = selectedCard;
+                setBoard(updatedBoard);
+                setSelectedCard(null);
+                updatePosition(selectedCard.id, index)
+                // Retirer la carte utilisée du côté correspondant
+                const updatedLeftCards = leftCards.filter((card) => card.id !== selectedCard.id)
+                setLeftCards(updatedLeftCards);
+            }
         }
     };
 
@@ -170,7 +198,6 @@ const Game = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '20px',
     };
 
     const cardStyle = {
@@ -231,7 +258,7 @@ const Game = () => {
     return (
         <>
             {isConnected ? (
-                <Layout>
+                <>
                     {game.id == id ?
                         (<>
                             < div style={gameStyle} >
@@ -246,15 +273,15 @@ const Game = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="game-board">
-                                {addAlert != "" && <div>
-                                    <Alert status='warning' width="100%">
-                                        <AlertIcon />
-                                        {addAlert}!
-                                    </Alert>
-                                </div>
-                                }
-                                
+                                <div className="game-board" style={{ padding: '10px' }}>
+                                    {addAlert != "" && <div>
+                                        <Alert status='warning' width="100%">
+                                            <AlertIcon />
+                                            {addAlert}!
+                                        </Alert>
+                                    </div>
+                                    }
+
                                     <div style={{ display: 'flex' }}>
 
                                         {board.slice(0, 3).map((card, index) => (
@@ -320,7 +347,7 @@ const Game = () => {
                                 <Link href="/">Back</Link>
                             </div>
                         )}
-                </Layout>
+                </>
             ) : (
                 <Alert status='warning' width="50%">
                     <AlertIcon />
