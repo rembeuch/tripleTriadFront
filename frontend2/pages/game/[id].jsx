@@ -22,7 +22,7 @@ const Game = () => {
     const [leftCards, setLeftCards] = useState([]);
     const [rightCards, setRightCards] = useState([]);
     const [game, setGame] = useState(null);
-    const [addAlert, setAddAlert] = useState("");
+    const [addAlert, setAddAlert] = useState('');
     const [turn, setTurn] = useState(true);
 
 
@@ -66,6 +66,7 @@ const Game = () => {
             }
         };
         updateBoard();
+
         const fetchComputerDeck = async () => {
             try {
                 const json = await getComputerDeck();
@@ -79,11 +80,35 @@ const Game = () => {
         if (response.ok) {
             const responseData = await response.json();
             setAddAlert(responseData.message);
-            setTimeout(() => {
-                setAddAlert("")
-            }, 3000);
+            if (responseData.message != '') {
+                setTimeout(() => {
+                    setAddAlert("");
+                }, 3000);
+                if (responseData.cards_updated != []) {
+
+                    responseData.cards_updated.forEach((card_id) => {
+                        const processUpdatedCards = async (card_id) => {
+                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?address=${address}&card_id=${card_id}`}`, {
+                                method: "PATCH",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            });
+                            if (responseCombo.ok) {
+                                const combo = await responseCombo.json();
+                                setAddAlert(combo.message);
+                                setTimeout(() => {
+                                    setAddAlert("");
+                                }, 3000);
+                                updateBoard();
+                                fetchComputerDeck();
+                            }
+                        }
+                        processUpdatedCards(card_id)
+                    });
+                }
+            }
         }
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?address=${address}`}`, {
             method: "PATCH",
@@ -100,9 +125,33 @@ const Game = () => {
         if (computerResponse.ok) {
             const responseComputer = await computerResponse.json();
             setAddAlert(responseComputer.message);
-            setTimeout(() => {
-                setAddAlert("")
-            }, 3000);
+            if (responseComputer.message != "") {
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
+                if (responseComputer.cards_updated != []) {
+                    responseComputer.cards_updated.forEach((card_id) => {
+
+                        const processUpdatedCards = async (card_id) => {
+
+                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?address=${address}&card_id=${card_id}`}`, {
+                                method: "PATCH",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            });
+                            const combo = await responseCombo.json();
+                            setAddAlert(combo.message);
+                            setTimeout(() => {
+                                setAddAlert("")
+                            }, 3000);
+                            updateBoard();
+                            fetchComputerDeck();
+                        }
+                        processUpdatedCards(card_id)
+                    });
+                }
+            }
         }
         setTurn(true)
     }
