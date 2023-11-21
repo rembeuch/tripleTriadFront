@@ -155,6 +155,7 @@ function Player() {
             <div style={gridContainerStyle}>
               {deck.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
+                  Matricule #{card.id}:
                   <Flex>
                     <Card card={card} />
                   </Flex>
@@ -175,6 +176,7 @@ function Player() {
             <div style={gridContainerStyle}>
               {cards.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
+                  Matricule #{card.id}:
                   <Flex>
                     <Card card={card} />
                   </Flex>

@@ -1,8 +1,9 @@
 import React from 'react'
-const Card = ({ card }) => {
+const Card = ({ card, played }) => {
+
     const circleStyle = {
-        width: '100px',
-        height: '100px',
+        width: '120px',
+        height: '120px',
         borderRadius: '50%',
         backgroundColor: '#ccc',
         display: 'flex',
@@ -10,6 +11,21 @@ const Card = ({ card }) => {
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+        margin: "auto",
+    };
+
+    const tyleStyle = {
+        width: '150px',
+        height: '150px',
+        borderRadius: '50%',
+        backgroundColor: '#ccc',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        margin: "auto",
+        marginTop: '30px',
     };
 
     const valueStyle = {
@@ -37,12 +53,9 @@ const Card = ({ card }) => {
         left: '5%',
         transform: 'translateY(-20%)',
     };
-
     return (
-        <>    <div>
-            <h3>Matricule: #{card.name ? card.name : card.id}</h3>
-        </div>
-            <div style={circleStyle}>
+        <>
+            <div style={played ? tyleStyle : circleStyle}>
                 <p style={upStyle}>{card.up}</p>
                 <p style={rightStyle}>{card.right}</p>
                 <p style={downStyle}>{card.down}</p>

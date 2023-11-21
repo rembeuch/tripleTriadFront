@@ -37,8 +37,6 @@ const Header = () => {
         try {
             await contract.withdraw()
             setBalance(0)
-            // router.push('/getNumber')
-
         }
         catch (e) {
             console.log(e.reason)

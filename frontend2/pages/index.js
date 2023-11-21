@@ -10,7 +10,6 @@ import {
   AlertDescription,
 } from '@chakra-ui/react'
 import { useEffect, useState } from "react";
-
 import NewPlayerForm from './player/NewPlayerForm'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -121,7 +120,8 @@ export default function Home() {
                       }} > Play </button>
                     </Link>
                   ) : (
-                    <button onClick={() => createGameUrl()} style={{
+                    
+                    <Link href="/game/NewGameForm" style={{
                       color: "#F9DC5C",
                       backgroundColor: "green",
                       padding: "10px 50px",
@@ -129,7 +129,7 @@ export default function Home() {
                       transition: "background-color 0.3s ease",
                       borderRadius: 5,
                       textDecoration: "none"
-                    }} > New Game </button>
+                    }} > New Game </Link>
 
                   )
                   }
