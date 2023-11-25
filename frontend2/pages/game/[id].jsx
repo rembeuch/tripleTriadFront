@@ -89,13 +89,16 @@ const Game = () => {
         const responseWin = await response.json();
         setEndAlert(responseWin.message)
         if (responseWin.message != "") {
-            setEndgame(true);
+            setTimeout(() => {
+                setEndgame(true);
+            }, 3000);
         }
 
     }
 
     async function review() {
         setEndgame(false);
+        setNext(true)
     }
 
 
@@ -115,9 +118,6 @@ const Game = () => {
             const responseData = await response.json();
             setAddAlert(responseData.message);
             if (responseData.message != '') {
-                setTimeout(() => {
-                    setAddAlert("");
-                }, 3000);
                 if (responseData.cards_updated != []) {
 
                     responseData.cards_updated.forEach((card_id) => {
@@ -131,9 +131,7 @@ const Game = () => {
                             if (responseCombo.ok) {
                                 const combo = await responseCombo.json();
                                 setAddAlert(combo.message);
-                                setTimeout(() => {
-                                    setAddAlert("");
-                                }, 3000);
+                                
                                 updateBoard();
                                 fetchComputerDeck();
                             }
@@ -141,6 +139,9 @@ const Game = () => {
                         processUpdatedCards(card_id)
                     });
                 }
+                setTimeout(() => {
+                    setAddAlert("");
+                }, 3000);
             }
         }
         await getScore()
@@ -159,9 +160,6 @@ const Game = () => {
             const responseComputer = await computerResponse.json();
             setAddAlert(responseComputer.message);
             if (responseComputer.message != "") {
-                setTimeout(() => {
-                    setAddAlert("")
-                }, 3000);
                 if (responseComputer.cards_updated != []) {
                     responseComputer.cards_updated.forEach((card_id) => {
 
@@ -175,15 +173,15 @@ const Game = () => {
                             });
                             const combo = await responseCombo.json();
                             setAddAlert(combo.message);
-                            setTimeout(() => {
-                                setAddAlert("")
-                            }, 3000);
                             updateBoard();
                             fetchComputerDeck();
                         }
                         processUpdatedCards(card_id)
                     });
                 }
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
             }
         }
         await getScore()
@@ -251,9 +249,14 @@ const Game = () => {
     useEffect(() => {
         setBoard(board)
         if (board.every(element => element !== false)) {
+            setTimeout(() => {
                 setNext(true);
+            }, 3900);
+            
+        } else {
+            setNext(false);
         }
-    }, [board]);
+    }, [board,next]);
 
     useEffect(() => {
         fetchPlayerDeck();

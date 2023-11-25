@@ -44,7 +44,7 @@ export default function Home() {
       }
     };
     fetchCurrentPlayer();
-  }, []);
+  }, [address]);
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
@@ -58,27 +58,7 @@ export default function Home() {
     fetchCurrentGame();
   }, []);
 
-  async function createGameUrl() {
-
-    const response = await fetch(`${`http://localhost:3000/api/v1/games?address=${address}`}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.ok) {
-      const responseData = await response.json();
-      const gameId = responseData.id;
-      router.push(`/game/${gameId}`)
-    } else {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false)
-      }, 3000);
-    }
-  }
+  
 
   return (
     <>
