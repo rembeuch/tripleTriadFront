@@ -2,6 +2,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useProvider, useSigner } from 'wagmi'
 import {
   Alert,
@@ -12,9 +13,10 @@ import {
 } from '@chakra-ui/react'
 import Layout from '@/components/Layout/Layout';
 import Card from '@/components/Card';
-
+import { useAuth } from '@/contexts/authContext';
 
 function Player() {
+  const { authToken } = useAuth();
   const { address, isConnected } = useAccount()
   const router = useRouter();
   const { id } = router.query;
@@ -30,17 +32,17 @@ function Player() {
 
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
     return response.json();
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}&token=${authToken}`}`);
     return response.json();
   }
 
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?address=${address}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/deck?address=${address}&token=${authToken}`}`);
     return response.json();
   }
 
@@ -51,7 +53,7 @@ function Player() {
 
   async function RecruitElite() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}&token=${authToken}`}`,
       {
         method: "POST",
         headers: {
@@ -66,6 +68,7 @@ function Player() {
   }
 
   useEffect(() => {
+
     const fetchCurrentPlayer = async () => {
       try {
         const json = await getPlayer();
@@ -75,20 +78,22 @@ function Player() {
       }
     };
     fetchCurrentPlayer();
-  }, []);
+  }, [address, authToken]);
 
   useEffect(() => {
     const fetchCurrentElites = async () => {
       try {
         const json = await getElites();
-        console.log(json.length)
         setElites(json);
       } catch (error) {
+        setElites(null);
         console.error("Failed to fetch the player: ", error);
       }
     };
-    fetchCurrentElites();
-  }, []);
+    if (isConnected || player) {
+      fetchCurrentElites();
+    }
+  }, [address, authToken, isConnected, player]);
 
   useEffect(() => {
     const fetchDeck = async () => {
@@ -99,8 +104,10 @@ function Player() {
         console.error("Failed to fetch the player: ", error);
       }
     };
-    fetchDeck();
-  }, [deck.length, addAlert]);
+    if (player) {
+      fetchDeck();
+    }
+  }, [deck.length, addAlert, player]);
 
   useEffect(() => {
     setSelectedCardId(selectedCardId)
@@ -120,7 +127,7 @@ function Player() {
 
   async function addCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?address=${address}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?address=${address}&token=${authToken}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -146,7 +153,7 @@ function Player() {
 
   async function removeCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?address=${address}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?address=${address}&token=${authToken}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -164,6 +171,15 @@ function Player() {
       }, 3000);
     }
   }
+
+  const wallet = async () => {
+    try {
+        await fetch(`${`http://localhost:3000/api/v1/connect_wallet?address=${address}&token=${authToken}`}`);
+    }
+    catch (e) {
+        console.log(e.reason)
+    }
+}
 
 
   const gridContainerStyle = {
@@ -198,7 +214,7 @@ function Player() {
   return (
     <>
       <Layout>
-        {isConnected ? (
+        {isConnected || player ? (
           <div>
             <h2>{player.name}</h2>
             <p>{player.wallet_address}</p>
@@ -210,6 +226,7 @@ function Player() {
               </Alert>
             </div>
             }
+           
             <hr></hr>
             {elites.length > 0 ? (
               <div style={gridContainerStyle}>
@@ -224,6 +241,11 @@ function Player() {
                     </div>
                   </>
                 ))}
+                 {authToken && player &&
+                <div>
+                    <ConnectButton />
+                </div>
+            }
               </div >
             ) :
               (
@@ -295,7 +317,7 @@ function Player() {
         )
           : (<Alert status='warning' width="50%">
             <AlertIcon />
-            Please, connect your Wallet!
+            Please, login or create account
           </Alert>)}
       </Layout>
     </>

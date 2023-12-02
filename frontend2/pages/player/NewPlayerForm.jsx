@@ -24,7 +24,7 @@ const NewPlayerForm = () => {
             );
         if  (response.ok) {
             const responseData = await response.json();
-            const playerId = responseData.id; // Récupérez l'ID du joueur nouvellement créé.
+            const playerId = responseData.id;
             router.push(`/player/${playerId}`)
         }
        

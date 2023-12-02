@@ -9,13 +9,35 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
+import { useAuth } from '@/contexts/authContext';
 
 
 
 const NewGameForm = () => {
+    const { authToken } = useAuth();
     const { address, isConnected } = useAccount()
+    const [player, setPlayer] = useState(null);
+
     const router = useRouter();
     const [numberOfRounds, setNumberOfRounds] = useState(1);
+
+    async function getPlayer() {
+        const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+        return response.json();
+      }
+
+      useEffect(() => {
+
+        const fetchCurrentPlayer = async () => {
+          try {
+            const json = await getPlayer();
+            setPlayer(json);
+          } catch (error) {
+            console.error("Failed to fetch the player: ", error);
+          }
+        };
+        fetchCurrentPlayer();
+      }, [address, authToken]);
 
     const handleInputChange = (event) => {
         const newValue = Math.max(1, Math.min(10, parseInt(event.target.value, 10)));
@@ -32,7 +54,7 @@ const NewGameForm = () => {
 
     async function createGameUrl() {
 
-        const response = await fetch(`${`http://localhost:3000/api/v1/games?address=${address}&rounds=${numberOfRounds}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/games?address=${address}&token=${authToken}&rounds=${numberOfRounds}`}`,
             {
                 method: "POST",
                 headers: {
@@ -53,7 +75,7 @@ const NewGameForm = () => {
     }
     return (
         <Layout>
-            {isConnected ? (
+            {player ? (
                 <>
                     <label style={{ marginRight: '10px' }}>
                         Number of rounds:
@@ -103,9 +125,9 @@ const NewGameForm = () => {
                 </>
             ) : (
                 <Alert status='warning' width="50%">
-                    <AlertIcon />
-                    Please, connect your Wallet!
-                </Alert>
+                <AlertIcon />
+                Please, login or create account
+              </Alert>
             )}
         </Layout>
     )

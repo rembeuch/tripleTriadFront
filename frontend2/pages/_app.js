@@ -10,6 +10,7 @@ import { hardhat } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { ChakraProvider } from '@chakra-ui/react'
+import { AuthProvider } from '@/contexts/authContext';
 
 
 
@@ -27,19 +28,21 @@ const { connectors } = getDefaultWallets({
 });
 
 const wagmiClient = createClient({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   provider
 })
 
 export default function App({ Component, pageProps }) {
   return (
-      <ChakraProvider>
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={chains}>
+    <ChakraProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
+          <AuthProvider>
             <Component {...pageProps} />
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </ChakraProvider>
+          </AuthProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ChakraProvider>
   )
 }
