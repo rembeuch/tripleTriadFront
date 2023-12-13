@@ -1,10 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Flex, Text } from '@chakra-ui/react';
-
 import { useAccount, useProvider, useSigner } from 'wagmi'
-import Layout from '@/components/Layout/Layout';
 import Card from '@/components/Card';
 import {
     Alert,
@@ -26,7 +23,6 @@ const Game = () => {
     const [leftCards, setLeftCards] = useState([]);
     const [rightCards, setRightCards] = useState([]);
     const [game, setGame] = useState(null);
-    const [addAlert, setAddAlert] = useState('');
     const [turn, setTurn] = useState(true);
     const [playerScore, setPlayerScore] = useState(0);
     const [computerScore, setComputerScore] = useState(0);
@@ -43,18 +39,18 @@ const Game = () => {
     const { address, } = useAccount()
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
         return response.json();
     }
 
     async function getGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_game?address=${address}&token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find_game?token=${authToken}`}`);
         return response.json();
     }
 
     async function fetchPlayerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/deck_in_game?address=${address}&token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/deck_in_game?token=${authToken}`}`);
             const json = await response.json();
             setLeftCards(json);
         } catch (error) {
@@ -64,7 +60,7 @@ const Game = () => {
 
     async function fetchComputerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/computer_deck?address=${address}&token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/computer_deck?token=${authToken}`}`);
             const json = await response.json();
             setRightCards(json);
         } catch (error) {
@@ -74,7 +70,7 @@ const Game = () => {
 
     async function updateBoard() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/board_position?address=${address}&token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/board_position?token=${authToken}`}`);
             const json = await response.json();
             setBoard(json);
         } catch (error) {
@@ -83,7 +79,7 @@ const Game = () => {
     };
 
     async function getScore() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/get_score?address=${address}&token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/get_score?token=${authToken}`}`);
         if (response.ok) {
             const responseScore = await response.json();
             setPlayerScore(responseScore.player_score)
@@ -96,7 +92,7 @@ const Game = () => {
     }
 
     async function win() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/win?address=${address}&token=${authToken}`}`)
+        const response = await fetch(`${`http://localhost:3000/api/v1/win?token=${authToken}`}`)
         const responseWin = await response.json();
         setEndAlert(responseWin.message)
         if (responseWin.message != "") {
@@ -108,14 +104,23 @@ const Game = () => {
     }
 
     async function review() {
-        setEndgame(false);
-        setNext(true)
+        if (endgame == true && next == true) {
+            setEndgame(false);
+            setNext(true)
+        }
+        else {
+            setEndgame(true);
+            setNext(false)
+            setEndAlert("!")
+        }
     }
+
+
 
 
     async function updatePosition(card_id, position) {
         setTurn(false)
-        const response = await fetch(`${`http://localhost:3000/api/v1/update_position?address=${address}&token=${authToken}&card_id=${card_id}&position=${position}`}`, {
+        const response = await fetch(`${`http://localhost:3000/api/v1/update_position?token=${authToken}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -127,13 +132,12 @@ const Game = () => {
 
         if (response.ok) {
             const responseData = await response.json();
-            setAddAlert(responseData.message);
+            document.querySelector('#alertPlayer').innerText = responseData.message
             if (responseData.message != '') {
                 if (responseData.cards_updated != []) {
-
                     responseData.cards_updated.forEach((card_id) => {
                         const processUpdatedCards = async (card_id) => {
-                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?address=${address}&token=${authToken}&card_id=${card_id}`}`, {
+                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?token=${authToken}&card_id=${card_id}`}`, {
                                 method: "PATCH",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -141,8 +145,7 @@ const Game = () => {
                             });
                             if (responseCombo.ok) {
                                 const combo = await responseCombo.json();
-                                setAddAlert(combo.message);
-
+                                document.querySelector('#alertPlayer').innerText = combo.message
                                 updateBoard();
                                 fetchComputerDeck();
                             }
@@ -150,58 +153,58 @@ const Game = () => {
                         processUpdatedCards(card_id)
                     });
                 }
-                setTimeout(() => {
-                    setAddAlert("");
-                }, 3000);
+
             }
         }
         await getScore()
+        document.querySelector('#alertComputer').innerText = ""
 
-        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?address=${address}&token=${authToken}`}`, {
+
+        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?token=${authToken}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
         });
-
         updateBoard();
         fetchComputerDeck();
-
         if (computerResponse.ok) {
             const responseComputer = await computerResponse.json();
-            setAddAlert(responseComputer.message);
+            document.querySelector('#alertComputer').innerText = responseComputer.message
             if (responseComputer.message != "") {
                 if (responseComputer.cards_updated != []) {
                     responseComputer.cards_updated.forEach((card_id) => {
+                        async function processUpdatedCards(card_id) {
 
-                        const processUpdatedCards = async (card_id) => {
-
-                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?address=${address}&token=${authToken}&card_id=${card_id}`}`, {
+                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?token=${authToken}&card_id=${card_id}`}`, {
                                 method: "PATCH",
                                 headers: {
                                     "Content-Type": "application/json",
                                 },
                             });
                             const combo = await responseCombo.json();
-                            setAddAlert(combo.message);
+                            document.querySelector('#alertComputer').innerText = combo.message
                             updateBoard();
                             fetchComputerDeck();
                         }
                         processUpdatedCards(card_id)
                     });
+
                 }
-                setTimeout(() => {
-                    setAddAlert("")
-                }, 3000);
             }
         }
+
+        await updateBoard();
+        await fetchComputerDeck();
+        await fetchPlayerDeck()
         await getScore()
+        document.querySelector('#alertPlayer').innerText = ""
         await win()
         setTurn(true)
     }
 
     async function nextGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?address=${address}&token=${authToken}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?token=${authToken}`}`,
             {
                 method: "POST",
                 headers: {
@@ -224,8 +227,25 @@ const Game = () => {
         }
     }
 
+    async function superPower() {
+        if (turn) {
+
+            const response = await fetch(`${`http://localhost:3000/api/v1/super_power?token=${authToken}`}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            setPlayerPowerPoints(0)
+            setPlayerPower(false)
+            await getPlayer()
+        }
+    }
+
     async function quitGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?address=${address}&token=${authToken}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?token=${authToken}`}`,
             {
                 method: "POST",
                 headers: {
@@ -280,8 +300,7 @@ const Game = () => {
             if (board.every(element => element !== false)) {
                 setTimeout(() => {
                     setNext(true);
-                }, 3900);
-
+                }, 3000);
             } else {
                 setNext(false);
             }
@@ -292,7 +311,7 @@ const Game = () => {
         if (player) {
             fetchPlayerDeck();
         }
-    }, [address, authToken, player]);
+    }, [address, authToken, player, playerPower]);
 
 
     useEffect(() => {
@@ -410,30 +429,83 @@ const Game = () => {
                     {game.id == id ?
                         (<>
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                <p>{player.name} rounds: {game.player_points} </p>
+                                <p>{player.name} rounds: {game.player_points}
+
+                                </p>
                                 <p>rounds to win: {game.rounds}</p>
-                                <p>rounds: {game.computer_points} The Machine </p>
+                                <p> rounds: {game.computer_points} The Machine </p>
                             </div>
                             {endgame ? (
                                 <>
                                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                         <p>Score: {playerScore}</p>
-                                        {endAlert != "" && <div>
-                                            <Alert status='warning' width="100%">
-                                                <AlertIcon />
-                                                {endAlert}!
-                                            </Alert>
-                                        </div>
+                                        {endAlert != "" &&
+                                            <div>
+                                                <Alert status='warning' width="100%">
+                                                    <AlertIcon />
+                                                    {endAlert}!
+                                                </Alert>
+                                                {game.rounds == game.player_points || game.rounds == game.computer_points ? (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                                        {next && <button onClick={() => nextGame()} style={{
+                                                            color: "#F9DC5C",
+                                                            backgroundColor: "green",
+                                                            padding: "10px 50px",
+                                                            margin: 10,
+                                                            transition: "background-color 0.3s ease",
+                                                            borderRadius: 5,
+                                                            textDecoration: "none"
+                                                        }} > Finish Game </button>}
+                                                        {next &&
+                                                            <button onClick={() => review()} style={{
+                                                                color: "#F9DC5C",
+                                                                backgroundColor: "blue",
+                                                                padding: "10px 50px",
+                                                                margin: 10,
+                                                                transition: "background-color 0.3s ease",
+                                                                borderRadius: 5,
+                                                                textDecoration: "none"
+                                                            }} >  Review Board </button>
+                                                        }
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                                        {next && <button onClick={() => nextGame()} style={{
+                                                            color: "#F9DC5C",
+                                                            backgroundColor: "green",
+                                                            padding: "10px 50px",
+                                                            margin: 10,
+                                                            transition: "background-color 0.3s ease",
+                                                            borderRadius: 5,
+                                                            textDecoration: "none"
+                                                        }} > Next Game </button>}
+                                                        {next &&
+                                                            <>
+                                                                <button onClick={() => review()} style={{
+                                                                    color: "#F9DC5C",
+                                                                    backgroundColor: "blue",
+                                                                    padding: "10px 50px",
+                                                                    margin: 10,
+                                                                    transition: "background-color 0.3s ease",
+                                                                    borderRadius: 5,
+                                                                    textDecoration: "none"
+                                                                }} >  Review Board </button>
+
+                                                                <button onClick={() => quitGame()} style={{
+                                                                    color: "#F9DC5C",
+                                                                    backgroundColor: "red",
+                                                                    padding: "10px 50px",
+                                                                    margin: 10,
+                                                                    transition: "background-color 0.3s ease",
+                                                                    borderRadius: 5,
+                                                                    textDecoration: "none"
+                                                                }} > Quit Game </button>
+                                                            </>
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
                                         }
-                                        <button onClick={() => review()} style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "blue",
-                                            padding: "10px 50px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            textDecoration: "none"
-                                        }} > Review Board </button>
                                         <p>Score: {computerScore}</p>
                                     </div>
                                 </>
@@ -454,8 +526,13 @@ const Game = () => {
                                         </div>
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                {playerPower ? (<p>🔥</p>) : (<p></p>) }                                             
-                                                {playerComputerPower ? (<p>🔥</p>) : (<p></p>)}
+                                                
+                                            <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
+                                             : (<span className='' id='alertPlayer' width="100%">
+                                                            </span>)}</p>
+                                                {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
+                                                            </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
+                                                            </span></p>)}
                                             </div>
 
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -515,14 +592,6 @@ const Game = () => {
 
                                                 <div>
                                                     Score: {playerScore}
-                                                    {addAlert !== "" && (
-                                                        <div>
-                                                            <Alert status='warning' width="100%">
-                                                                <AlertIcon />
-                                                                {addAlert}!
-                                                            </Alert>
-                                                        </div>
-                                                    )}
                                                 </div>
 
                                                 <div style={{ display: 'flex', marginLeft: 'auto' }}>
@@ -634,29 +703,23 @@ const Game = () => {
                                     </div>
                                 </>
                             )}
-                            {game.rounds == game.player_points || game.rounds == game.computer_points ? (
-                                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    {next && <button onClick={() => nextGame()} style={{
-                                        color: "#F9DC5C",
-                                        backgroundColor: "green",
-                                        padding: "10px 50px",
-                                        margin: 10,
-                                        transition: "background-color 0.3s ease",
-                                        borderRadius: 5,
-                                        textDecoration: "none"
-                                    }} > Finish Game </button>}
-                                </div>
-                            ) : (
-                                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    {next && <button onClick={() => nextGame()} style={{
-                                        color: "#F9DC5C",
-                                        backgroundColor: "green",
-                                        padding: "10px 50px",
-                                        margin: 10,
-                                        transition: "background-color 0.3s ease",
-                                        borderRadius: 5,
-                                        textDecoration: "none"
-                                    }} > Next Game </button>}
+                            {next && endgame == false &&
+                                <button onClick={() => review()} style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "blue",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    textDecoration: "none"
+                                }} >  Back To Results </button>
+                            }
+                            {endgame == false &&
+                                <div style={{
+                                    display: "flex",
+                                    margin: 10,
+                                    justifyContent: "center"
+                                }}>
                                     <button onClick={() => quitGame()} style={{
                                         color: "#F9DC5C",
                                         backgroundColor: "red",
@@ -667,7 +730,7 @@ const Game = () => {
                                         textDecoration: "none"
                                     }} > Quit Game </button>
                                 </div>
-                            )}
+                            }
                         </>
                         )
                         : (
@@ -680,7 +743,7 @@ const Game = () => {
             ) : (
                 <Alert status='warning' width="50%">
                     <AlertIcon />
-                    Please, connect your Wallet!
+                    Loading!
                 </Alert>
             )
             }

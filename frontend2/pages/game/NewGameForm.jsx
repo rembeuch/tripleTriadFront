@@ -126,7 +126,7 @@ const NewGameForm = () => {
             ) : (
                 <Alert status='warning' width="50%">
                 <AlertIcon />
-                Please, login or create account
+                Loading
               </Alert>
             )}
         </Layout>

@@ -32,17 +32,17 @@ function Player() {
 
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
     return response.json();
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`);
     return response.json();
   }
 
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/deck?token=${authToken}`}`);
     return response.json();
   }
 
@@ -53,7 +53,7 @@ function Player() {
 
   async function RecruitElite() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}&token=${authToken}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`,
       {
         method: "POST",
         headers: {
@@ -127,7 +127,7 @@ function Player() {
 
   async function addCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?address=${address}&token=${authToken}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?token=${authToken}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -153,7 +153,7 @@ function Player() {
 
   async function removeCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?address=${address}&token=${authToken}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?token=${authToken}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -174,12 +174,12 @@ function Player() {
 
   const wallet = async () => {
     try {
-        await fetch(`${`http://localhost:3000/api/v1/connect_wallet?address=${address}&token=${authToken}`}`);
+      await fetch(`${`http://localhost:3000/api/v1/connect_wallet?token=${authToken}`}`);
     }
     catch (e) {
-        console.log(e.reason)
+      console.log(e.reason)
     }
-}
+  }
 
 
   const gridContainerStyle = {
@@ -196,7 +196,7 @@ function Player() {
     textAlign: 'center',
     backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
 
-   
+
   };
 
   const eliteCardStyle = {
@@ -217,7 +217,7 @@ function Player() {
         {isConnected || player ? (
           <div>
             <h2>{player.name}</h2>
-            <p>{player.wallet_address}</p>
+            <p>ability: {player.ability}</p>
             <p>Your Team: {deck.length + elites.length}/5</p>
             {removeAlert && <div>
               <Alert status='warning' width="50%">
@@ -226,7 +226,7 @@ function Player() {
               </Alert>
             </div>
             }
-           
+
             <hr></hr>
             {elites.length > 0 ? (
               <div style={gridContainerStyle}>
@@ -234,18 +234,29 @@ function Player() {
                 {elites.map(card => (
                   <>
                     <div key={card.id} style={eliteCardStyle} className="card">
-                    <p style={{background: "white", margin: '5px'}}> Elite #{card.name}</p>
+                      <p style={{ background: "white", margin: '5px' }}> Elite #{card.name}</p>
                       <Flex>
                         <Card card={card} />
                       </Flex>
+                      <Link href="/elite/[id]" as={`/elite/${card.id}`}>
+                        <button style={{
+                          color: "#F9DC5C",
+                          backgroundColor: "green",
+                          padding: "10px 50px",
+                          margin: 10,
+                          transition: "background-color 0.3s ease",
+                          borderRadius: 5,
+                          textDecoration: "none"
+                        }} > Details </button>
+                      </Link>
                     </div>
                   </>
                 ))}
-                 {authToken && player &&
-                <div>
+                {authToken && player &&
+                  <div>
                     <ConnectButton />
-                </div>
-            }
+                  </div>
+                }
               </div >
             ) :
               (
@@ -268,7 +279,7 @@ function Player() {
             <div style={gridContainerStyle}>
               {deck.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
-                    <p style={{background: "white", margin: '5px'}}> Matricule #{card.id}</p>
+                  <p style={{ background: "white", margin: '5px' }}> Matricule #{card.id}</p>
                   <Flex>
                     <Card card={card} />
                   </Flex>
@@ -289,7 +300,7 @@ function Player() {
             <div style={gridContainerStyle}>
               {cards.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
-                    <p style={{background: "white", margin: '5px'}}> Matricule #{card.id}</p>
+                  <p style={{ background: "white", margin: '5px' }}> Matricule #{card.id}</p>
                   <Flex>
                     <Card card={card} />
                   </Flex>
