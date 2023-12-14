@@ -130,32 +130,7 @@ const Game = () => {
         updateBoard();
         fetchComputerDeck();
 
-        if (response.ok) {
-            const responseData = await response.json();
-            document.querySelector('#alertPlayer').innerText = responseData.message
-            if (responseData.message != '') {
-                if (responseData.cards_updated != []) {
-                    responseData.cards_updated.forEach((card_id) => {
-                        const processUpdatedCards = async (card_id) => {
-                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?token=${authToken}&card_id=${card_id}`}`, {
-                                method: "PATCH",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                            });
-                            if (responseCombo.ok) {
-                                const combo = await responseCombo.json();
-                                document.querySelector('#alertPlayer').innerText = combo.message
-                                updateBoard();
-                                fetchComputerDeck();
-                            }
-                        }
-                        processUpdatedCards(card_id)
-                    });
-                }
-
-            }
-        }
+        await playerCombo(response)
         await getScore()
         document.querySelector('#alertComputer').innerText = ""
 
@@ -168,32 +143,8 @@ const Game = () => {
         });
         updateBoard();
         fetchComputerDeck();
-        if (computerResponse.ok) {
-            const responseComputer = await computerResponse.json();
-            document.querySelector('#alertComputer').innerText = responseComputer.message
-            if (responseComputer.message != "") {
-                if (responseComputer.cards_updated != []) {
-                    responseComputer.cards_updated.forEach((card_id) => {
-                        async function processUpdatedCards(card_id) {
 
-                            const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?token=${authToken}&card_id=${card_id}`}`, {
-                                method: "PATCH",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                            });
-                            const combo = await responseCombo.json();
-                            document.querySelector('#alertComputer').innerText = combo.message
-                            updateBoard();
-                            fetchComputerDeck();
-                        }
-                        processUpdatedCards(card_id)
-                    });
-
-                }
-            }
-        }
-
+        await computerCombo(computerResponse)
         await updateBoard();
         await fetchComputerDeck();
         await fetchPlayerDeck()
@@ -201,6 +152,64 @@ const Game = () => {
         document.querySelector('#alertPlayer').innerText = ""
         await win()
         setTurn(true)
+    }
+
+    async function playerCombo(response) {
+        if (response.ok) {
+            const responseData = await response.json();
+            document.querySelector('#alertPlayer').innerText = responseData.message
+            if (responseData.message != '') {
+                if (responseData.cards_updated != []) {
+                    for (const card_id of responseData.cards_updated) {
+                        await processUpdatedCards(card_id);
+                    }
+                }
+
+            }
+        }
+    }
+
+    async function processUpdatedCards(card_id) {
+        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?token=${authToken}&card_id=${card_id}`}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (responseCombo.ok) {
+            const combo = await responseCombo.json();
+            document.querySelector('#alertPlayer').innerText = combo.message
+            await updateBoard();
+            await fetchComputerDeck();
+        }
+    }
+
+    async function computerCombo(computerResponse) {
+        if (computerResponse.ok) {
+            const responseComputer = await computerResponse.json();
+            document.querySelector('#alertComputer').innerText = responseComputer.message
+            if (responseComputer.message != "") {
+                if (responseComputer.cards_updated != []) {
+                    for (const card_id of responseComputer.cards_updated) {
+                        await processUpdatedCardsComputer(card_id);
+                    }
+                }
+            }
+        }
+    }
+
+    async function processUpdatedCardsComputer(card_id) {
+
+        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?token=${authToken}&card_id=${card_id}`}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const combo = await responseCombo.json();
+        document.querySelector('#alertComputer').innerText = combo.message
+        await updateBoard();
+        await fetchComputerDeck();
     }
 
     async function nextGame() {
@@ -228,7 +237,7 @@ const Game = () => {
     }
 
     async function superPower() {
-        if (turn) {
+        if (turn == true && next == false) {
 
             const response = await fetch(`${`http://localhost:3000/api/v1/super_power?token=${authToken}`}`,
                 {
@@ -241,6 +250,7 @@ const Game = () => {
             setPlayerPowerPoints(0)
             setPlayerPower(false)
             await getPlayer()
+            await updateBoard();
         }
     }
 
@@ -318,7 +328,7 @@ const Game = () => {
         if (player) {
             fetchComputerDeck();
         }
-    }, [address, authToken, player]);
+    }, [address, authToken, player, playerPower]);
 
     useEffect(() => {
         if (player) {
@@ -526,13 +536,13 @@ const Game = () => {
                                         </div>
                                         <div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                
-                                            <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
-                                             : (<span className='' id='alertPlayer' width="100%">
-                                                            </span>)}</p>
+
+                                                <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
+                                                    : (<span className='' id='alertPlayer' width="100%">
+                                                    </span>)}</p>
                                                 {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
-                                                            </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
-                                                            </span></p>)}
+                                                </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
+                                                </span></p>)}
                                             </div>
 
                                             <div style={{ display: 'flex', alignItems: 'center' }}>

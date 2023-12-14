@@ -56,10 +56,30 @@ const Card = ({ card, played }) => {
     return (
         <>
             <div style={played ? tyleStyle : circleStyle}>
-                <p style={upStyle}>{card.up}</p>
-                <p style={rightStyle}>{card.right}</p>
-                <p style={downStyle}>{card.down}</p>
-                <p style={leftStyle}>{card.left}</p>
+                {played &&
+                    <>
+                        <p style={upStyle}>{card.up}</p>
+                        <p style={rightStyle}>{card.right}</p>
+                        <p style={downStyle}>{card.down}</p>
+                        <p style={leftStyle}>{card.left}</p>
+                    </>
+                }
+                {!card.computer &&
+                    <>
+                        <p style={upStyle}>{card.up}</p>
+                        <p style={rightStyle}>{card.right}</p>
+                        <p style={downStyle}>{card.down}</p>
+                        <p style={leftStyle}>{card.left}</p>
+                    </>
+                }
+                {!card.hide &&
+                    <>
+                        <p style={upStyle}>{card.up}</p>
+                        <p style={rightStyle}>{card.right}</p>
+                        <p style={downStyle}>{card.down}</p>
+                        <p style={leftStyle}>{card.left}</p>
+                    </>
+                }
             </div>
         </>
     )

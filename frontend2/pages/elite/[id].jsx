@@ -115,7 +115,7 @@ const elite = () => {
                         <p>Leadership: {elite.leadership}</p>
                     </div>
                 </div>
-                <h2> Powers: {ability && `Actual power: ${ability}`} </h2>
+                <h2>{ability && `Actual power: ${ability}`} </h2>
                 <div style={gridContainerStyle}>
                     {powers.map(power => (
                         <>
