@@ -47,9 +47,9 @@ export default function Home() {
     return response.json();
   }
 
-  const redirectForm = () => {
-    if (deck.length + elites.length == 5) {
-      window.location.href = "/game/NewGameForm";
+  const redirectZones = () => {
+    if (deck.length == 4) {
+      window.location.href = "/game/Zones";
     } else {
       alert("You need a team with 5 members");
     }
@@ -154,7 +154,7 @@ export default function Home() {
                   ) : (
                     <>
                     { deck && elites && <button
-                      onClick={redirectForm}
+                      onClick={redirectZones}
                       style={{
                         color: "#F9DC5C",
                         backgroundColor: "green",
@@ -163,7 +163,7 @@ export default function Home() {
                         transition: "background-color 0.3s ease",
                         borderRadius: 5,
                         textDecoration: "none"
-                      }} > New Game </button>}
+                      }} > Play </button>}
                       </>
                   )
                   }

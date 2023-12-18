@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/authContext';
 
 
 
-const NewGameForm = () => {
+const Zones = () => {
     const { authToken } = useAuth();
     const { address, isConnected } = useAccount()
     const [player, setPlayer] = useState(null);
@@ -39,20 +39,8 @@ const NewGameForm = () => {
         fetchCurrentPlayer();
       }, [address, authToken]);
 
-    const handleInputChange = (event) => {
-        const newValue = Math.max(1, Math.min(10, parseInt(event.target.value, 10)));
-        setNumberOfRounds(newValue);
-    };
 
-    const incrementRounds = () => {
-        setNumberOfRounds((prevRounds) => Math.min(prevRounds + 1, 10));
-    };
-
-    const decrementRounds = () => {
-        setNumberOfRounds((prevRounds) => Math.max(prevRounds - 1, 1));
-    };
-
-    async function createGameUrl() {
+    async function createGame() {
 
         const response = await fetch(`${`http://localhost:3000/api/v1/games?address=${address}&token=${authToken}&rounds=${numberOfRounds}`}`,
             {
@@ -77,51 +65,22 @@ const NewGameForm = () => {
         <Layout>
             {player ? (
                 <>
-                    <label style={{ marginRight: '10px' }}>
-                        Number of rounds:
-                        <input
-                            type="number"
-                            value={numberOfRounds}
-                            onChange={handleInputChange}
-                            min={1}
-                            max={10}
-                            style={{
-                                marginLeft: '5px',
-                                marginRight: '5px',
-                                textAlign: 'center',
-                                width: '40px',
-                            }}
-                        />
-                    </label>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                        <button style={{
+                {player.zones.map(zone => (
+                  <>
+                    <div key={zone} className="card">
+                      <p style={{ background: "white", margin: '5px' }}> Zone #{zone}</p>
+                        <button onClick={() => createGame()} style={{
                             color: "#F9DC5C",
-                            backgroundColor: "red",
+                            backgroundColor: "green",
                             padding: "10px 50px",
                             margin: 10,
                             transition: "background-color 0.3s ease",
                             borderRadius: 5,
                             textDecoration: "none"
-                        }} onClick={decrementRounds}>-</button>
-                        <button style={{
-                            color: "#F9DC5C",
-                            backgroundColor: "blue",
-                            padding: "10px 50px",
-                            margin: 10,
-                            transition: "background-color 0.3s ease",
-                            borderRadius: 5,
-                            textDecoration: "none"
-                        }} onClick={incrementRounds}>+</button>
+                        }} > Hunt </button>
                     </div>
-                    <button onClick={() => createGameUrl()} style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "green",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                    }} > Create Game </button>
+                  </>
+                ))}
                 </>
             ) : (
                 <Alert status='warning' width="50%">
@@ -133,4 +92,4 @@ const NewGameForm = () => {
     )
 }
 
-export default NewGameForm
+export default Zones

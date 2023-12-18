@@ -231,7 +231,7 @@ const Game = () => {
                 setEndAlert('')
                 setNext(false)
             } else {
-                router.push('/');
+                window.location.href = "/game/Zones";
             }
         }
     }
@@ -263,7 +263,7 @@ const Game = () => {
                 },
             }
         );
-        router.push('/');
+        window.location.href = "/game/Zones";
     }
 
 
