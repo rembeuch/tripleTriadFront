@@ -33,6 +33,8 @@ const Game = () => {
     const [endgame, setEndgame] = useState(false);
     const [endAlert, setEndAlert] = useState('');
     const [next, setNext] = useState(false);
+    const [reward, setReward] = useState(null);
+    const [rewardMessage, setRewardMessage] = useState(null);
 
 
 
@@ -254,6 +256,28 @@ const Game = () => {
         }
     }
 
+    async function getRewardMessage(message) {
+        setRewardMessage(message)
+    }
+
+    async function getReward(monster) {
+        const response = await fetch(`${`http://localhost:3000/api/v1/reward?token=${authToken}&id=${monster.id}`}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (response.ok) {
+            const responseData = await response.json();
+            if (responseData.message != "") {
+                await getRewardMessage(responseData.message)
+            }
+        }
+        setReward(monster)
+    }
+
     async function quitGame() {
         const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?token=${authToken}`}`,
             {
@@ -340,7 +364,7 @@ const Game = () => {
         if (player) {
             getScore();
         }
-    }, [playerScore, computerScore, authToken, player]);
+    }, [playerScore, computerScore, authToken, player, playerPower, playerComputerPower]);
 
     const handleCardClick = (card) => {
         if (turn) {
@@ -456,16 +480,50 @@ const Game = () => {
                                                     {endAlert}!
                                                 </Alert>
                                                 {game.rounds == game.player_points || game.rounds == game.computer_points ? (
-                                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                                        {next && <button onClick={() => nextGame()} style={{
-                                                            color: "#F9DC5C",
-                                                            backgroundColor: "green",
-                                                            padding: "10px 50px",
-                                                            margin: 10,
-                                                            transition: "background-color 0.3s ease",
-                                                            borderRadius: 5,
-                                                            textDecoration: "none"
-                                                        }} > Finish Game </button>}
+                                                    <div style={{ justifyContent: 'space-around' }}>
+                                                        {game.rounds == game.player_points ? (
+                                                            <>
+                                                                <h2>Get Reward</h2>
+                                                                {!reward &&
+                                                                    <div id='reward' className="left-cards" style={{ display: 'flex' }}>
+                                                                        {game.monsters.map((monster) => (
+                                                                            <div
+                                                                                key={monster.id}
+                                                                                onClick={() => getReward(monster)}
+                                                                                style={leftCardStyle}
+                                                                            >
+                                                                                <Card reveal={true} />
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                }
+                                                                <div>{rewardMessage}</div>
+                                                                {reward &&
+                                                                    <>
+                                                                        <div onClick={() => nextGame()}
+                                                                            style={selectedCardStyle}
+                                                                        >
+                                                                            {reward.name}:
+                                                                            <Card card={reward} />
+                                                                        </div>
+                                                                        <p>Energy + {game.player_points * 10}</p>
+                                                                    </>
+                                                                }
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <p>Energy + {game.player_points * 10}</p>
+                                                                <button onClick={() => nextGame()} style={{
+                                                                    color: "#F9DC5C",
+                                                                    backgroundColor: "green",
+                                                                    padding: "10px 50px",
+                                                                    margin: 10,
+                                                                    transition: "background-color 0.3s ease",
+                                                                    borderRadius: 5,
+                                                                    textDecoration: "none"
+                                                                }} > Finish </button>
+                                                            </>
+                                                        )}
                                                         {next &&
                                                             <button onClick={() => review()} style={{
                                                                 color: "#F9DC5C",
@@ -529,7 +587,7 @@ const Game = () => {
                                                     style={selectedCard === card ? selectedCardStyle : leftCardStyle}
                                                     onClick={() => handleCardClick(card)}
                                                 >
-                                                    Matricule #{card.name}:
+                                                    # {card.name}:
                                                     <Card card={card} />
                                                 </div>
                                             ))}
@@ -706,7 +764,6 @@ const Game = () => {
                                                     style={rightCardStyle}
                                                 >
                                                     <Card card={card} />
-                                                    Matricule #{card.name}:
                                                 </div>
                                             ))}
                                         </div>

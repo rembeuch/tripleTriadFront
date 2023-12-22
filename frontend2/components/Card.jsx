@@ -1,5 +1,5 @@
 import React from 'react'
-const Card = ({ card, played }) => {
+const Card = ({ card, played, reveal }) => {
 
     const circleStyle = {
         width: '120px',
@@ -55,32 +55,44 @@ const Card = ({ card, played }) => {
     };
     return (
         <>
-            <div style={played ? tyleStyle : circleStyle}>
-                {played &&
-                    <>
-                        <p style={upStyle}>{card.up}</p>
-                        <p style={rightStyle}>{card.right}</p>
-                        <p style={downStyle}>{card.down}</p>
-                        <p style={leftStyle}>{card.left}</p>
-                    </>
-                }
-                {!card.computer &&
-                    <>
-                        <p style={upStyle}>{card.up}</p>
-                        <p style={rightStyle}>{card.right}</p>
-                        <p style={downStyle}>{card.down}</p>
-                        <p style={leftStyle}>{card.left}</p>
-                    </>
-                }
-                {!card.hide &&
-                    <>
-                        <p style={upStyle}>{card.up}</p>
-                        <p style={rightStyle}>{card.right}</p>
-                        <p style={downStyle}>{card.down}</p>
-                        <p style={leftStyle}>{card.left}</p>
-                    </>
-                }
-            </div>
+            {reveal ? (
+                <div style={circleStyle}>
+                    <p style={upStyle}>?</p>
+                    <p style={rightStyle}>?</p>
+                    <p style={downStyle}>?</p>
+                    <p style={leftStyle}>?</p>
+                </div>
+            ) : (
+                <>
+                    <div style={played ? tyleStyle : circleStyle}>
+                        {played &&
+                            <>
+                                <p style={upStyle}>{card.up}</p>
+                                <p style={rightStyle}>{card.right}</p>
+                                <p style={downStyle}>{card.down}</p>
+                                <p style={leftStyle}>{card.left}</p>
+                            </>
+                        }
+                        {!card.computer &&
+                            <>
+                                <p style={upStyle}>{card.up}</p>
+                                <p style={rightStyle}>{card.right}</p>
+                                <p style={downStyle}>{card.down}</p>
+                                <p style={leftStyle}>{card.left}</p>
+                            </>
+                        }
+                        {!card.hide &&
+                            <>
+                                <p style={upStyle}>{card.up}</p>
+                                <p style={rightStyle}>{card.right}</p>
+                                <p style={downStyle}>{card.down}</p>
+                                <p style={leftStyle}>{card.left}</p>
+                            </>
+                        }
+                    </div>
+                </>
+            )}
+
         </>
     )
 }

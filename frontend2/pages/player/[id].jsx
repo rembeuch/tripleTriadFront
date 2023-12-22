@@ -219,6 +219,7 @@ function Player() {
             <h2>{player.name}</h2>
             <p>ability: {player.ability}</p>
             <p>Your Team: {deck.length + elites.length}/5</p>
+            <p>Elite points: {player.elite_points}</p>
             {removeAlert && <div>
               <Alert status='warning' width="50%">
                 <AlertIcon />
@@ -279,13 +280,13 @@ function Player() {
             <div style={gridContainerStyle}>
               {deck.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
-                  <p style={{ background: "white", margin: '5px' }}> Matricule #{card.id}</p>
+                  <p style={{ background: "white", margin: '5px' }}> {card.name}</p>
                   <Flex>
                     <Card card={card} />
                   </Flex>
                   <button onClick={() => removeCard(card.id)} style={{
                     color: "#F9DC5C",
-                    backgroundColor: "blue",
+                    backgroundColor: "red",
                     padding: "10px 10px",
                     marginTop: 10,
                     transition: "background-color 0.3s ease",
@@ -300,7 +301,7 @@ function Player() {
             <div style={gridContainerStyle}>
               {cards.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
-                  <p style={{ background: "white", margin: '5px' }}> Matricule #{card.id}</p>
+                  <p style={{ background: "white", margin: '5px' }}> {card.name} points:{card.copy}</p>
                   <Flex>
                     <Card card={card} />
                   </Flex>
@@ -311,15 +312,26 @@ function Player() {
                     </Alert>
                   </div>
                   }
+                  <Link href="/monster/[id]" as={`/monster/${card.id}`}>
+                    <button style={{
+                      color: "#F9DC5C",
+                      backgroundColor: "green",
+                      padding: "10px 50px",
+                      margin: 5,
+                      transition: "background-color 0.3s ease",
+                      borderRadius: 5,
+                      textDecoration: "none"
+                    }} > Details </button>
+                  </Link>
                   <button onClick={() => addCard(card.id)} style={{
                     color: "#F9DC5C",
-                    backgroundColor: "green",
+                    backgroundColor: "blue",
                     padding: "10px 10px",
                     marginTop: 10,
                     transition: "background-color 0.3s ease",
                     borderRadius: 5,
                     textDecoration: "none"
-                  }} > Add to your Team
+                  }} > Add
                   </button>
                 </div>
               ))}

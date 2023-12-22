@@ -62,9 +62,9 @@ const Header = () => {
                     <button className='' onClick={clearToken}>LogOut</button>
                 </div>
             }
-                <div status='warning' width="100%" id="alert">
-                 </div>   
-            
+            <div status='warning' width="100%" id="alert">
+            </div>
+
             <Flex width="30%" justifyContent="space-between" alignItems="center">
                 <Text
                     fontWeight="bold"
@@ -74,10 +74,24 @@ const Header = () => {
                         },
                     }}
                 >
-                    <Link href="/" passHref>
-                        Home
-                    </Link>
-                </Text>
+                    {player &&
+                        <Link href="/player/[id]" as={`/player/${player.id}`}>
+                            Dashboard
+                        </Link>
+                    }
+                    </Text>
+                    <Text
+                        fontWeight="bold"
+                        sx={{
+                            ':hover': {
+                                textDecoration: 'underline',
+                            },
+                        }}
+                    >
+                        <Link href="/" passHref>
+                            Home
+                        </Link>
+                    </Text>
             </Flex>
         </Flex>
     )

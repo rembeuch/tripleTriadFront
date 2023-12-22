@@ -128,6 +128,9 @@ export default function Home() {
               {player ? (
                 <>
                   <h2>Name: {player.name}</h2>
+                  <h2>Energy: {player.energy}</h2>
+                  <h2>Monsters: {player.monsters.length}</h2>
+
                   <Link href="/player/[id]" as={`/player/${player.id}`}>
                     <button style={{
                       color: "#F9DC5C",
