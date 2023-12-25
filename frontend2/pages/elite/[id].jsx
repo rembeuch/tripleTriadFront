@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useProvider, useSigner } from 'wagmi'
+import { ethers } from 'ethers'
+import { contractAddress, abi } from '@/public/constants';
 import {
     Alert,
     AlertIcon,
@@ -13,6 +15,7 @@ import {
 import Layout from '@/components/Layout/Layout';
 import Card from '@/components/Card';
 import { useAuth } from '@/contexts/authContext';
+import { BigNumber } from 'ethers';
 
 const elite = () => {
     const { authToken } = useAuth();
@@ -23,7 +26,9 @@ const elite = () => {
     const [elite, setElite] = useState();
     const [powers, setPowers] = useState([]);
     const [ability, setAbility] = useState();
-    const [energy, setEnergy] = useState(null);
+    const { data: signer } = useSigner();
+    const [nftList, setNftList] = useState([]);
+
 
 
     async function getPlayer() {
@@ -61,21 +66,72 @@ const elite = () => {
         if (response.ok) {
             const responseData = await response.json();
             setElite(responseData.elite)
+            setPowers(responseData.power)
+            setPlayer(responseData.player)
+        }
+    }
+
+    async function mintElite(id, value = 0.01) {
+        if (isConnected) {
+            const contract = new ethers.Contract(contractAddress, abi, signer)
+
+            const valueInWei = ethers.utils.parseEther(value.toString());
+            await contract.mintElite(id, { value: valueInWei });
+        }
+    }
+
+    async function checkNftElite(id) {
+        const response = await fetch(`${`http://localhost:3000/api/v1/nft_elite?token=${authToken}&id=${id}`}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (response.ok) {
+            const responseData = await response.json();
+            setElite(responseData.elite)
+        }
+    }
+
+    async function fetchNfts() {
+        if (isConnected) {
+            const contract = new ethers.Contract(contractAddress, abi, signer)
+            const nfts = await contract.getMyNFTs();
+
+            setNftList(nfts);
+            nftList.map(nft => {
+                const eliteIdBigNumber = BigNumber.from(nft.eliteId);
+
+                // Utilisez toNumber pour obtenir la valeur numérique
+                const eliteId = eliteIdBigNumber.toNumber();
+                checkNftElite(eliteId)
+                return null;
+            });
         }
     }
 
     useEffect(() => {
+        const fetchNFT = async () => {
+            await fetchNfts();
+        };
+        if (isConnected && signer && !elite.nft) {
+            fetchNFT()
+        }
+    }, [authToken, player, elite]);
+
+
+    useEffect(() => {
 
         const fetchCurrentPlayer = async () => {
-            try {
-                const json = await getPlayer();
-                setPlayer(json);
-                setAbility(json.ability)
-            } catch (error) {
-                console.error("Failed to fetch the player: ", error);
-            }
+            const json = await getPlayer();
+            setPlayer(json);
+            setAbility(json.ability)
         };
-        fetchCurrentPlayer();
+        if (authToken) {
+            fetchCurrentPlayer();
+        }
     }, [address, authToken]);
 
     useEffect(() => {
@@ -93,18 +149,6 @@ const elite = () => {
             fetchCurrentElite();
         }
     }, [address, authToken, player]);
-
-    useEffect(() => {
-        const fetchCurrentPlayer = async () => {
-            try {
-                const json = await getPlayer();
-                setEnergy(json.energy)
-            } catch (error) {
-                console.error("Failed to fetch the player: ", error);
-            }
-        };
-        fetchCurrentPlayer();
-}, [player, elite]);
 
     const eliteCardStyle = {
         height: '220px',
@@ -130,14 +174,39 @@ const elite = () => {
             <Layout>
                 <div style={gridContainerStyle}>
                     <h2> Your Elite:</h2>
-                    <div key={elite.id} style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> Elite #{elite.name}</p>
+                    {player && elite && isConnected ?
+                        (
+                            <div>
+                                {elite.nft == false &&
+                                    <>
+                                        <h2>Mint Elite</h2>
+                                        <button onClick={() => mintElite()}>Mint</button>
+                                    </>
+                                }
+                            </div>
+                        )
+                        :
+                        (
+                            <div>
+                                {elite.nft == false &&
+                                    <>
+                                        <h2>Mint Elite</h2>
+                                        <ConnectButton />
+                                    </>
+                                }
+                            </div>
+                        )
+                    }
+                    <div style={eliteCardStyle} className="card">
+                        <p style={{ background: "white", margin: '5px' }}> {elite.name}
+                            {elite.nft && '//NFT'}
+                        </p>
                         <Flex>
                             <Card card={elite} />
                         </Flex>
                     </div>
                     <div>
-                        points: {player.elite_points} / energy: {energy}
+                        points: {player.elite_points} / energy: {player.energy}
                         {elite.fight < 100 ? (
                             <p>{elite.fight} / 100
                                 {player.elite_points > 0 &&
@@ -152,7 +221,11 @@ const elite = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {elite.fight * 10} energy )</span>
+                                        {elite.nft ? (
+                                            <span> (- {elite.fight * 5} energy )</span>
+                                        ) : (
+                                            <span> (- {elite.fight * 10} energy )</span>
+                                        )}
                                     </>
                                 }
                             </p>) : (
@@ -175,8 +248,11 @@ const elite = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {elite.diplomacy * 10} energy )</span>
-                                    </>
+                                        {elite.nft ? (
+                                            <span> (- {elite.diplomacy * 5} energy )</span>
+                                        ) : (
+                                            <span> (- {elite.diplomacy * 10} energy )</span>
+                                        )}                                    </>
                                 }
                             </p>) : (
                             <p>
@@ -198,8 +274,11 @@ const elite = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {elite.espionage * 10} energy )</span>
-                                    </>
+                                        {elite.nft ? (
+                                            <span> (- {elite.espionage * 5} energy )</span>
+                                        ) : (
+                                            <span> (- {elite.espionage * 10} energy )</span>
+                                        )}                                    </>
                                 }
                             </p>) : (
                             <p>
@@ -221,8 +300,11 @@ const elite = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {elite.leadership * 10} energy )</span>
-                                    </>
+                                        {elite.nft ? (
+                                            <span> (- {elite.leadership * 5} energy )</span>
+                                        ) : (
+                                            <span> (- {elite.leadership * 10} energy )</span>
+                                        )}                                    </>
                                 }
                             </p>) : (
                             <p>
@@ -236,7 +318,7 @@ const elite = () => {
                 <div style={gridContainerStyle}>
                     {powers.map(power => (
                         <>
-                            <div key={power.index} onClick={() => playerAbility(power)} className="card">
+                            <div key={powers.index} onClick={() => playerAbility(power)} className="card">
                                 <button style={{
                                     color: "#F9DC5C",
                                     backgroundColor: "green",

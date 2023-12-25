@@ -235,7 +235,9 @@ function Player() {
                 {elites.map(card => (
                   <>
                     <div key={card.id} style={eliteCardStyle} className="card">
-                      <p style={{ background: "white", margin: '5px' }}> Elite #{card.name}</p>
+                      <p style={{ background: "white", margin: '5px' }}> {card.name}
+                        {card.nft && '//NFT'}
+                      </p>
                       <Flex>
                         <Card card={card} />
                       </Flex>
@@ -253,11 +255,6 @@ function Player() {
                     </div>
                   </>
                 ))}
-                {authToken && player &&
-                  <div>
-                    <ConnectButton />
-                  </div>
-                }
               </div >
             ) :
               (

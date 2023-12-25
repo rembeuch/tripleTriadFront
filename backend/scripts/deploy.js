@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const Elite = await hre.ethers.getContractFactory("Elite");
+  const Elite = await hre.ethers.getContractFactory("EliteNFT");
   const elite = await Elite.deploy();
 
   await elite.deployed();

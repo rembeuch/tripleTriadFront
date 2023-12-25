@@ -26,26 +26,12 @@ const Header = () => {
         return response.json();
     }
 
-
-    useEffect(() => {
-        if (isConnected) {
-            document.getElementById("alert").innerText = ""
-            wallet()
-        }
-    }, [isConnected]);
-
     useEffect(() => {
 
         const fetchCurrentPlayer = async () => {
             try {
                 const json = await getPlayer();
                 setPlayer(json);
-                if (isConnected) {
-                    if (address != json.wallet_address) {
-                        document.getElementById("alert").innerText = `Wallet Address or account already connect`
-                        clearToken();
-                    }
-                }
             } catch (error) {
                 console.error("Failed to fetch the player: ", error);
             }
