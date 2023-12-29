@@ -16,13 +16,13 @@ import {
 
 
 
-const Header = () => {
+const Header = ({pvp}) => {
     const { clearToken, authToken, setToken } = useAuth();
     const { address, isConnected } = useAccount()
     const [player, setPlayer] = useState(null);
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
         return response.json();
     }
 
@@ -47,6 +47,24 @@ const Header = () => {
                 <div>
                     <button className='' onClick={clearToken}>LogOut</button>
                 </div>
+            }
+            {player && pvp == 'wait' &&
+                <div>
+                    <button >PvP: waiting List</button>
+                </div>
+            }
+            {player && pvp == 'true' &&
+                 <Link href="/pvp/[id]" as={`/pvp/${game.id}`}>
+                 <button style={{
+                   color: "#F9DC5C",
+                   backgroundColor: "purple",
+                   padding: "10px 50px",
+                   margin: 10,
+                   transition: "background-color 0.3s ease",
+                   borderRadius: 5,
+                   textDecoration: "none"
+                 }} > PVP Fight </button>
+               </Link>
             }
             <div status='warning' width="100%" id="alert">
             </div>

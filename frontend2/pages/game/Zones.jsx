@@ -18,6 +18,7 @@ const Zones = () => {
   const { authToken } = useAuth();
   const { address, isConnected } = useAccount()
   const [player, setPlayer] = useState(null);
+  const [pvp, setPvp] = useState(null);
   const [game, setGame] = useState(null);
   const router = useRouter();
   const [numberOfRounds, setNumberOfRounds] = useState(1);
@@ -61,6 +62,11 @@ const Zones = () => {
     }
   }, [player]);
 
+  useEffect(() => {
+    if (player) {
+      setPvp(player.in_pvp);
+    }
+  }, [player]);
 
   async function createGame() {
 
@@ -100,7 +106,7 @@ const Zones = () => {
     }
   }
   return (
-    <Layout>
+    <Layout pvp={pvp}>
       {player ? (
         <>
           <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points}</h2>

@@ -20,6 +20,7 @@ import { useAuth } from '@/contexts/authContext';
 export default function Home() {
   const router = useRouter();
   const [player, setPlayer] = useState(null);
+  const [pvp, setPvp] = useState(null);
   const [game, setGame] = useState(null);
   const [deck, setDeck] = useState([]);
   const [elites, setElites] = useState([]);
@@ -28,23 +29,64 @@ export default function Home() {
   const { address, isConnected } = useAccount()
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
     return response.json();
   }
 
   async function getGame() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?token=${authToken}`}`);
     return response.json();
   }
 
+  async function getPvp() {
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_pvp?token=${authToken}`}`);
+    return response.json();
+}
+
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/deck?token=${authToken}`}`);
     return response.json();
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`);
     return response.json();
+  }
+
+  async function createPvp() {
+
+    const response = await fetch(`${`http://localhost:3000/api/v1/pvps?token=${authToken}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      if (responseData.id) {
+        const pvpId = responseData.id;
+        router.push(`/pvp/${pvpId}`)
+      }
+      setPlayer(responseData.player)
+    }
+  }
+
+  async function stopPvp() {
+
+    const response = await fetch(`${`http://localhost:3000/api/v1/stop_pvp?token=${authToken}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setPlayer(responseData.player)
+    }
   }
 
   const redirectZones = () => {
@@ -99,6 +141,22 @@ export default function Home() {
   }, [player]);
 
   useEffect(() => {
+    const fetchCurrentPvp = async () => {
+      try {
+        const json = await getPvp();
+        setPvp(json);
+      } catch (error) {
+        setPvp(null);
+        console.error("Failed to fetch the game: ", error);
+      }
+    };
+
+    if (player) {
+      fetchCurrentPvp();
+    }
+  }, [player]);
+
+  useEffect(() => {
     const fetchCurrentElites = async () => {
       try {
         const json = await getElites();
@@ -121,8 +179,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Layout>
-        { player ? (
+      <Layout pvp={pvp}>
+        {player ? (
           <div className="App">
             <div>
               {player ? (
@@ -152,23 +210,71 @@ export default function Home() {
                         transition: "background-color 0.3s ease",
                         borderRadius: 5,
                         textDecoration: "none"
-                      }} > Play </button>
+                      }} > Fight </button>
                     </Link>
                   ) : (
                     <>
-                    { deck && elites && <button
-                      onClick={redirectZones}
-                      style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "green",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                      }} > Play </button>}
-                      </>
+                      {deck && elites &&
+                        <>
+                          <button
+                            onClick={redirectZones}
+                            style={{
+                              color: "#F9DC5C",
+                              backgroundColor: "green",
+                              padding: "10px 50px",
+                              margin: 10,
+                              transition: "background-color 0.3s ease",
+                              borderRadius: 5,
+                              textDecoration: "none"
+                            }} > Play </button>
+                        </>
+                      }
+                    </>
                   )
+                  }
+                  {deck && elites &&
+                    <>
+                      {
+                        player.in_pvp == 'false' &&
+                        <button
+                          onClick={createPvp}
+                          style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "purple",
+                            padding: "10px 50px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} > PvP </button>
+                      }
+                      {player.in_pvp == 'wait' &&
+                        <button
+                          onClick={stopPvp}
+                          style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "purple",
+                            padding: "10px 50px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} >Leave PvP waiting list</button>
+                      }
+                      {player.in_pvp == 'true' && pvp &&
+                        <Link href="/pvp/[id]" as={`/pvp/${pvp.id}`}>
+                          <button style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "purple",
+                            padding: "10px 50px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} > Fight </button>
+                        </Link>
+                      }
+                    </>
                   }
                   {showAlert && <div>
                     <Alert status='warning' width="50%">

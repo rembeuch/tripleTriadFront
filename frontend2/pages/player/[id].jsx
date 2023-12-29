@@ -21,6 +21,7 @@ function Player() {
   const router = useRouter();
   const { id } = router.query;
   const [player, setPlayer] = useState(null);
+  const [pvp, setPvp] = useState(null);
   const [elites, setElites] = useState([]);
   const [cards, setCards] = useState([]);
   const [deck, setDeck] = useState([]);
@@ -47,7 +48,7 @@ function Player() {
   }
 
   async function getCards() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/cards`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/cards?token=${authToken}`}`);
     return response.json();
   }
 
@@ -67,6 +68,63 @@ function Player() {
     }
   }
 
+  
+  async function addCard(id) {
+
+    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?token=${authToken}&card_id=${id}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+      );
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData.message == "") {
+          setDeck(responseData)
+      }
+
+      if (responseData.message != "") {
+        setAddAlert(responseData.message);
+        setSelectedCardId(responseData.id);
+        setTimeout(() => {
+          setAddAlert("")
+        }, 3000);
+      }
+    }
+  }
+
+  async function removeCard(id) {
+
+    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?token=${authToken}&card_id=${id}`}`,
+    {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setDeck(responseData)
+    } else {
+      setRemoveAlert(true);
+      setTimeout(() => {
+        setRemoveAlert(false)
+      }, 3000);
+    }
+  }
+
+  const wallet = async () => {
+    try {
+      await fetch(`${`http://localhost:3000/api/v1/connect_wallet?token=${authToken}`}`);
+    }
+    catch (e) {
+      console.log(e.reason)
+    }
+  }
+  
   useEffect(() => {
 
     const fetchCurrentPlayer = async () => {
@@ -114,7 +172,7 @@ function Player() {
   }, [addAlert]);
 
   useEffect(() => {
-    const fetchCurrentPlayer = async () => {
+    const fetchCards = async () => {
       try {
         const json = await getCards();
         setCards(json);
@@ -122,66 +180,17 @@ function Player() {
         console.error("Failed to fetch the player: ", error);
       }
     };
-    fetchCurrentPlayer();
-  }, []);
-
-  async function addCard(id) {
-
-    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?token=${authToken}&card_id=${id}`}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.ok) {
-      const responseData = await response.json();
-      if (responseData.message == "") {
-        setDeck(responseData)
-      }
-
-      if (responseData.message != "") {
-        setAddAlert(responseData.message);
-        setSelectedCardId(responseData.id);
-        setTimeout(() => {
-          setAddAlert("")
-        }, 3000);
-      }
+    if (player) {
+      fetchCards();
     }
-  }
+  }, [player]);
 
-  async function removeCard(id) {
-
-    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?token=${authToken}&card_id=${id}`}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.ok) {
-      const responseData = await response.json();
-      setDeck(responseData)
-    } else {
-      setRemoveAlert(true);
-      setTimeout(() => {
-        setRemoveAlert(false)
-      }, 3000);
+  useEffect(() => {
+    if (player) {
+      setPvp(player.in_pvp);
     }
-  }
-
-  const wallet = async () => {
-    try {
-      await fetch(`${`http://localhost:3000/api/v1/connect_wallet?token=${authToken}`}`);
-    }
-    catch (e) {
-      console.log(e.reason)
-    }
-  }
-
-
+  }, [player]);
+  
   const gridContainerStyle = {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
@@ -213,13 +222,15 @@ function Player() {
 
   return (
     <>
-      <Layout>
+      <Layout pvp={pvp}>
         {isConnected || player ? (
           <div>
-            <h2>{player.name}</h2>
-            <p>ability: {player.ability}</p>
-            <p>Your Team: {deck.length + elites.length}/5</p>
-            <p>Elite points: {player.elite_points}</p>
+            <div>
+              <h2>{player.name}</h2>
+              <p>ability: {player.ability}</p>
+              <p>Your Team: {deck.length + elites.length}/5</p>
+              <p>Elite points: {player.elite_points}</p>
+            </div>
             {removeAlert && <div>
               <Alert status='warning' width="50%">
                 <AlertIcon />
