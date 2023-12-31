@@ -189,7 +189,7 @@ const Pvp = () => {
         );
         if (response.ok) {
             const responseData = await response.json();
-            if (responseData.id == game.id) {
+            if (responseData.id == pvp.id) {
                 setEndgame(false)
                 await updatePvpBoard();
                 await fetchOpponentDeck();

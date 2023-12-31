@@ -16,13 +16,19 @@ import {
 
 
 
-const Header = ({pvp}) => {
+const Header = ({ pvp }) => {
     const { clearToken, authToken, setToken } = useAuth();
     const { address, isConnected } = useAccount()
     const [player, setPlayer] = useState(null);
+    const [playerPvp, setPlayerPvp] = useState(null);
 
     async function getPlayer() {
         const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+        return response.json();
+    }
+
+    async function getPvp() {
+        const response = await fetch(`${`http://localhost:3000/api/v1/find_pvp?token=${authToken}`}`);
         return response.json();
     }
 
@@ -39,6 +45,22 @@ const Header = ({pvp}) => {
         fetchCurrentPlayer();
     }, [address, authToken, isConnected]);
 
+    useEffect(() => {
+
+        const fetchPvp = async () => {
+            try {
+                const json = await getPvp();
+                setPlayerPvp(json);
+            } catch (error) {
+                console.error("Failed to fetch the player: ", error);
+            }
+        };
+
+        if (pvp == "true") {
+            fetchPvp();
+        }
+    }, [pvp]);
+
 
 
     return (
@@ -53,18 +75,18 @@ const Header = ({pvp}) => {
                     <button >PvP: waiting List</button>
                 </div>
             }
-            {player && pvp == 'true' &&
-                 <Link href="/pvp/[id]" as={`/pvp/${game.id}`}>
-                 <button style={{
-                   color: "#F9DC5C",
-                   backgroundColor: "purple",
-                   padding: "10px 50px",
-                   margin: 10,
-                   transition: "background-color 0.3s ease",
-                   borderRadius: 5,
-                   textDecoration: "none"
-                 }} > PVP Fight </button>
-               </Link>
+            {player && pvp == 'true' && playerPvp &&
+                <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
+                    <button style={{
+                        color: "#F9DC5C",
+                        backgroundColor: "purple",
+                        padding: "10px 50px",
+                        margin: 10,
+                        transition: "background-color 0.3s ease",
+                        borderRadius: 5,
+                        textDecoration: "none"
+                    }} > PVP Fight </button>
+                </Link>
             }
             <div status='warning' width="100%" id="alert">
             </div>
@@ -83,19 +105,19 @@ const Header = ({pvp}) => {
                             Dashboard
                         </Link>
                     }
-                    </Text>
-                    <Text
-                        fontWeight="bold"
-                        sx={{
-                            ':hover': {
-                                textDecoration: 'underline',
-                            },
-                        }}
-                    >
-                        <Link href="/" passHref>
-                            Home
-                        </Link>
-                    </Text>
+                </Text>
+                <Text
+                    fontWeight="bold"
+                    sx={{
+                        ':hover': {
+                            textDecoration: 'underline',
+                        },
+                    }}
+                >
+                    <Link href="/" passHref>
+                        Home
+                    </Link>
+                </Text>
             </Flex>
         </Flex>
     )

@@ -143,8 +143,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCurrentPvp = async () => {
       try {
-        const json = await getPvp();
-        setPvp(json);
+        setPvp(player.in_pvp);
       } catch (error) {
         setPvp(null);
         console.error("Failed to fetch the game: ", error);
