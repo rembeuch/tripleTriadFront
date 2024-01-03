@@ -11,8 +11,6 @@ import {
 } from '@chakra-ui/react'
 import { useAuth } from '@/contexts/authContext';
 
-
-
 const Pvp = () => {
     const { authToken } = useAuth();
     const router = useRouter();
@@ -24,7 +22,7 @@ const Pvp = () => {
     const [leftCards, setLeftCards] = useState([]);
     const [rightCards, setRightCards] = useState([]);
     const [pvp, setPvp] = useState(null);
-    const [turn, setTurn] = useState(true);
+    const [turn, setTurn] = useState(null);
     const [playerScore, setPlayerScore] = useState(0);
     const [computerScore, setComputerScore] = useState(0);
     const [playerPowerPoints, setPlayerPowerPoints] = useState(0);
@@ -36,7 +34,10 @@ const Pvp = () => {
     const [next, setNext] = useState(false);
     const [reward, setReward] = useState(null);
     const [rewardMessage, setRewardMessage] = useState(null);
+    const [messagePvp, setMessagePvp] = useState(null);
     const { address, } = useAccount()
+    const [isWebSocketActive, setIsWebSocketActive] = useState(false);
+
 
     async function getPlayer() {
         const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
@@ -101,22 +102,19 @@ const Pvp = () => {
         const responseWin = await response.json();
         setEndAlert(responseWin.message)
         if (responseWin.message != "") {
-            setTimeout(() => {
-                setEndgame(true);
-            }, 3000);
+            setEndgame(true);
         }
-
     }
 
     async function review() {
-        if (endgame == true && next == true) {
-            setEndgame(false);
-            setNext(true)
-        }
-        else {
+        if (endgame == false ) {
             setEndgame(true);
             setNext(false)
             setEndAlert("!")
+        }
+        else {
+        setEndgame(false);
+        setNext(true)
         }
     }
 
@@ -124,7 +122,11 @@ const Pvp = () => {
 
 
     async function updatePosition(card_id, position) {
-        setTurn(false)
+        if (playerNumber == 1) {
+            setTurn(2)
+        } else {
+            setTurn(1)
+        }
         const response = await fetch(`${`http://localhost:3000/api/v1/update_pvp_position?token=${authToken}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
@@ -132,26 +134,39 @@ const Pvp = () => {
             },
         });
 
-        updatePvpBoard();
+        await updatePvpBoard();
         fetchOpponentDeck();
 
         await playerCombo(response)
         await getScore()
-        document.querySelector('#alertComputer').innerText = ""
+        const alertC = document.querySelector('#alertComputer')
+        if (alertC) {
+            alertC.innerText = ""
+        }
 
         await updatePvpBoard();
         await fetchOpponentDeck();
         await fetchPlayerDeck()
         await getScore()
-        document.querySelector('#alertPlayer').innerText = ""
+        const alertP = document.querySelector('#alertPlayer')
+        if (alertP) {
+            alertP.innerText = ""
+        }
+        if (playerNumber == 1) {
+            setTurn(2)
+        } else {
+            setTurn(1)
+        }
         await win()
-        setTurn(true)
     }
 
     async function playerCombo(response) {
         if (response.ok) {
             const responseData = await response.json();
-            document.querySelector('#alertPlayer').innerText = responseData.message
+            const alertP = document.querySelector('#alertPlayer')
+            if (alertP) {
+                alertP.innerText = responseData.message
+            }
             if (responseData.message != '') {
                 if (responseData.cards_updated != []) {
                     for (const card_id of responseData.cards_updated) {
@@ -172,8 +187,10 @@ const Pvp = () => {
         });
         if (responseCombo.ok) {
             const combo = await responseCombo.json();
-            document.querySelector('#alertPlayer').innerText = combo.message
-            await updatePvpBoard();
+            const alertP = document.querySelector('#alertPlayer')
+            if (alertP) {
+                alertP.innerText = combo.message
+            } await updatePvpBoard();
             await fetchOpponentDeck();
         }
     }
@@ -232,9 +249,7 @@ const Pvp = () => {
         window.location.href = "/game/Zones";
     }
 
-
     useEffect(() => {
-
         const fetchCurrentPlayer = async () => {
             try {
                 const json = await getPlayer();
@@ -243,7 +258,9 @@ const Pvp = () => {
                 console.error("Failed to fetch the player: ", error);
             }
         };
-        fetchCurrentPlayer();
+        if (authToken) {
+            fetchCurrentPlayer();
+        }
     }, [address, authToken]);
 
     useEffect(() => {
@@ -256,7 +273,9 @@ const Pvp = () => {
                 console.error("Failed to fetch the player: ", error);
             }
         };
-        fetchPlayerNumber();
+        if (authToken) {
+            fetchPlayerNumber();
+        }
     }, [address, authToken]);
 
     useEffect(() => {
@@ -264,6 +283,7 @@ const Pvp = () => {
             try {
                 const json = await getPvp();
                 setPvp(json);
+                setTurn(json.turn)
             } catch (error) {
                 setPvp(null);
                 console.error("Failed to fetch the game: ", error);
@@ -273,7 +293,7 @@ const Pvp = () => {
         if (player) {
             fetchCurrentGame();
         }
-    }, [address, authToken, player, endgame]);
+    }, [address, authToken, player, endgame, messagePvp]);
 
     useEffect(() => {
         if (player) {
@@ -283,16 +303,44 @@ const Pvp = () => {
 
     useEffect(() => {
         if (player) {
-            setBoard(board)
-            if (board.every(element => element !== false)) {
-                setTimeout(() => {
-                    setNext(true);
-                }, 3000);
-            } else {
-                setNext(false);
-            }
+            updatePvpBoard()
         }
-    }, [board, next]);
+    }, [player, messagePvp]);
+
+    useEffect(() => {
+        if (turn == 3) {
+            setEndgame(true);
+            setEndAlert("!")
+            setNext(true)
+        } else {
+            setNext(false);
+        }
+    }, [turn]);
+
+    useEffect(() => {
+        const newWs = new WebSocket('ws://localhost:3000/cable');
+
+        if (isWebSocketActive) {
+
+            newWs.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                setMessagePvp(data);
+            };
+        }
+        if (board.every(element => element !== false)) {
+            newWs.close();
+        }
+
+    }, [isWebSocketActive]);
+
+    useEffect(() => {
+        if (turn == playerNumber || turn == 3) {
+            setIsWebSocketActive(false)
+        } else {
+            setIsWebSocketActive(true)
+        }
+    }, [turn, board, next]);
+
 
     useEffect(() => {
         if (player) {
@@ -305,13 +353,7 @@ const Pvp = () => {
         if (player) {
             fetchOpponentDeck();
         }
-    }, [address, authToken, player, playerPower]);
-
-    useEffect(() => {
-        if (player) {
-            updatePvpBoard();
-        }
-    }, [address, authToken, player]);
+    }, [address, authToken, player, playerPower, messagePvp]);
 
     useEffect(() => {
         if (player) {
@@ -320,13 +362,14 @@ const Pvp = () => {
     }, [playerScore, computerScore, authToken, player, playerPower, playerComputerPower]);
 
     const handleCardClick = (card) => {
-        if (turn) {
+        if (turn == playerNumber) {
             setSelectedCard(card);
+            updatePvpBoard()
         }
     };
 
     const handleTileClick = (index) => {
-        if (turn) {
+        if (turn == playerNumber) {
             if (selectedCard !== null && board[index] === false) {
                 const updatedBoard = [...board];
                 updatedBoard[index] = selectedCard;
@@ -339,23 +382,6 @@ const Pvp = () => {
             }
         }
     };
-
-    const setBG = (card) => {
-        if (card.player_id == player.id && card.computer) {
-            '#FFC0CB'
-        }
-        if (card.player_id == player.id && !card.computer) {
-            '#87CEEB'
-        }
-        if (card.player_id != player.id && !card.computer) {
-            '#FFC0CB'
-        }
-        if (card.player_id != player.id && card.computer) {
-            '#87CEEB'
-        }
-    };
-
-
 
     const gameStyle = {
         display: 'flex',
@@ -398,16 +424,16 @@ const Pvp = () => {
 
     const playerCardStyle = (card) => {
         return {
-            background: ( (parseInt(card.player_id) == parseInt(player.id) && card.computer &&
+            background: ((parseInt(card.player_id) == parseInt(player.id) && card.computer &&
                 '#FFC0CB') ||
-            ( parseInt(card.player_id) == parseInt(player.id) && !card.computer &&
-                '#87CEEB')
-            ||
-            (parseInt(card.player_id) != parseInt(player.id) && !card.computer &&
-                '#FFC0CB')
-            ||
-            (parseInt(card.player_id) != parseInt(player.id) && card.computer &&
-                '#87CEEB')
+                (parseInt(card.player_id) == parseInt(player.id) && !card.computer &&
+                    '#87CEEB')
+                ||
+                (parseInt(card.player_id) != parseInt(player.id) && !card.computer &&
+                    '#FFC0CB')
+                ||
+                (parseInt(card.player_id) != parseInt(player.id) && card.computer &&
+                    '#87CEEB')
             ),
             width: '220px',
             height: '220px',
@@ -445,7 +471,7 @@ const Pvp = () => {
                     {pvp.id == id ?
                         (<>
                             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                <p>{player.name} rounds:
+                                <p>{player.name} {playerNumber} rounds:
                                     {playerNumber == 1 ? (
                                         <span>
                                             {pvp.player1_points}
@@ -456,7 +482,7 @@ const Pvp = () => {
                                         </span>
                                     )}
                                 </p>
-                                <p>rounds to win: {pvp.rounds}</p>
+                                <p>turn: {pvp.turn} / rounds to win: {pvp.rounds}</p>
                                 <p> rounds: {playerNumber == 1 ? (
                                     <span>
                                         {pvp.player2_points}
@@ -468,146 +494,190 @@ const Pvp = () => {
                                 )} The Machine </p>
                             </div>
                             {endgame ? (
-                                <>
-                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                        <p>Score: {playerScore}</p>
-                                        {endAlert != "" &&
-                                            <div>
-                                                <Alert status='warning' width="100%">
-                                                    <AlertIcon />
-                                                    {endAlert}!
-                                                </Alert>
-                                                {pvp.rounds == pvp.player1_points || pvp.rounds == pvp.player2_points ? (
-                                                    <div style={{ justifyContent: 'space-around' }}>
-                                                        {pvp.rounds == pvp.player1_points && playerNumber == 1 &&
-                                                            <>
-                                                                <p>+ 1 Elite Point</p>
-                                                                <button onClick={() => nextGame()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "green",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} > Finish </button>
-                                                            </>
-                                                        }
-                                                        {pvp.rounds == pvp.player2_points && playerNumber == 2 &&
-                                                            <>
-                                                                <p>+ 1 Elite Point</p>
-                                                                <button onClick={() => nextGame()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "green",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} > Finish </button>
-                                                            </>
-                                                        }
-                                                        <>
-                                                            <p>Energy +  {playerNumber == 1 ? (
-                                                                <span>
-                                                                    {pvp.player1_points * 10}
-                                                                </span>
-                                                            ) : (
-                                                                <span>
-                                                                    {pvp.player2_points * 10}
-                                                                </span>
-                                                            )} </p>
-                                                            <button onClick={() => nextGame()} style={{
-                                                                color: "#F9DC5C",
-                                                                backgroundColor: "green",
-                                                                padding: "10px 50px",
-                                                                margin: 10,
-                                                                transition: "background-color 0.3s ease",
-                                                                borderRadius: 5,
-                                                                textDecoration: "none"
-                                                            }} > Finish </button>
-                                                        </>
 
-                                                        {next &&
-                                                            <button onClick={() => review()} style={{
-                                                                color: "#F9DC5C",
-                                                                backgroundColor: "blue",
-                                                                padding: "10px 50px",
-                                                                margin: 10,
-                                                                transition: "background-color 0.3s ease",
-                                                                borderRadius: 5,
-                                                                textDecoration: "none"
-                                                            }} >  Review Board </button>
-                                                        }
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                                        {next && <button onClick={() => nextGame()} style={{
+                                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                    <p>Score: {playerScore}</p>
+                                    {endAlert != "" &&
+                                        <div>
+                                            <Alert status='warning' width="100%">
+                                                <AlertIcon />
+                                                {endAlert}!
+                                            </Alert>
+                                            {pvp.rounds == pvp.player1_points || pvp.rounds == pvp.player2_points ? (
+                                                <div style={{ justifyContent: 'space-around' }}>
+                                                    {pvp.rounds == pvp.player1_points && playerNumber == 1 &&
+                                                        <div>
+                                                            + 1 Elite Point
+                                                        </div>
+
+                                                    }
+                                                    {pvp.rounds == pvp.player2_points && playerNumber == 2 &&
+
+                                                        <div>
+                                                            + 1 Elite Point
+                                                        </div>
+                                                    }
+
+                                                    <p>Energy +  {playerNumber == 1 ? (
+                                                        <span>
+                                                            {pvp.player1_points * 10}
+                                                        </span>
+                                                    ) : (
+                                                        <span>
+                                                            {pvp.player2_points * 10}
+                                                        </span>
+                                                    )} </p>
+                                                    <button onClick={() => nextGame()} style={{
+                                                        color: "#F9DC5C",
+                                                        backgroundColor: "green",
+                                                        padding: "10px 50px",
+                                                        margin: 10,
+                                                        transition: "background-color 0.3s ease",
+                                                        borderRadius: 5,
+                                                        textDecoration: "none"
+                                                    }} > Finish </button>
+
+
+                                                    {
+                                                        <button onClick={() => review()} style={{
                                                             color: "#F9DC5C",
-                                                            backgroundColor: "green",
+                                                            backgroundColor: "blue",
                                                             padding: "10px 50px",
                                                             margin: 10,
                                                             transition: "background-color 0.3s ease",
                                                             borderRadius: 5,
                                                             textDecoration: "none"
-                                                        }} > Next Game </button>}
-                                                        {next &&
-                                                            <>
-                                                                <button onClick={() => review()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "blue",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} >  Review Board </button>
-
-                                                                <button onClick={() => quitGame()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "red",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} > Quit Game </button>
-                                                            </>
-                                                        }
-                                                    </div>
-                                                )}
-                                            </div>
-                                        }
-                                        <p>Score: {computerScore}</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    < div style={gameStyle} >
-                                        <div className="left-cards">
-                                            {leftCards.map((card) => (
-                                                <div
-                                                    key={card.id}
-                                                    style={selectedCard === card ? selectedCardStyle : leftCardStyle}
-                                                    onClick={() => handleCardClick(card)}
-                                                >
-                                                    # {card.name}:
-                                                    <CardPvp player={card.player} card={card} />
+                                                        }} >  Review Board </button>
+                                                    }
                                                 </div>
-                                            ))}
-                                        </div>
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            ) : (
+                                                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                                    <button onClick={() => nextGame()} style={{
+                                                        color: "#F9DC5C",
+                                                        backgroundColor: "green",
+                                                        padding: "10px 50px",
+                                                        margin: 10,
+                                                        transition: "background-color 0.3s ease",
+                                                        borderRadius: 5,
+                                                        textDecoration: "none"
+                                                    }} > Next Game </button>
 
-                                                <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
-                                                    : (<span className='' id='alertPlayer' width="100%">
-                                                    </span>)}</p>
-                                                {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
-                                                </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
-                                                </span></p>)}
+
+                                                    <button onClick={() => review()} style={{
+                                                        color: "#F9DC5C",
+                                                        backgroundColor: "blue",
+                                                        padding: "10px 50px",
+                                                        margin: 10,
+                                                        transition: "background-color 0.3s ease",
+                                                        borderRadius: 5,
+                                                        textDecoration: "none"
+                                                    }} >  Review Board </button>
+
+                                                    <button onClick={() => quitGame()} style={{
+                                                        color: "#F9DC5C",
+                                                        backgroundColor: "red",
+                                                        padding: "10px 50px",
+                                                        margin: 10,
+                                                        transition: "background-color 0.3s ease",
+                                                        borderRadius: 5,
+                                                        textDecoration: "none"
+                                                    }} > Quit Game </button>
+
+
+                                                </div>
+                                            )}
+                                        </div>
+                                    }
+                                    <p>Score: {computerScore}</p>
+                                </div>
+                            ) : (
+
+                                < div style={gameStyle} >
+                                    <div className="left-cards">
+                                        {leftCards.map((card) => (
+                                            <div
+                                                key={card.id}
+                                                style={selectedCard === card ? selectedCardStyle : leftCardStyle}
+                                                onClick={() => handleCardClick(card)}
+                                            >
+                                                # {card.name}:
+                                                <CardPvp player={card.player} card={card} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+
+                                            <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
+                                                : (<span className='' id='alertPlayer' width="100%">
+                                                </span>)}</p>
+                                            {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
+                                            </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
+                                            </span></p>)}
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '50%',
+                                                        left: '50%',
+                                                        transform: 'translate(-50%, -50%)',
+                                                        color: '#555',
+                                                    }}
+                                                >
+                                                    Power
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '20px',
+                                                        background: 'linear-gradient(to right, green, yellow, red)',
+                                                        transition: 'width 0.3s ease',
+                                                        position: 'relative',
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: `${(playerPowerPoints / 10) * 100}%`,
+                                                            transform: 'translateX(-50%)',
+                                                            width: '10px',
+                                                            height: '100%',
+                                                            backgroundColor: 'transparent',
+                                                            zIndex: 1,
+                                                        }}
+                                                    />
+                                                    {[...Array(10)].map((_, index) => (
+                                                        playerPowerPoints === index + 1 && (
+                                                            <div
+                                                                key={index}
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    top: '50%',
+                                                                    left: `${(index + 1) * 10}%`,
+                                                                    transform: 'translate(-50%, -50%)',
+                                                                    color: '#555',
+                                                                }}
+                                                            >
+                                                                {index + 1}
+                                                            </div>
+                                                        )
+                                                    ))}
+                                                </div>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+
+                                            <div>
+                                                Score: {playerScore}
+                                            </div>
+
+                                            <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                                                <p>Score: {computerScore}</p>
+
                                                 <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
                                                     <div
                                                         style={{
@@ -634,7 +704,7 @@ const Pvp = () => {
                                                             style={{
                                                                 position: 'absolute',
                                                                 top: 0,
-                                                                left: `${(playerPowerPoints / 10) * 100}%`,
+                                                                left: `${(playerComputerPowerPoints / 10) * 100}%`,
                                                                 transform: 'translateX(-50%)',
                                                                 width: '10px',
                                                                 height: '100%',
@@ -643,7 +713,7 @@ const Pvp = () => {
                                                             }}
                                                         />
                                                         {[...Array(10)].map((_, index) => (
-                                                            playerPowerPoints === index + 1 && (
+                                                            playerComputerPowerPoints === index + 1 && (
                                                                 <div
                                                                     key={index}
                                                                     style={{
@@ -660,119 +730,57 @@ const Pvp = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-
-
-                                                <div>
-                                                    Score: {playerScore}
-                                                </div>
-
-                                                <div style={{ display: 'flex', marginLeft: 'auto' }}>
-                                                    <p>Score: {computerScore}</p>
-
-                                                    <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
-                                                        <div
-                                                            style={{
-                                                                position: 'absolute',
-                                                                top: '50%',
-                                                                left: '50%',
-                                                                transform: 'translate(-50%, -50%)',
-                                                                color: '#555',
-                                                            }}
-                                                        >
-                                                            Power
-                                                        </div>
-
-                                                        <div
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '20px',
-                                                                background: 'linear-gradient(to right, green, yellow, red)',
-                                                                transition: 'width 0.3s ease',
-                                                                position: 'relative',
-                                                            }}
-                                                        >
-                                                            <div
-                                                                style={{
-                                                                    position: 'absolute',
-                                                                    top: 0,
-                                                                    left: `${(playerComputerPowerPoints / 10) * 100}%`,
-                                                                    transform: 'translateX(-50%)',
-                                                                    width: '10px',
-                                                                    height: '100%',
-                                                                    backgroundColor: 'transparent',
-                                                                    zIndex: 1,
-                                                                }}
-                                                            />
-                                                            {[...Array(10)].map((_, index) => (
-                                                                playerComputerPowerPoints === index + 1 && (
-                                                                    <div
-                                                                        key={index}
-                                                                        style={{
-                                                                            position: 'absolute',
-                                                                            top: '50%',
-                                                                            left: `${(index + 1) * 10}%`,
-                                                                            transform: 'translate(-50%, -50%)',
-                                                                            color: '#555',
-                                                                        }}
-                                                                    >
-                                                                        {index + 1}
-                                                                    </div>
-                                                                )
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <div style={{ display: 'flex' }}>
-
-                                                {board.slice(0, 3).map((card, index) => (
-                                                    <div
-                                                        key={index}
-                                                        onClick={() => handleTileClick(index)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
-                                                    >
-                                                        {card !== false ? <CardPvp card={card} played={true} /> : ""}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div style={{ display: 'flex' }}>
-                                                {board.slice(3, 6).map((card, index) => (
-                                                    <div
-                                                        key={index + 3}
-                                                        onClick={() => handleTileClick(index + 3)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
-                                                    >
-                                                        {card !== false ? <CardPvp card={card} played={true} /> : ''}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div style={{ display: 'flex' }}>
-                                                {board.slice(6, 9).map((card, index) => (
-                                                    <div
-                                                        key={index + 6}
-                                                        onClick={() => handleTileClick(index + 6)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
-                                                    >
-                                                        {card !== false ? <CardPvp card={card} played={true} /> : ''}
-                                                    </div>
-                                                ))}
                                             </div>
                                         </div>
 
-                                        <div className="right-cards">
-                                            {rightCards.map((card) => (
+
+                                        <div style={{ display: 'flex' }}>
+
+                                            {board.slice(0, 3).map((card, index) => (
                                                 <div
-                                                    key={card.id}
-                                                    style={rightCardStyle}
+                                                    key={index}
+                                                    onClick={() => handleTileClick(index)}
+                                                    style={card ? playerCardStyle(card) : tyleCardStyle}
                                                 >
-                                                    <CardPvp player={player} card={card} />
+                                                    {card !== false ? <CardPvp card={card} played={true} /> : ""}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div style={{ display: 'flex' }}>
+                                            {board.slice(3, 6).map((card, index) => (
+                                                <div
+                                                    key={index + 3}
+                                                    onClick={() => handleTileClick(index + 3)}
+                                                    style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                >
+                                                    {card !== false ? <CardPvp card={card} played={true} /> : ''}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div style={{ display: 'flex' }}>
+                                            {board.slice(6, 9).map((card, index) => (
+                                                <div
+                                                    key={index + 6}
+                                                    onClick={() => handleTileClick(index + 6)}
+                                                    style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                >
+                                                    {card !== false ? <CardPvp card={card} played={true} /> : ''}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
-                                </>
+
+                                    <div className="right-cards">
+                                        {rightCards.map((card) => (
+                                            <div
+                                                key={card.id}
+                                                style={rightCardStyle}
+                                            >
+                                                <CardPvp player={player} card={card} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             )}
                             {next && endgame == false &&
                                 <button onClick={() => review()} style={{
