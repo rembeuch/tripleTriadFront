@@ -21,10 +21,13 @@ const Header = ({ pvp }) => {
     const { address, isConnected } = useAccount()
     const [player, setPlayer] = useState(null);
     const [playerPvp, setPlayerPvp] = useState(null);
+    const [pvpMessage, setPvpMessage] = useState(false);
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
-        return response.json();
+        if (authToken) {
+            const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+            return response.json();
+        }
     }
 
     async function getPvp() {
@@ -59,8 +62,35 @@ const Header = ({ pvp }) => {
         if (pvp == "true") {
             fetchPvp();
         }
-    }, [pvp]);
+        if (pvp == 'wait' && player) {
 
+            const newWs = new WebSocket('ws://localhost:3000/cable');
+            newWs.onopen = () => {
+
+                newWs.send(
+                    JSON.stringify({
+                        command: "subscribe",
+                        identifier: JSON.stringify({
+                            id: player.id,
+                            channel: "PvpsChannel",
+                        }),
+                    })
+                );
+            };
+            newWs.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.type === "ping") return
+                if (data.type === "welcome") return
+                if (data.type === "confirm_subscription") return
+                const message = data.message;
+                if (message.message == "pvp" && message.id == player.id) {
+                    console.log(message)
+                    setPvpMessage(true)
+                    fetchPvp();
+                }
+            };
+        }
+    }, [pvp, playerPvp, player]);
 
 
     return (
@@ -70,10 +100,31 @@ const Header = ({ pvp }) => {
                     <button className='' onClick={clearToken}>LogOut</button>
                 </div>
             }
-            {player && pvp == 'wait' &&
+            {player && pvp == 'wait' && pvpMessage == false ? (
                 <div>
-                    <button >PvP: waiting List</button>
+                    <button>PvP: waiting List</button>
                 </div>
+            )
+                :
+                (
+                    <>
+                        {playerPvp && pvp == "wait" &&
+
+                            <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
+                                <button style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "purple",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    textDecoration: "none"
+                                }} > PVP Fight </button>
+                            </Link>
+                        }
+                    </>
+                )
+
             }
             {player && pvp == 'true' && playerPvp &&
                 <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>

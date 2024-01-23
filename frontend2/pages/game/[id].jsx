@@ -10,6 +10,7 @@ import {
     AlertDescription,
 } from '@chakra-ui/react'
 import { useAuth } from '@/contexts/authContext';
+import Layout from '@/components/Layout/Layout';
 
 
 
@@ -458,97 +459,76 @@ const Game = () => {
 
     return (
         <>
-            {player ? (
-                <>
-                    {game.id == id ?
-                        (<>
-                            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                <p>{player.name} rounds: {game.player_points}
+            <Layout pvp={player.in_pvp}>
 
-                                </p>
-                                <p>rounds to win: {game.rounds}</p>
-                                <p> rounds: {game.computer_points} The Machine </p>
-                            </div>
-                            {endgame ? (
-                                <>
-                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                        <p>Score: {playerScore}</p>
-                                        {endAlert != "" &&
-                                            <div>
-                                                <Alert status='warning' width="100%">
-                                                    <AlertIcon />
-                                                    {endAlert}!
-                                                </Alert>
-                                                {game.rounds == game.player_points || game.rounds == game.computer_points ? (
-                                                    <div style={{ justifyContent: 'space-around' }}>
-                                                        {game.rounds == game.player_points ? (
-                                                            <>
-                                                                <h2>Get Reward</h2>
-                                                                {!reward &&
-                                                                    <div id='reward' className="left-cards" style={{ display: 'flex' }}>
-                                                                        {game.monsters.map((monster) => (
-                                                                            <div
-                                                                                key={monster.id}
-                                                                                onClick={() => getReward(monster)}
-                                                                                style={leftCardStyle}
-                                                                            >
-                                                                                <Card reveal={true} />
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                }
-                                                                <div>{rewardMessage}</div>
-                                                                {reward &&
-                                                                    <>
-                                                                        <div onClick={() => nextGame()}
-                                                                            style={selectedCardStyle}
-                                                                        >
-                                                                            {reward.name}:
-                                                                            <Card card={reward} />
+
+                {player ? (
+                    <>
+                        {game.id == id ?
+                            (<>
+                                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                    <p>{player.name} rounds: {game.player_points}
+
+                                    </p>
+                                    <p>rounds to win: {game.rounds}</p>
+                                    <p> rounds: {game.computer_points} The Machine </p>
+                                </div>
+                                {endgame ? (
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                            <p>Score: {playerScore}</p>
+                                            {endAlert != "" &&
+                                                <div>
+                                                    <Alert status='warning' width="100%">
+                                                        <AlertIcon />
+                                                        {endAlert}!
+                                                    </Alert>
+                                                    {game.rounds == game.player_points || game.rounds == game.computer_points ? (
+                                                        <div style={{ justifyContent: 'space-around' }}>
+                                                            {game.rounds == game.player_points ? (
+                                                                <>
+                                                                    <h2>Get Reward</h2>
+                                                                    {!reward &&
+                                                                        <div id='reward' className="left-cards" style={{ display: 'flex' }}>
+                                                                            {game.monsters.map((monster) => (
+                                                                                <div
+                                                                                    key={monster.id}
+                                                                                    onClick={() => getReward(monster)}
+                                                                                    style={leftCardStyle}
+                                                                                >
+                                                                                    <Card reveal={true} />
+                                                                                </div>
+                                                                            ))}
                                                                         </div>
-                                                                        <p>Energy + {game.player_points * 10}</p>
-                                                                    </>
-                                                                }
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <p>Energy + {game.player_points * 10}</p>
-                                                                <button onClick={() => nextGame()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "green",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} > Finish </button>
-                                                            </>
-                                                        )}
-                                                        {next &&
-                                                            <button onClick={() => review()} style={{
-                                                                color: "#F9DC5C",
-                                                                backgroundColor: "blue",
-                                                                padding: "10px 50px",
-                                                                margin: 10,
-                                                                transition: "background-color 0.3s ease",
-                                                                borderRadius: 5,
-                                                                textDecoration: "none"
-                                                            }} >  Review Board </button>
-                                                        }
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                                        {next && <button onClick={() => nextGame()} style={{
-                                                            color: "#F9DC5C",
-                                                            backgroundColor: "green",
-                                                            padding: "10px 50px",
-                                                            margin: 10,
-                                                            transition: "background-color 0.3s ease",
-                                                            borderRadius: 5,
-                                                            textDecoration: "none"
-                                                        }} > Next Game </button>}
-                                                        {next &&
-                                                            <>
+                                                                    }
+                                                                    <div>{rewardMessage}</div>
+                                                                    {reward &&
+                                                                        <>
+                                                                            <div onClick={() => nextGame()}
+                                                                                style={selectedCardStyle}
+                                                                            >
+                                                                                {reward.name}:
+                                                                                <Card card={reward} />
+                                                                            </div>
+                                                                            <p>Energy + {game.player_points * 10}</p>
+                                                                        </>
+                                                                    }
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <p>Energy + {game.player_points * 10}</p>
+                                                                    <button onClick={() => nextGame()} style={{
+                                                                        color: "#F9DC5C",
+                                                                        backgroundColor: "green",
+                                                                        padding: "10px 50px",
+                                                                        margin: 10,
+                                                                        transition: "background-color 0.3s ease",
+                                                                        borderRadius: 5,
+                                                                        textDecoration: "none"
+                                                                    }} > Finish </button>
+                                                                </>
+                                                            )}
+                                                            {next &&
                                                                 <button onClick={() => review()} style={{
                                                                     color: "#F9DC5C",
                                                                     backgroundColor: "blue",
@@ -558,113 +538,76 @@ const Game = () => {
                                                                     borderRadius: 5,
                                                                     textDecoration: "none"
                                                                 }} >  Review Board </button>
+                                                            }
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                                            {next && <button onClick={() => nextGame()} style={{
+                                                                color: "#F9DC5C",
+                                                                backgroundColor: "green",
+                                                                padding: "10px 50px",
+                                                                margin: 10,
+                                                                transition: "background-color 0.3s ease",
+                                                                borderRadius: 5,
+                                                                textDecoration: "none"
+                                                            }} > Next Game </button>}
+                                                            {next &&
+                                                                <>
+                                                                    <button onClick={() => review()} style={{
+                                                                        color: "#F9DC5C",
+                                                                        backgroundColor: "blue",
+                                                                        padding: "10px 50px",
+                                                                        margin: 10,
+                                                                        transition: "background-color 0.3s ease",
+                                                                        borderRadius: 5,
+                                                                        textDecoration: "none"
+                                                                    }} >  Review Board </button>
 
-                                                                <button onClick={() => quitGame()} style={{
-                                                                    color: "#F9DC5C",
-                                                                    backgroundColor: "red",
-                                                                    padding: "10px 50px",
-                                                                    margin: 10,
-                                                                    transition: "background-color 0.3s ease",
-                                                                    borderRadius: 5,
-                                                                    textDecoration: "none"
-                                                                }} > Quit Game </button>
-                                                            </>
-                                                        }
-                                                    </div>
-                                                )}
-                                            </div>
-                                        }
-                                        <p>Score: {computerScore}</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    < div style={gameStyle} >
-                                        <div className="left-cards">
-                                            {leftCards.map((card) => (
-                                                <div
-                                                    key={card.id}
-                                                    style={selectedCard === card ? selectedCardStyle : leftCardStyle}
-                                                    onClick={() => handleCardClick(card)}
-                                                >
-                                                    # {card.name}:
-                                                    <Card card={card} />
+                                                                    <button onClick={() => quitGame()} style={{
+                                                                        color: "#F9DC5C",
+                                                                        backgroundColor: "red",
+                                                                        padding: "10px 50px",
+                                                                        margin: 10,
+                                                                        transition: "background-color 0.3s ease",
+                                                                        borderRadius: 5,
+                                                                        textDecoration: "none"
+                                                                    }} > Quit Game </button>
+                                                                </>
+                                                            }
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            ))}
+                                            }
+                                            <p>Score: {computerScore}</p>
                                         </div>
-                                        <div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-
-                                                <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
-                                                    : (<span className='' id='alertPlayer' width="100%">
-                                                    </span>)}</p>
-                                                {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
-                                                </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
-                                                </span></p>)}
+                                    </>
+                                ) : (
+                                    <>
+                                        < div style={gameStyle} >
+                                            <div className="left-cards">
+                                                {leftCards.map((card) => (
+                                                    <div
+                                                        key={card.id}
+                                                        style={selectedCard === card ? selectedCardStyle : leftCardStyle}
+                                                        onClick={() => handleCardClick(card)}
+                                                    >
+                                                        # {card.name}:
+                                                        <Card card={card} />
+                                                    </div>
+                                                ))}
                                             </div>
+                                            <div>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
 
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
-                                                    <div
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: '50%',
-                                                            left: '50%',
-                                                            transform: 'translate(-50%, -50%)',
-                                                            color: '#555',
-                                                        }}
-                                                    >
-                                                        Power
-                                                    </div>
-
-                                                    <div
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '20px',
-                                                            background: 'linear-gradient(to right, green, yellow, red)',
-                                                            transition: 'width 0.3s ease',
-                                                            position: 'relative',
-                                                        }}
-                                                    >
-                                                        <div
-                                                            style={{
-                                                                position: 'absolute',
-                                                                top: 0,
-                                                                left: `${(playerPowerPoints / 10) * 100}%`,
-                                                                transform: 'translateX(-50%)',
-                                                                width: '10px',
-                                                                height: '100%',
-                                                                backgroundColor: 'transparent',
-                                                                zIndex: 1,
-                                                            }}
-                                                        />
-                                                        {[...Array(10)].map((_, index) => (
-                                                            playerPowerPoints === index + 1 && (
-                                                                <div
-                                                                    key={index}
-                                                                    style={{
-                                                                        position: 'absolute',
-                                                                        top: '50%',
-                                                                        left: `${(index + 1) * 10}%`,
-                                                                        transform: 'translate(-50%, -50%)',
-                                                                        color: '#555',
-                                                                    }}
-                                                                >
-                                                                    {index + 1}
-                                                                </div>
-                                                            )
-                                                        ))}
-                                                    </div>
+                                                    <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
+                                                        : (<span className='' id='alertPlayer' width="100%">
+                                                        </span>)}</p>
+                                                    {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
+                                                    </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
+                                                    </span></p>)}
                                                 </div>
 
-
-                                                <div>
-                                                    Score: {playerScore}
-                                                </div>
-
-                                                <div style={{ display: 'flex', marginLeft: 'auto' }}>
-                                                    <p>Score: {computerScore}</p>
-
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
                                                         <div
                                                             style={{
@@ -691,7 +634,7 @@ const Game = () => {
                                                                 style={{
                                                                     position: 'absolute',
                                                                     top: 0,
-                                                                    left: `${(playerComputerPowerPoints / 10) * 100}%`,
+                                                                    left: `${(playerPowerPoints / 10) * 100}%`,
                                                                     transform: 'translateX(-50%)',
                                                                     width: '10px',
                                                                     height: '100%',
@@ -700,7 +643,7 @@ const Game = () => {
                                                                 }}
                                                             />
                                                             {[...Array(10)].map((_, index) => (
-                                                                playerComputerPowerPoints === index + 1 && (
+                                                                playerPowerPoints === index + 1 && (
                                                                     <div
                                                                         key={index}
                                                                         style={{
@@ -717,103 +660,165 @@ const Game = () => {
                                                             ))}
                                                         </div>
                                                     </div>
+
+
+                                                    <div>
+                                                        Score: {playerScore}
+                                                    </div>
+
+                                                    <div style={{ display: 'flex', marginLeft: 'auto' }}>
+                                                        <p>Score: {computerScore}</p>
+
+                                                        <div style={{ position: 'relative', width: '200px', border: '1px solid #ccc', borderRadius: '4px', overflow: 'hidden' }}>
+                                                            <div
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    top: '50%',
+                                                                    left: '50%',
+                                                                    transform: 'translate(-50%, -50%)',
+                                                                    color: '#555',
+                                                                }}
+                                                            >
+                                                                Power
+                                                            </div>
+
+                                                            <div
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '20px',
+                                                                    background: 'linear-gradient(to right, green, yellow, red)',
+                                                                    transition: 'width 0.3s ease',
+                                                                    position: 'relative',
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        top: 0,
+                                                                        left: `${(playerComputerPowerPoints / 10) * 100}%`,
+                                                                        transform: 'translateX(-50%)',
+                                                                        width: '10px',
+                                                                        height: '100%',
+                                                                        backgroundColor: 'transparent',
+                                                                        zIndex: 1,
+                                                                    }}
+                                                                />
+                                                                {[...Array(10)].map((_, index) => (
+                                                                    playerComputerPowerPoints === index + 1 && (
+                                                                        <div
+                                                                            key={index}
+                                                                            style={{
+                                                                                position: 'absolute',
+                                                                                top: '50%',
+                                                                                left: `${(index + 1) * 10}%`,
+                                                                                transform: 'translate(-50%, -50%)',
+                                                                                color: '#555',
+                                                                            }}
+                                                                        >
+                                                                            {index + 1}
+                                                                        </div>
+                                                                    )
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div style={{ display: 'flex' }}>
+
+                                                    {board.slice(0, 3).map((card, index) => (
+                                                        <div
+                                                            key={index}
+                                                            onClick={() => handleTileClick(index)}
+                                                            style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                        >
+                                                            {card !== false ? <Card card={card} played={true} /> : ""}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div style={{ display: 'flex' }}>
+                                                    {board.slice(3, 6).map((card, index) => (
+                                                        <div
+                                                            key={index + 3}
+                                                            onClick={() => handleTileClick(index + 3)}
+                                                            style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                        >
+                                                            {card !== false ? <Card card={card} played={true} /> : ''}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div style={{ display: 'flex' }}>
+                                                    {board.slice(6, 9).map((card, index) => (
+                                                        <div
+                                                            key={index + 6}
+                                                            onClick={() => handleTileClick(index + 6)}
+                                                            style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                        >
+                                                            {card !== false ? <Card card={card} played={true} /> : ''}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
 
-
-                                            <div style={{ display: 'flex' }}>
-
-                                                {board.slice(0, 3).map((card, index) => (
+                                            <div className="right-cards">
+                                                {rightCards.map((card) => (
                                                     <div
-                                                        key={index}
-                                                        onClick={() => handleTileClick(index)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
+                                                        key={card.id}
+                                                        style={rightCardStyle}
                                                     >
-                                                        {card !== false ? <Card card={card} played={true} /> : ""}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div style={{ display: 'flex' }}>
-                                                {board.slice(3, 6).map((card, index) => (
-                                                    <div
-                                                        key={index + 3}
-                                                        onClick={() => handleTileClick(index + 3)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
-                                                    >
-                                                        {card !== false ? <Card card={card} played={true} /> : ''}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div style={{ display: 'flex' }}>
-                                                {board.slice(6, 9).map((card, index) => (
-                                                    <div
-                                                        key={index + 6}
-                                                        onClick={() => handleTileClick(index + 6)}
-                                                        style={card ? playerCardStyle(card) : tyleCardStyle}
-                                                    >
-                                                        {card !== false ? <Card card={card} played={true} /> : ''}
+                                                        <Card card={card} />
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
-
-                                        <div className="right-cards">
-                                            {rightCards.map((card) => (
-                                                <div
-                                                    key={card.id}
-                                                    style={rightCardStyle}
-                                                >
-                                                    <Card card={card} />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                            {next && endgame == false &&
-                                <button onClick={() => review()} style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "blue",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    textDecoration: "none"
-                                }} >  Back To Results </button>
-                            }
-                            {endgame == false &&
-                                <div style={{
-                                    display: "flex",
-                                    margin: 10,
-                                    justifyContent: "center"
-                                }}>
-                                    <button onClick={() => quitGame()} style={{
+                                    </>
+                                )}
+                                {next && endgame == false &&
+                                    <button onClick={() => review()} style={{
                                         color: "#F9DC5C",
-                                        backgroundColor: "red",
+                                        backgroundColor: "blue",
                                         padding: "10px 50px",
                                         margin: 10,
                                         transition: "background-color 0.3s ease",
                                         borderRadius: 5,
                                         textDecoration: "none"
-                                    }} > Quit Game </button>
+                                    }} >  Back To Results </button>
+                                }
+                                {endgame == false &&
+                                    <div style={{
+                                        display: "flex",
+                                        margin: 10,
+                                        justifyContent: "center"
+                                    }}>
+                                        <button onClick={() => quitGame()} style={{
+                                            color: "#F9DC5C",
+                                            backgroundColor: "red",
+                                            padding: "10px 50px",
+                                            margin: 10,
+                                            transition: "background-color 0.3s ease",
+                                            borderRadius: 5,
+                                            textDecoration: "none"
+                                        }} > Quit Game </button>
+                                    </div>
+                                }
+                            </>
+                            )
+                            : (
+                                <div>
+                                    <p> "Not your game!"</p>
+                                    <Link href="/">Back</Link>
                                 </div>
-                            }
-                        </>
-                        )
-                        : (
-                            <div>
-                                <p> "Not your game!"</p>
-                                <Link href="/">Back</Link>
-                            </div>
-                        )}
-                </>
-            ) : (
-                <Alert status='warning' width="50%">
-                    <AlertIcon />
-                    Loading!
-                </Alert>
-            )
-            }
+                            )}
+                    </>
+                ) : (
+                    <Alert status='warning' width="50%">
+                        <AlertIcon />
+                        Loading!
+                    </Alert>
+                )
+                }
+            </Layout>
         </>
     );
 };

@@ -107,14 +107,14 @@ const Pvp = () => {
     }
 
     async function review() {
-        if (endgame == false ) {
+        if (endgame == false) {
             setEndgame(true);
             setNext(false)
             setEndAlert("!")
         }
         else {
-        setEndgame(false);
-        setNext(true)
+            setEndgame(false);
+            setNext(true)
         }
     }
 
@@ -127,6 +127,7 @@ const Pvp = () => {
         } else {
             setTurn(1)
         }
+
         const response = await fetch(`${`http://localhost:3000/api/v1/update_pvp_position?token=${authToken}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
@@ -214,13 +215,13 @@ const Pvp = () => {
                 setEndAlert('')
                 setNext(false)
             } else {
-                window.location.href = "/game/Zones";
+                window.location.href = "/";
             }
         }
     }
 
     async function superPower() {
-        if (turn == true && next == false) {
+        if (turn == playerNumber && next == false) {
 
             const response = await fetch(`${`http://localhost:3000/api/v1/pvp_super_power?token=${authToken}`}`,
                 {
@@ -246,7 +247,7 @@ const Pvp = () => {
                 },
             }
         );
-        window.location.href = "/game/Zones";
+        window.location.href = "/";
     }
 
     useEffect(() => {
@@ -260,6 +261,7 @@ const Pvp = () => {
         };
         if (authToken) {
             fetchCurrentPlayer();
+            updatePvpBoard()
         }
     }, [address, authToken]);
 
@@ -304,8 +306,9 @@ const Pvp = () => {
     useEffect(() => {
         if (player) {
             updatePvpBoard()
+            getScore()
         }
-    }, [player, messagePvp]);
+    }, [messagePvp]);
 
     useEffect(() => {
         if (turn == 3) {
@@ -315,22 +318,43 @@ const Pvp = () => {
         } else {
             setNext(false);
         }
-    }, [turn]);
+    }, [turn, messagePvp]);
 
     useEffect(() => {
         const newWs = new WebSocket('ws://localhost:3000/cable');
 
-        if (isWebSocketActive) {
+        if (isWebSocketActive && pvp) {
+            newWs.onopen = () => {
 
-            newWs.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                setMessagePvp(data);
+                newWs.send(
+                    JSON.stringify({
+                        command: "subscribe",
+                        identifier: JSON.stringify({
+                            id: pvp.id,
+                            channel: "PvpsChannel",
+                        }),
+                    })
+                );
             };
-        }
-        if (board.every(element => element !== false)) {
-            newWs.close();
-        }
-
+        };
+        newWs.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.type === "ping") return
+            if (data.type === "welcome") return
+            if (data.type === "confirm_subscription") return
+            if (data) {
+                const message = data.message;
+                if (message.message == "result" && message.id == pvp.id) {
+                    setMessagePvp(event);
+                }
+                if (message.message == "next" && message.id == pvp.id) {
+                    window.location.reload();
+                }
+                if (message.message == "win" && message.id == pvp.id) {
+                    setEndgame(true);
+                }
+            }
+        };
     }, [isWebSocketActive]);
 
     useEffect(() => {
@@ -497,12 +521,13 @@ const Pvp = () => {
 
                                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                     <p>Score: {playerScore}</p>
-                                    {endAlert != "" &&
+                                    
                                         <div>
                                             <Alert status='warning' width="100%">
                                                 <AlertIcon />
                                                 {endAlert}!
                                             </Alert>
+                                    
                                             {pvp.rounds == pvp.player1_points || pvp.rounds == pvp.player2_points ? (
                                                 <div style={{ justifyContent: 'space-around' }}>
                                                     {pvp.rounds == pvp.player1_points && playerNumber == 1 &&
@@ -587,7 +612,7 @@ const Pvp = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    }
+                                    
                                     <p>Score: {computerScore}</p>
                                 </div>
                             ) : (
