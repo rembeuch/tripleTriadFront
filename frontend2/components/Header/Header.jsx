@@ -153,7 +153,21 @@ const Header = ({ pvp }) => {
                 >
                     {player &&
                         <Link href="/player/[id]" as={`/player/${player.id}`}>
-                            Dashboard
+                            Deck
+                        </Link>
+                    }
+                </Text>
+                <Text
+                    fontWeight="bold"
+                    sx={{
+                        ':hover': {
+                            textDecoration: 'underline',
+                        },
+                    }}
+                >
+                    {player &&
+                        <Link href="/game/Zones">
+                            Zones
                         </Link>
                     }
                 </Text>

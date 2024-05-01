@@ -172,7 +172,7 @@ const elite = () => {
     return (
         <>
             <Layout>
-                <div style={gridContainerStyle}>
+                <div>
                     <h2> Your Elite:</h2>
                     {player && elite && isConnected ?
                         (
@@ -208,7 +208,7 @@ const elite = () => {
                     <div>
                         points: {player.elite_points} / energy: {player.energy}
                         {elite.fight < 100 ? (
-                            <p>{elite.fight} / 100
+                            <p>Fight (up): {elite.fight} / 100
                                 {player.elite_points > 0 &&
                                     <>
                                         <button onClick={() => increment(0)} style={{
@@ -235,7 +235,7 @@ const elite = () => {
                         )
                         }
                         {elite.fight < 100 ? (
-                            <p>{elite.diplomacy} / 100
+                            <p>Diplomacy (right): {elite.diplomacy} / 100
                                 {player.elite_points > 0 &&
                                     <>
                                         <button onClick={() => increment(1)} style={{
@@ -261,7 +261,7 @@ const elite = () => {
                         )
                         }
                         {elite.espionage < 100 ? (
-                            <p>{elite.espionage} / 100
+                            <p>Espionage (down): {elite.espionage} / 100
                                 {player.elite_points > 0 &&
                                     <>
                                         <button onClick={() => increment(2)} style={{
@@ -287,7 +287,7 @@ const elite = () => {
                         )
                         }
                         {elite.leadership < 100 ? (
-                            <p>{elite.leadership} / 100
+                            <p>Leadership (left): {elite.leadership} / 100
                                 {player.elite_points > 0 &&
                                     <>
                                         <button onClick={() => increment(3)} style={{

@@ -90,95 +90,29 @@ const Zones = () => {
     }
   }
 
-  async function selectZone(zone) {
-
-    const response = await fetch(`${`http://localhost:3000/api/v1/select_zone?address=${address}&token=${authToken}&zone=${zone}`}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.ok) {
-      const responseData = await response.json();
-      setPlayer(responseData)
-    }
-  }
+  // async function selectZone(zone) {
+  //   if (player.in_game == false) {
+  //     const response = await fetch(`${`http://localhost:3000/api/v1/select_zone?address=${address}&token=${authToken}&zone=${zone}`}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       setPlayer(responseData)
+  //     }
+  //   }
+  // }
   return (
     <Layout pvp={pvp}>
       {player ? (
         <>
           <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points}</h2>
           <p> current position: {player.zone_position} </p>
-          <div style={{ display: "flex" }}>
-            <div >
-              {player.zone_position == 'A1' ? (
-                <button style={{
-                  color: "#F9DC5C",
-                  backgroundColor: "grey",
-                  padding: "10px 50px",
-                  margin: 10,
-                  transition: "background-color 0.3s ease",
-                  borderRadius: 5,
-                  textDecoration: "none"
-                }} > A1 📍</button>
-              ) : (
-                <button onClick={() => selectZone("A1")} style={{
-                  color: "#F9DC5C",
-                  backgroundColor: "blue",
-                  padding: "10px 50px",
-                  margin: 10,
-                  transition: "background-color 0.3s ease",
-                  borderRadius: 5,
-                  textDecoration: "none"
-                }} > A1 </button>
-              )
-              }
-            </div>
-            <div >
-              {player.zone_position == 'A2' ? (
-                <button style={{
-                  color: "#F9DC5C",
-                  backgroundColor: "grey",
-                  padding: "10px 50px",
-                  margin: 10,
-                  transition: "background-color 0.3s ease",
-                  borderRadius: 5,
-                  textDecoration: "none"
-                }} > A2 📍</button>
-              ) : (
-                <>
-                  {
-                    player.monsters.length > 3 ? (
-
-                      <button onClick={() => selectZone("A2")} style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "blue",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                      }} > A2 </button>
-                    ) : (
-                      <button style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "purple",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                      }} > A2 🔒 {player.monsters.length}/4 monsters </button>
-                    )
-                  }
-                </>
-              )
-              }
-            </div>
-
-          </div>
+          
           {game ? (
             <Link href="/game/[id]" as={`/game/${game.id}`}>
               <button style={{

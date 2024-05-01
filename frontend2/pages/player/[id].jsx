@@ -27,6 +27,7 @@ function Player() {
   const [deck, setDeck] = useState([]);
   const [removeAlert, setRemoveAlert] = useState(false);
   const [addAlert, setAddAlert] = useState("");
+  const [removeCardAlert, setRemoveCardAlert] = useState("");
   const [selectedCardId, setSelectedCardId] = useState(null);
 
 
@@ -68,7 +69,7 @@ function Player() {
     }
   }
 
-  
+
   async function addCard(id) {
 
     const response = await fetch(`${`http://localhost:3000/api/v1/add_card?token=${authToken}&card_id=${id}`}`,
@@ -78,11 +79,11 @@ function Player() {
           "Content-Type": "application/json",
         },
       }
-      );
-      if (response.ok) {
-        const responseData = await response.json();
-        if (responseData.message == "") {
-          setDeck(responseData)
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      if (responseData.message == "") {
+        setDeck(responseData)
       }
 
       if (responseData.message != "") {
@@ -98,7 +99,7 @@ function Player() {
   async function removeCard(id) {
 
     const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?token=${authToken}&card_id=${id}`}`,
-    {
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,13 +108,17 @@ function Player() {
     );
     if (response.ok) {
       const responseData = await response.json();
-      setDeck(responseData)
-    } else {
-      setRemoveAlert(true);
-      setTimeout(() => {
-        setRemoveAlert(false)
-      }, 3000);
-    }
+      if (responseData.message == "") {
+        setDeck(responseData)
+      }
+      if (responseData.message != "") {
+        setRemoveCardAlert(responseData.message);
+        setSelectedCardId(responseData.id);
+        setTimeout(() => {
+          setRemoveCardAlert("")
+        }, 3000);
+      }
+    } 
   }
 
   const wallet = async () => {
@@ -124,7 +129,7 @@ function Player() {
       console.log(e.reason)
     }
   }
-  
+
   useEffect(() => {
 
     const fetchCurrentPlayer = async () => {
@@ -169,7 +174,7 @@ function Player() {
 
   useEffect(() => {
     setSelectedCardId(selectedCardId)
-  }, [addAlert]);
+  }, [addAlert, removeCardAlert]);
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -190,7 +195,7 @@ function Player() {
       setPvp(player.in_pvp);
     }
   }, [player]);
-  
+
   const gridContainerStyle = {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
@@ -230,6 +235,7 @@ function Player() {
               <p>ability: {player.ability}</p>
               <p>Your Team: {deck.length + elites.length}/5</p>
               <p>Elite points: {player.elite_points}</p>
+              <p>Energy: {player.energy}</p>
             </div>
             {removeAlert && <div>
               <Alert status='warning' width="50%">
@@ -292,6 +298,14 @@ function Player() {
                   <Flex>
                     <Card card={card} />
                   </Flex>
+                  {removeCardAlert && selectedCardId == card.id && 
+                  <div>
+                    <Alert status='warning' width="50%">
+                      <AlertIcon />
+                      {removeCardAlert}
+                    </Alert>
+                  </div>
+                  }
                   <button onClick={() => removeCard(card.id)} style={{
                     color: "#F9DC5C",
                     backgroundColor: "red",

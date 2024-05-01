@@ -91,7 +91,7 @@ export default function Home() {
 
   const redirectZones = () => {
     if (deck.length == 4) {
-      window.location.href = "/game/Map";
+      window.location.href = "/game/Zones";
     } else {
       alert("You need a team with 5 members");
     }

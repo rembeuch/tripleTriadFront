@@ -31,6 +31,7 @@ const Game = () => {
     const [playerPower, setPlayerPower] = useState(false);
     const [playerComputerPowerPoints, setPlayerComputerPowerPoints] = useState(0);
     const [playerComputerPower, setPlayerComputerPower] = useState(false);
+    const [bossLife, setBossLife] = useState(0);
     const [endgame, setEndgame] = useState(false);
     const [endAlert, setEndAlert] = useState('');
     const [next, setNext] = useState(false);
@@ -91,6 +92,9 @@ const Game = () => {
             setPlayerPower(responseScore.player_power)
             setPlayerComputerPowerPoints(responseScore.player_computer_power_points)
             setPlayerComputerPower(responseScore.player_computer_power)
+            if (responseScore.boss_life) {
+                setBossLife(responseScore.boss_life)
+            }
         }
     }
 
@@ -327,8 +331,6 @@ const Game = () => {
         }
     }, [address, endgame]);
 
-
-
     useEffect(() => {
         if (player) {
             setBoard(board)
@@ -338,6 +340,11 @@ const Game = () => {
                 }, 3000);
             } else {
                 setNext(false);
+            }
+        }
+        if (game && game.boss) {
+            if (bossLife <= 0) {
+                    setNext(true);
             }
         }
     }, [board, next]);
@@ -368,6 +375,9 @@ const Game = () => {
     }, [playerScore, computerScore, authToken, player, playerPower, playerComputerPower]);
 
     const handleCardClick = (card) => {
+        if (game.boss && bossLife <= 0) {
+            return
+        }
         if (turn) {
             setSelectedCard(card);
         }
@@ -467,11 +477,17 @@ const Game = () => {
                         {game.id == id ?
                             (<>
                                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                                    <p>{player.name} rounds: {game.player_points}
-
-                                    </p>
-                                    <p>rounds to win: {game.rounds}</p>
-                                    <p> rounds: {game.computer_points} The Machine </p>
+                                    {game.boss ?
+                                        (
+                                            <p style={{ paddingLeft: '20px', paddingRight: '20px' }}>Boss Life ☠️ {bossLife}</p>
+                                        )
+                                        : (<>
+                                            <p style={{ paddingRight: '20px' }}>{player.name} rounds: {game.player_points}</p>
+                                            <p style={{ paddingLeft: '20px', paddingRight: '20px' }}>rounds to win: {game.rounds}</p>
+                                            <p style={{ paddingLeft: '20px' }}> rounds: {game.computer_points} The Machine </p>
+                                        </>
+                                        )
+                                    }
                                 </div>
                                 {endgame ? (
                                     <>
@@ -483,22 +499,29 @@ const Game = () => {
                                                         <AlertIcon />
                                                         {endAlert}!
                                                     </Alert>
-                                                    {game.rounds == game.player_points || game.rounds == game.computer_points ? (
+                                                    {game.rounds <= game.player_points || game.rounds == game.computer_points ? (
                                                         <div style={{ justifyContent: 'space-around' }}>
-                                                            {game.rounds == game.player_points ? (
+                                                            {game.rounds <= game.player_points ? (
                                                                 <>
                                                                     <h2>Get Reward</h2>
                                                                     {!reward &&
                                                                         <div id='reward' className="left-cards" style={{ display: 'flex' }}>
-                                                                            {game.monsters.map((monster) => (
-                                                                                <div
-                                                                                    key={monster.id}
-                                                                                    onClick={() => getReward(monster)}
-                                                                                    style={leftCardStyle}
-                                                                                >
-                                                                                    <Card reveal={true} />
-                                                                                </div>
-                                                                            ))}
+                                                                            {game.boss ? (<div
+                                                                                onClick={() => getReward(game.monsters[0])}
+                                                                                style={leftCardStyle}
+                                                                            >
+                                                                                <Card reveal={true} />
+                                                                            </div>) : (<>
+                                                                                {game.monsters.map((monster) => (
+                                                                                    <div
+                                                                                        key={monster.id}
+                                                                                        onClick={() => getReward(monster)}
+                                                                                        style={leftCardStyle}
+                                                                                    >
+                                                                                        <Card reveal={true} />
+                                                                                    </div>
+                                                                                ))}
+                                                                            </>)}
                                                                         </div>
                                                                     }
                                                                     <div>{rewardMessage}</div>
@@ -517,7 +540,7 @@ const Game = () => {
                                                             ) : (
                                                                 <>
                                                                     <p>Energy + {game.player_points * 10}</p>
-                                                                    <button onClick={() => nextGame()} style={{
+                                                                    <button onClick={() => quitGame()} style={{
                                                                         color: "#F9DC5C",
                                                                         backgroundColor: "green",
                                                                         padding: "10px 50px",

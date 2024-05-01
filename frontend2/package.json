@@ -16,6 +16,7 @@
     "bignumber.js": "^9.1.2",
     "ethers": "5.7.0",
     "framer-motion": "^10.3.0",
+    "gsap": "^3.12.5",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-actioncable-provider": "^2.0.0",
