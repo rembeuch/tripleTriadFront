@@ -170,7 +170,7 @@ function Player() {
     if (player) {
       fetchDeck();
     }
-  }, [deck.length, addAlert, player]);
+  }, [deck, addAlert, player]);
 
   useEffect(() => {
     setSelectedCardId(selectedCardId)

@@ -90,6 +90,18 @@ const Zones = () => {
     }
   }
 
+  async function quitGame() {
+    const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?token=${authToken}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    window.location.href = "/game/Zones";
+  }
+
   // async function selectZone(zone) {
   //   if (player.in_game == false) {
   //     const response = await fetch(`${`http://localhost:3000/api/v1/select_zone?address=${address}&token=${authToken}&zone=${zone}`}`,
@@ -112,7 +124,7 @@ const Zones = () => {
         <>
           <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points}</h2>
           <p> current position: {player.zone_position} </p>
-          
+
           {game ? (
             <Link href="/game/[id]" as={`/game/${game.id}`}>
               <button style={{
@@ -136,6 +148,17 @@ const Zones = () => {
               textDecoration: "none"
             }} > Hunt </button>
           )}
+          {player.zone_position != "A1" &&
+            <button onClick={() => quitGame()} style={{
+              color: "#F9DC5C",
+              backgroundColor: "red",
+              padding: "10px 50px",
+              margin: 10,
+              transition: "background-color 0.3s ease",
+              borderRadius: 5,
+              textDecoration: "none"
+            }} > Quit and Back to A1 </button>
+          }
         </>
       ) : (
         <Alert status='warning' width="50%">

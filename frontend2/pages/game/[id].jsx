@@ -542,13 +542,13 @@ const Game = () => {
                                                                     <p>Energy + {game.player_points * 10}</p>
                                                                     <button onClick={() => quitGame()} style={{
                                                                         color: "#F9DC5C",
-                                                                        backgroundColor: "green",
+                                                                        backgroundColor: "purple",
                                                                         padding: "10px 50px",
                                                                         margin: 10,
                                                                         transition: "background-color 0.3s ease",
                                                                         borderRadius: 5,
                                                                         textDecoration: "none"
-                                                                    }} > Finish </button>
+                                                                    }} > Game Over </button>
                                                                 </>
                                                             )}
                                                             {next &&

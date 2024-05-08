@@ -8,7 +8,7 @@ const PowerModal = ({ power, isHovered }) => {
   const hoverModalStyle = {
     display: 'block',
     position: 'absolute',
-    top: '-250%',
+    top: '-275%',
     right: '-100px',
     backgroundColor: 'purple',
     boxShadow: '0px 0px 10px rgba(0,0,0,0.2)',
@@ -20,28 +20,52 @@ const PowerModal = ({ power, isHovered }) => {
   let powerText;
   switch (power) {
     case "fight1":
-      powerText = "Increase a random attribute of a random card in your hand by 1 for this round."
+      powerText = "Increase 1 random attribute of a random card in your hand by 1 for this round."
       break;
     case "fight2":
-      powerText = "Increase two random attributes of a random card in your hand by 1 for this round."
+      powerText = "Increase 2 random attributes of a random card in your hand by 1 for this round."
+      break;
+    case "fight3":
+      powerText = "Increase 3 random attributes of a random card in your hand by 1 for this round."
+      break;
+    case "fight4":
+      powerText = "Increase 4 random attributes of a random card in your hand by 1 for this round."
       break;
     case "diplomacy1":
-      powerText = "Reduce a random attribute of a random card in your opponent's hand by 1 for this round."
+      powerText = "Reduce 1 random attribute of a random card in your opponent's hand by 1 for this round."
       break;
     case "diplomacy2":
-      powerText = "Reduce two random attribute of a random card in your opponent's hand by 1 for this round."
+      powerText = "Reduce 2 random attribute of a random card in your opponent's hand by 1 for this round."
+      break;
+    case "diplomacy3":
+      powerText = "Reduce 3 random attribute of a random card in your opponent's hand by 1 for this round."
+      break;
+    case "diplomacy4":
+      powerText = "Reduce 4 random attribute of a random card in your opponent's hand by 1 for this round."
       break;
     case "espionage1":
-      powerText = "Reveal one random card in your opponent's hand permanently."
+      powerText = "Reveal 1 random card in your opponent's hand permanently."
       break;
     case "espionage2":
-      powerText = "Reveal one random card in your opponent's hand permanently and reduce his power by 1 point."
+      powerText = "Reveal 1 random card in your opponent's hand permanently and reduce his power by 1 point."
+      break;
+    case "espionage3":
+      powerText = "Reveal 2 random card in your opponent's hand permanently and reduce his power by 1 point."
+      break;
+    case "espionage4":
+      powerText = "Reveal 2 random card in your opponent's hand permanently and reduce his power by 2 point."
       break;
     case "leadership1":
-      powerText = "Choose one random card on the board and swap one of its attributes with a random attribute from one of your opponent's cards for this round."
+      powerText = "1 random card on the board swap 1 of its attributes with a random attribute from one of your opponent's cards for this round."
       break;
     case "leadership2":
-      powerText = "Choose one random card on the board and swap 2 of its attributes with a random attribute from one of your opponent's cards for this round."
+      powerText = "1 random card on the board swap 2 of its attributes with a random attribute from one of your opponent's cards for this round."
+      break;
+    case "leadership3":
+      powerText = "1 random card on the board swap 3 of its attributes with a random attribute from one of your opponent's cards for this round."
+      break;
+    case "leadership4":
+      powerText = "1 random card on the board swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
       break;
   }
 

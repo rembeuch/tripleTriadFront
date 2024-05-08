@@ -31,6 +31,8 @@ const elite = () => {
     const [nftList, setNftList] = useState([]);
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredPower, setHoveredPower] = useState(null);
+    const [addAlert, setAddAlert] = useState("");
+
 
 
     async function getPlayer() {
@@ -53,7 +55,19 @@ const elite = () => {
                 },
             }
         );
-        setAbility(power)
+        if (response.ok) {
+            const responseData = await response.json();
+            if (responseData.message == "") {
+                setAbility(power)
+            }
+
+            if (responseData.message != "") {
+                setAddAlert(responseData.message);
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
+            }
+        }
     }
 
     async function increment(stat) {
@@ -144,7 +158,7 @@ const elite = () => {
         if (authToken) {
             fetchCurrentPlayer();
         }
-    }, [address, authToken]);
+    }, [address, authToken, addAlert]);
 
     useEffect(() => {
         const fetchCurrentElite = async () => {
@@ -211,6 +225,9 @@ const elite = () => {
         <>
             <Layout>
                 <div>
+                    {player.zone_position != "A1" && 
+                    <h2>You can't do modifications when you are in zone {player.zone_position}</h2>
+                    }
                     <h2> Your Elite:</h2>
                     {player && elite && isConnected ?
                         (
@@ -353,7 +370,9 @@ const elite = () => {
                     </div>
                 </div>
                 <h2>{ability && `Current power: ${ability}`} </h2>
-
+                {hoveredPower && <div>
+                    {addAlert}
+                </div>}
                 <div className="button-column" style={{
                     display: "flex"
                 }}>
@@ -372,10 +391,17 @@ const elite = () => {
                                                     <PowerModal power={power} isHovered={isHovered} />
                                                 }
                                             </button>
-
                                         </div >
                                     </>
                                 ))}
+                                {powers.filter(power => power[0] === "f").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)} onMouseLeave={() => handleMouseLeave("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)}>
+                                        {"fight" + `${powers.filter(power => power[0] === "f").length + 1}`}
+                                        {hoveredPower === "fight" + `${powers.filter(power => power[0] === "f").length + 1}` &&
+                                            <PowerModal power={"fight" + `${powers.filter(power => power[0] === "f").length + 1}`} isHovered={isHovered} />
+                                        }
+                                    </button>
+                                }
                             </>)
                             :
                             (<div className="card" >
@@ -407,16 +433,24 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
+                                 {powers.filter(power => power[0] === "d").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
+                                        {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
+                                        {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
+                                            <PowerModal power={"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`} isHovered={isHovered} />
+                                        }
+                                    </button>
+                                }
                             </>)
                             :
                             (<div className="card" >
-                            <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy1")} onMouseLeave={() => handleMouseLeave("diplomacy1")}>
-                                {"diplomacy1"}
-                                {hoveredPower === "diplomacy1" &&
-                                    <PowerModal power={"diplomacy1"} isHovered={isHovered} />
-                                }
-                            </button>
-                        </div >
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy1")} onMouseLeave={() => handleMouseLeave("diplomacy1")}>
+                                    {"diplomacy1"}
+                                    {hoveredPower === "diplomacy1" &&
+                                        <PowerModal power={"diplomacy1"} isHovered={isHovered} />
+                                    }
+                                </button>
+                            </div >
                             )}
                     </div>
                     {/* Troisième colonne */}
@@ -438,6 +472,14 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
+                                 {powers.filter(power => power[0] === "e").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
+                                        {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
+                                        {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
+                                            <PowerModal power={"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`} isHovered={isHovered} />
+                                        }
+                                    </button>
+                                }
                             </>)
                             :
                             (< div className="card">
@@ -473,6 +515,14 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
+                                 {powers.filter(power => power[0] === "l").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
+                                        {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
+                                        {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
+                                            <PowerModal power={"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`} isHovered={isHovered} />
+                                        }
+                                    </button>
+                                }
                             </>)
                             :
                             (< div className="card">

@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
         }
         setAuthToken(null);
         localStorage.removeItem('authToken');
-        window.location.reload();
+        window.location.href="/";
     };
 
     return (
