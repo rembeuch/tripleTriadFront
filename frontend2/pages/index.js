@@ -192,12 +192,12 @@ export default function Home() {
                     <button style={{
                       color: "#F9DC5C",
                       backgroundColor: "blue",
-                      padding: 10,
+                      padding: "10px 50px",
                       margin: 10,
                       transition: "background-color 0.3s ease",
                       borderRadius: 5,
                       textDecoration: "none"
-                    }} >Dashboard </button>
+                    }} >Deck </button>
                   </Link>
                   {game && deck ? (
                     <Link href="/game/[id]" as={`/game/${game.id}`}>

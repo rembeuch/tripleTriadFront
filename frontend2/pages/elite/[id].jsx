@@ -174,7 +174,6 @@ const elite = () => {
         position: 'relative',
         display: 'inline-block',
         color: "#F9DC5C",
-        backgroundColor: "grey",
         padding: "10px 50px",
         margin: 10,
         transition: "background-color 0.3s ease",
@@ -182,6 +181,19 @@ const elite = () => {
         display: 'block',
         textDecoration: "none",
         backgroundColor: 'green'
+    };
+
+    const greyButtonStyle = {
+        position: 'relative',
+        display: 'inline-block',
+        color: "#F9DC5C",
+        padding: "10px 50px",
+        margin: 10,
+        transition: "background-color 0.3s ease",
+        borderRadius: 5,
+        display: 'block',
+        textDecoration: "none",
+        backgroundColor: 'grey'
     };
 
 
@@ -356,26 +368,23 @@ const elite = () => {
                                         <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
                                             <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
                                                 {power}
-                                            </button>
-                                            {hoveredPower === power && 
+                                                {hoveredPower === power &&
                                                     <PowerModal power={power} isHovered={isHovered} />
-                                            }
+                                                }
+                                            </button>
+
                                         </div >
                                     </>
                                 ))}
                             </>)
                             :
-                            (< div className="card">
-                                <button style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "grey",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    display: 'block',
-                                    textDecoration: "none"
-                                }} > fight1 </button>
+                            (<div className="card" >
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight1")} onMouseLeave={() => handleMouseLeave("fight1")}>
+                                    {"fight1"}
+                                    {hoveredPower === "fight1" &&
+                                        <PowerModal power={"fight1"} isHovered={isHovered} />
+                                    }
+                                </button>
                             </div >
                             )}
                     </div>
@@ -386,34 +395,28 @@ const elite = () => {
                         {powers.filter(power => power[0] === "d").length > 0 ? (
                             <>
                                 {powers.filter(power => power[0] === "d").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} />
+                                                }
+                                            </button>
 
-                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
-                                        <button style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "green",
-                                            padding: "10px 50px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            display: 'block',
-                                            textDecoration: "none"
-                                        }} > {power} </button>
-                                    </div >
+                                        </div >
+                                    </>
                                 ))}
                             </>)
                             :
-                            (< div className="card">
-                                <button style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "grey",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    display: 'block',
-                                    textDecoration: "none"
-                                }} > diplomacy1 </button>
-                            </div >
+                            (<div className="card" >
+                            <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy1")} onMouseLeave={() => handleMouseLeave("diplomacy1")}>
+                                {"diplomacy1"}
+                                {hoveredPower === "diplomacy1" &&
+                                    <PowerModal power={"diplomacy1"} isHovered={isHovered} />
+                                }
+                            </button>
+                        </div >
                             )}
                     </div>
                     {/* Troisième colonne */}
@@ -423,19 +426,17 @@ const elite = () => {
                         {powers.filter(power => power[0] === "e").length > 0 ? (
                             <>
                                 {powers.filter(power => power[0] === "e").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} />
+                                                }
+                                            </button>
 
-                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
-                                        <button style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "green",
-                                            padding: "10px 50px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            display: 'block',
-                                            textDecoration: "none"
-                                        }} > {power} </button>
-                                    </div >
+                                        </div >
+                                    </>
                                 ))}
                             </>)
                             :
@@ -460,19 +461,17 @@ const elite = () => {
                         {powers.filter(power => power[0] === "l").length > 0 ? (
                             <>
                                 {powers.filter(power => power[0] === "l").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} />
+                                                }
+                                            </button>
 
-                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
-                                        <button style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "green",
-                                            padding: "10px 50px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            display: 'block',
-                                            textDecoration: "none"
-                                        }} > {power} </button>
-                                    </div >
+                                        </div >
+                                    </>
                                 ))}
                             </>)
                             :
