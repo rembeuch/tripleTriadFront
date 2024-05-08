@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import Layout from '@/components/Layout/Layout';
 import Card from '@/components/Card';
+import PowerModal from '@/components/PowerModal';
 import { useAuth } from '@/contexts/authContext';
 import { BigNumber } from 'ethers';
 
@@ -28,7 +29,8 @@ const elite = () => {
     const [ability, setAbility] = useState();
     const { data: signer } = useSigner();
     const [nftList, setNftList] = useState([]);
-
+    const [isHovered, setIsHovered] = useState(false);
+    const [hoveredPower, setHoveredPower] = useState(null);
 
 
     async function getPlayer() {
@@ -112,6 +114,16 @@ const elite = () => {
         }
     }
 
+    const handleMouseEnter = (power) => {
+        setIsHovered(true);
+        setHoveredPower(power);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        setHoveredPower(null);
+    };
+
     useEffect(() => {
         const fetchNFT = async () => {
             await fetchNfts();
@@ -156,6 +168,20 @@ const elite = () => {
         borderRadius: '8px',
         textAlign: 'center',
         backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
+    };
+
+    const buttonStyle = {
+        position: 'relative',
+        display: 'inline-block',
+        color: "#F9DC5C",
+        backgroundColor: "grey",
+        padding: "10px 50px",
+        margin: 10,
+        transition: "background-color 0.3s ease",
+        borderRadius: 5,
+        display: 'block',
+        textDecoration: "none",
+        backgroundColor: 'green'
     };
 
 
@@ -234,7 +260,7 @@ const elite = () => {
                             </p>
                         )
                         }
-                        {elite.fight < 100 ? (
+                        {elite.diplomacy < 100 ? (
                             <p>Diplomacy (right): {elite.diplomacy} / 100
                                 {player.elite_points > 0 &&
                                     <>
@@ -315,24 +341,157 @@ const elite = () => {
                     </div>
                 </div>
                 <h2>{ability && `Current power: ${ability}`} </h2>
-                <div style={gridContainerStyle}>
-                    {powers.map(power => (
-                        <>
-                            <div key={powers.index} onClick={() => playerAbility(power)} className="card">
+
+                <div className="button-column" style={{
+                    display: "flex"
+                }}>
+                    {/* Première colonne */}
+                    <div className="column" style={{
+                        flexDirection: "column"
+                    }}>
+                        {powers.filter(power => power[0] === "f").length > 0 ? (
+                            <>
+                                {powers.filter(power => power[0] === "f").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                            </button>
+                                            {hoveredPower === power && 
+                                                    <PowerModal power={power} isHovered={isHovered} />
+                                            }
+                                        </div >
+                                    </>
+                                ))}
+                            </>)
+                            :
+                            (< div className="card">
                                 <button style={{
                                     color: "#F9DC5C",
-                                    backgroundColor: "green",
+                                    backgroundColor: "grey",
                                     padding: "10px 50px",
                                     margin: 10,
                                     transition: "background-color 0.3s ease",
                                     borderRadius: 5,
+                                    display: 'block',
                                     textDecoration: "none"
-                                }} > {power} </button>
-                            </div>
-                        </>
-                    ))}
+                                }} > fight1 </button>
+                            </div >
+                            )}
+                    </div>
+                    {/* Deuxième colonne */}
+                    <div className="column" style={{
+                        flexDirection: "column"
+                    }}>
+                        {powers.filter(power => power[0] === "d").length > 0 ? (
+                            <>
+                                {powers.filter(power => power[0] === "d").map(power => (
+
+                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
+                                        <button style={{
+                                            color: "#F9DC5C",
+                                            backgroundColor: "green",
+                                            padding: "10px 50px",
+                                            margin: 10,
+                                            transition: "background-color 0.3s ease",
+                                            borderRadius: 5,
+                                            display: 'block',
+                                            textDecoration: "none"
+                                        }} > {power} </button>
+                                    </div >
+                                ))}
+                            </>)
+                            :
+                            (< div className="card">
+                                <button style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "grey",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    display: 'block',
+                                    textDecoration: "none"
+                                }} > diplomacy1 </button>
+                            </div >
+                            )}
+                    </div>
+                    {/* Troisième colonne */}
+                    <div className="column" style={{
+                        flexDirection: "column"
+                    }}>
+                        {powers.filter(power => power[0] === "e").length > 0 ? (
+                            <>
+                                {powers.filter(power => power[0] === "e").map(power => (
+
+                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
+                                        <button style={{
+                                            color: "#F9DC5C",
+                                            backgroundColor: "green",
+                                            padding: "10px 50px",
+                                            margin: 10,
+                                            transition: "background-color 0.3s ease",
+                                            borderRadius: 5,
+                                            display: 'block',
+                                            textDecoration: "none"
+                                        }} > {power} </button>
+                                    </div >
+                                ))}
+                            </>)
+                            :
+                            (< div className="card">
+                                <button style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "grey",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    display: 'block',
+                                    textDecoration: "none"
+                                }} > espionage1 </button>
+                            </div >
+                            )}
+                    </div>
+                    {/* Quatrième colonne */}
+                    <div className="column" style={{
+                        flexDirection: "column"
+                    }}>
+                        {powers.filter(power => power[0] === "l").length > 0 ? (
+                            <>
+                                {powers.filter(power => power[0] === "l").map(power => (
+
+                                    < div key={powers.index} onClick={() => playerAbility(power)} className="card">
+                                        <button style={{
+                                            color: "#F9DC5C",
+                                            backgroundColor: "green",
+                                            padding: "10px 50px",
+                                            margin: 10,
+                                            transition: "background-color 0.3s ease",
+                                            borderRadius: 5,
+                                            display: 'block',
+                                            textDecoration: "none"
+                                        }} > {power} </button>
+                                    </div >
+                                ))}
+                            </>)
+                            :
+                            (< div className="card">
+                                <button style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "grey",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    display: 'block',
+                                    textDecoration: "none"
+                                }} > leadership1 </button>
+                            </div >
+                            )}
+                    </div>
                 </div>
-            </Layout>
+            </Layout >
         </>
     )
 }
