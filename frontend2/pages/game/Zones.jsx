@@ -122,8 +122,23 @@ const Zones = () => {
     <Layout pvp={pvp}>
       {player ? (
         <>
-          <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points}</h2>
-          <p> current position: {player.zone_position} </p>
+          <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points} Zone Max: {player.zones.slice(-1)[0]} Monsters: {player.monsters.length}</h2>
+          <p>current ability: {player.ability}
+          {player.zone_position == "A1" && player.in_pvp == false && player.in_game == false &&
+ <Link href="/player/[id]" as={`/player/${player.id}`}>
+ <button style={{
+   color: "#F9DC5C",
+   backgroundColor: "blue",
+   padding: "10px 50px",
+   margin: 10,
+   transition: "background-color 0.3s ease",
+   borderRadius: 5,
+   textDecoration: "none"
+ }} > Change </button>
+</Link>
+}
+          <br />
+          current position: {player.zone_position} </p>
 
           {game ? (
             <Link href="/game/[id]" as={`/game/${game.id}`}>
@@ -146,7 +161,7 @@ const Zones = () => {
               transition: "background-color 0.3s ease",
               borderRadius: 5,
               textDecoration: "none"
-            }} > Hunt </button>
+            }} > Start Game </button>
           )}
           {player.zone_position != "A1" &&
             <button onClick={() => quitGame()} style={{

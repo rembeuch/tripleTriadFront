@@ -234,7 +234,7 @@ const elite = () => {
                             <div>
                                 {elite.nft == false &&
                                     <>
-                                        <h2>Mint Elite</h2>
+                                        <h2>Mint Elite for Half of the energy needed for boost.</h2>
                                         <button onClick={() => mintElite()}>Mint</button>
                                     </>
                                 }
@@ -245,7 +245,7 @@ const elite = () => {
                             <div>
                                 {elite.nft == false &&
                                     <>
-                                        <h2>Mint Elite</h2>
+                                        <h2>Mint Elite for Half of the energy needed for boost.</h2>
                                         <ConnectButton />
                                     </>
                                 }

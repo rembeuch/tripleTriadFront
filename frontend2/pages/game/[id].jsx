@@ -37,7 +37,8 @@ const Game = () => {
     const [next, setNext] = useState(false);
     const [reward, setReward] = useState(null);
     const [rewardMessage, setRewardMessage] = useState(null);
-
+    const [zoneMessage, setZoneMessage] = useState(null);
+    const [bZoneMessage, setBZoneMessage] = useState(null);
 
 
     const { address, } = useAccount()
@@ -118,12 +119,17 @@ const Game = () => {
         else {
             setEndgame(true);
             setNext(false)
-            setEndAlert("!")
+            if (playerScore > computerScore) {
+                setEndAlert("You Win!")
+            }
+            if (playerScore < computerScore) {
+                setEndAlert("You Lose!")
+            }
+            if (playerScore === computerScore) {
+                setEndAlert("Draw!")
+            }
         }
     }
-
-
-
 
     async function updatePosition(card_id, position) {
         setTurn(false)
@@ -265,6 +271,14 @@ const Game = () => {
         setRewardMessage(message)
     }
 
+    async function getZoneMessage(message) {
+        setZoneMessage(message)
+    }
+
+    async function getBZoneMessage(message) {
+        setBZoneMessage(message)
+    }
+
     async function getReward(monster) {
         const response = await fetch(`${`http://localhost:3000/api/v1/reward?token=${authToken}&id=${monster.id}`}`,
             {
@@ -274,13 +288,19 @@ const Game = () => {
                 },
             }
         );
+        setReward(monster)
         if (response.ok) {
             const responseData = await response.json();
             if (responseData.message != "") {
                 await getRewardMessage(responseData.message)
             }
+            if (responseData.zone_message != "") {
+                await getZoneMessage(responseData.zone_message)
+            }
+            if (responseData.b_zone_message != "") {
+                await getBZoneMessage(responseData.b_zone_message)
+            }
         }
-        setReward(monster)
     }
 
     async function quitGame() {
@@ -344,7 +364,7 @@ const Game = () => {
         }
         if (game && game.boss) {
             if (bossLife <= 0) {
-                    setNext(true);
+                setNext(true);
             }
         }
     }, [board, next]);
@@ -391,7 +411,6 @@ const Game = () => {
                 setBoard(updatedBoard);
                 setSelectedCard(null);
                 updatePosition(selectedCard.id, index)
-                // Retirer la carte utilisée du côté correspondant
                 const updatedLeftCards = leftCards.filter((card) => card.id !== selectedCard.id)
                 setLeftCards(updatedLeftCards);
             }
@@ -424,6 +443,8 @@ const Game = () => {
         backgroundColor: '#ffcc00',
         transform: 'scale(1.1)',
         marginRight: "25px",
+        cursor: '',
+
     };
 
     const leftCardStyle = {
@@ -503,9 +524,9 @@ const Game = () => {
                                                         <div style={{ justifyContent: 'space-around' }}>
                                                             {game.rounds <= game.player_points ? (
                                                                 <>
-                                                                    <h2>Get Reward</h2>
                                                                     {!reward &&
                                                                         <div id='reward' className="left-cards" style={{ display: 'flex' }}>
+                                                                            <h2>Get Reward</h2>
                                                                             {game.boss ? (<div
                                                                                 onClick={() => getReward(game.monsters[0])}
                                                                                 style={leftCardStyle}
@@ -524,16 +545,19 @@ const Game = () => {
                                                                             </>)}
                                                                         </div>
                                                                     }
-                                                                    <div>{rewardMessage}</div>
                                                                     {reward &&
                                                                         <>
-                                                                            <div onClick={() => nextGame()}
-                                                                                style={selectedCardStyle}
-                                                                            >
+                                                                            <div>{rewardMessage}</div>
+                                                                            <h2>Your Reward: Energy + {game.player_points * 10}</h2>
+                                                                            <div style={selectedCardStyle}>
                                                                                 {reward.name}:
                                                                                 <Card card={reward} />
                                                                             </div>
-                                                                            <p>Energy + {game.player_points * 10}</p>
+                                                                            <h2>Select next Level</h2>
+                                                                            <div style={{ display: "flex" }}>
+                                                                                <div onClick={nextGame} style={leftCardStyle}>{zoneMessage}</div>
+                                                                                <div onClick={nextGame} style={leftCardStyle}>{bZoneMessage}</div>
+                                                                            </div>
                                                                         </>
                                                                     }
                                                                 </>
