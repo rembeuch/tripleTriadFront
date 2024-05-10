@@ -41,6 +41,7 @@ const Game = () => {
     const [bZoneMessage, setBZoneMessage] = useState(null);
 
 
+
     const { address, } = useAccount()
 
     async function getPlayer() {
@@ -119,14 +120,23 @@ const Game = () => {
         else {
             setEndgame(true);
             setNext(false)
-            if (playerScore > computerScore) {
-                setEndAlert("You Win!")
+            if (game.boss == false) {
+                if (playerScore - computerScore > 1) {
+                    setEndAlert("You Win!");
+                } else if (computerScore - playerScore > 1) {
+                    setEndAlert("You Lose!");
+                } else if (playerScore === computerScore || playerScore - computerScore === 1 || computerScore - playerScore === 1) {
+                    setEndAlert("Draw!");
+                }
             }
-            if (playerScore < computerScore) {
-                setEndAlert("You Lose!")
-            }
-            if (playerScore === computerScore) {
-                setEndAlert("Draw!")
+            if (game.boss == true) {
+                if (playerScore - game.rounds >= 0) {
+                    setEndAlert("You Win!");
+                } else if (computerScore - playerScore > 1) {
+                    setEndAlert("You Lose!");
+                } else if (game.rounds - playerScore > 0) {
+                    setEndAlert("Continue!");
+                }
             }
         }
     }
@@ -225,8 +235,8 @@ const Game = () => {
         await fetchComputerDeck();
     }
 
-    async function nextGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?token=${authToken}`}`,
+    async function nextGame(zone_message) {
+        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?token=${authToken}&zone_message=${zone_message}`}`,
             {
                 method: "POST",
                 headers: {
@@ -322,12 +332,13 @@ const Game = () => {
             try {
                 const json = await getPlayer();
                 setPlayer(json);
+                console.log(player.zones[0].slice(0, 5) == "bossB")
             } catch (error) {
                 console.error("Failed to fetch the player: ", error);
             }
         };
         fetchCurrentPlayer();
-    }, [address, authToken]);
+    }, [address, authToken, reward]);
 
     useEffect(() => {
         const fetchCurrentGame = async () => {
@@ -350,6 +361,12 @@ const Game = () => {
             getScore()
         }
     }, [address, endgame]);
+
+    useEffect(() => {
+        if (game) {
+            setBossLife(game.player_points - game.rounds)
+        }
+    }, [endgame]);
 
     useEffect(() => {
         if (player) {
@@ -553,10 +570,65 @@ const Game = () => {
                                                                                 {reward.name}:
                                                                                 <Card card={reward} />
                                                                             </div>
-                                                                            <h2>Select next Level</h2>
+                                                                            <h2>Select next Level
+                                                                                {player.s_zone && " / You find a safe zone!"}
+                                                                            </h2>
                                                                             <div style={{ display: "flex" }}>
-                                                                                <div onClick={nextGame} style={leftCardStyle}>{zoneMessage}</div>
-                                                                                <div onClick={nextGame} style={leftCardStyle}>{bZoneMessage}</div>
+                                                                                {zoneMessage != null &&
+                                                                                    <button onClick={() => nextGame("A")} style={{
+                                                                                        color: "#F9DC5C",
+                                                                                        backgroundColor: "green",
+                                                                                        padding: "10px 50px",
+                                                                                        margin: 10,
+                                                                                        transition: "background-color 0.3s ease",
+                                                                                        borderRadius: 5,
+                                                                                        textDecoration: "none"
+                                                                                    }}>{zoneMessage}</button>
+                                                                                }
+                                                                                {bZoneMessage &&
+                                                                                    <button onClick={() => nextGame("B")} style={{
+                                                                                        color: "#F9DC5C",
+                                                                                        backgroundColor: "purple",
+                                                                                        padding: "10px 50px",
+                                                                                        margin: 10,
+                                                                                        transition: "background-color 0.3s ease",
+                                                                                        borderRadius: 5,
+                                                                                        textDecoration: "none"
+                                                                                    }}>{bZoneMessage}</button>
+                                                                                }
+                                                                                {player.zones[0].slice(0, 5) == "bossA" &&
+                                                                                    <button onClick={() => nextGame("Aboss")} style={{
+                                                                                        color: "#F9DC5C",
+                                                                                        backgroundColor: "green",
+                                                                                        padding: "10px 50px",
+                                                                                        margin: 10,
+                                                                                        transition: "background-color 0.3s ease",
+                                                                                        borderRadius: 5,
+                                                                                        textDecoration: "none"
+                                                                                    }}>Boss {zoneMessage} 💀</button>
+                                                                                }
+                                                                                {player.zones[0].slice(0, 5) == "bossB" &&
+                                                                                    <button onClick={() => nextGame("Bboss")} style={{
+                                                                                        color: "#F9DC5C",
+                                                                                        backgroundColor: "purple",
+                                                                                        padding: "10px 50px",
+                                                                                        margin: 10,
+                                                                                        transition: "background-color 0.3s ease",
+                                                                                        borderRadius: 5,
+                                                                                        textDecoration: "none"
+                                                                                    }}>Boss {bZoneMessage} 💀</button>
+                                                                                }
+                                                                                {player.zones[1].slice(0, 5) == "bossB" &&
+                                                                                    <button onClick={() => nextGame("Bboss")} style={{
+                                                                                        color: "#F9DC5C",
+                                                                                        backgroundColor: "purple",
+                                                                                        padding: "10px 50px",
+                                                                                        margin: 10,
+                                                                                        transition: "background-color 0.3s ease",
+                                                                                        borderRadius: 5,
+                                                                                        textDecoration: "none"
+                                                                                    }}>Boss {bZoneMessage} 💀</button>
+                                                                                }
                                                                             </div>
                                                                         </>
                                                                     }
@@ -564,7 +636,7 @@ const Game = () => {
                                                             ) : (
                                                                 <>
                                                                     <p>Energy + {game.player_points * 10}</p>
-                                                                    <button onClick={() => quitGame()} style={{
+                                                                    <button onClick={() => nextGame()} style={{
                                                                         color: "#F9DC5C",
                                                                         backgroundColor: "purple",
                                                                         padding: "10px 50px",

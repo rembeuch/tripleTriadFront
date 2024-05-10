@@ -320,6 +320,8 @@ function Player() {
               ))}
             </div>
             <hr></hr>
+            <p>Monsters: {player.monsters.length} </p>
+
             <div style={gridContainerStyle}>
               {cards.map(card => (
                 <div key={card.id} style={cardStyle} className="card">

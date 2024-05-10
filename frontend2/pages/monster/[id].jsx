@@ -124,8 +124,8 @@ const monster = () => {
                     </div>
                     <div>
                         points: {monster.copy} / energy: {energy}
-                        {monster.up_points < 30 ? (
-                            <p>boost up: {monster.up_points} / 30
+                        {monster.up_points < (30 / monster.rank) ? (
+                            <p>boost up: {monster.up_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
                                         <button onClick={() => increment(0)} style={{
@@ -147,8 +147,8 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.right_points < 30 ? (
-                            <p>boost right: {monster.right_points} / 30
+                        {monster.right_points < (30 / monster.rank) ? (
+                            <p>boost right: {monster.right_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
                                         <button onClick={() => increment(1)} style={{
@@ -171,8 +171,8 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.down_points < 30 ? (
-                            <p>boost down: {monster.down_points} / 30
+                        {monster.down_points < (30 / monster.rank) ? (
+                            <p>boost down: {monster.down_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
                                         <button onClick={() => increment(2)} style={{
@@ -195,8 +195,8 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.left_points < 30 ? (
-                            <p>boost left: {monster.left_points} / 30
+                        {monster.left_points < (30 / monster.rank) ? (
+                            <p>boost left: {monster.left_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
                                         <button onClick={() => increment(3)} style={{

@@ -81,9 +81,17 @@ const elite = () => {
         );
         if (response.ok) {
             const responseData = await response.json();
-            setElite(responseData.elite)
-            setPowers(responseData.power)
-            setPlayer(responseData.player)
+            if (responseData.message == "") {
+                setElite(responseData.elite)
+                setPowers(responseData.power)
+                setPlayer(responseData.player)
+            }
+            if (responseData.message != "") {
+                setAddAlert(responseData.message);
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
+            }
         }
     }
 
@@ -225,8 +233,8 @@ const elite = () => {
         <>
             <Layout>
                 <div>
-                    {player.zone_position != "A1" && 
-                    <h2>You can't do modifications when you are in zone {player.zone_position}</h2>
+                    {player.zone_position != "A1" && player.s_zone == false &&
+                        <h2>You can't do modifications when you are in zone {player.zone_position}</h2>
                     }
                     <h2> Your Elite:</h2>
                     {player && elite && isConnected ?
@@ -261,7 +269,8 @@ const elite = () => {
                         </Flex>
                     </div>
                     <div>
-                        points: {player.elite_points} / energy: {player.energy}
+                        points: {player.elite_points} / energy: {player.energy} {addAlert}
+
                         {elite.fight < 100 ? (
                             <p>Fight (up): {elite.fight} / 100
                                 {player.elite_points > 0 &&
@@ -355,6 +364,7 @@ const elite = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
+
                                         {elite.nft ? (
                                             <span> (- {elite.leadership * 5} energy )</span>
                                         ) : (
@@ -433,7 +443,7 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
-                                 {powers.filter(power => power[0] === "d").length < 10 &&
+                                {powers.filter(power => power[0] === "d").length < 10 &&
                                     <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
                                         {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
                                         {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
@@ -472,7 +482,7 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
-                                 {powers.filter(power => power[0] === "e").length < 10 &&
+                                {powers.filter(power => power[0] === "e").length < 10 &&
                                     <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
                                         {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
                                         {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
@@ -515,7 +525,7 @@ const elite = () => {
                                         </div >
                                     </>
                                 ))}
-                                 {powers.filter(power => power[0] === "l").length < 10 &&
+                                {powers.filter(power => power[0] === "l").length < 10 &&
                                     <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
                                         {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
                                         {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
