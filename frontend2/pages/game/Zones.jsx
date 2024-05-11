@@ -6,10 +6,12 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Flex,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import { useAuth } from '@/contexts/authContext';
+import Card from '@/components/Card';
 import Link from 'next/link';
 
 
@@ -17,10 +19,13 @@ import Link from 'next/link';
 const Zones = () => {
   const { authToken } = useAuth();
   const { address, isConnected } = useAccount()
+  const router = useRouter();
   const [player, setPlayer] = useState(null);
   const [pvp, setPvp] = useState(null);
   const [game, setGame] = useState(null);
-  const router = useRouter();
+  const [monsters, setMonsters] = useState(null);
+  const [zoneMonsters, setZoneMonsters] = useState(null);
+  const [sMonsters, setSMonsters] = useState(null);
   const [numberOfRounds, setNumberOfRounds] = useState(1);
 
   async function getPlayer() {
@@ -33,40 +38,10 @@ const Zones = () => {
     return response.json();
   }
 
-  useEffect(() => {
-
-    const fetchCurrentPlayer = async () => {
-      try {
-        const json = await getPlayer();
-        setPlayer(json);
-      } catch (error) {
-        console.error("Failed to fetch the player: ", error);
-      }
-    };
-    fetchCurrentPlayer();
-  }, [address, authToken]);
-
-  useEffect(() => {
-    const fetchCurrentGame = async () => {
-      try {
-        const json = await getGame();
-        setGame(json);
-      } catch (error) {
-        setGame(null);
-        console.error("Failed to fetch the game: ", error);
-      }
-    };
-
-    if (player) {
-      fetchCurrentGame();
-    }
-  }, [player]);
-
-  useEffect(() => {
-    if (player) {
-      setPvp(player.in_pvp);
-    }
-  }, [player]);
+  async function getMonsters() {
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_monsters?address=${address}&token=${authToken}`}`);
+    return response.json();
+  }
 
   async function createGame() {
 
@@ -102,6 +77,61 @@ const Zones = () => {
     window.location.href = "/game/Zones";
   }
 
+
+  useEffect(() => {
+
+    const fetchCurrentPlayer = async () => {
+      try {
+        const json = await getPlayer();
+        setPlayer(json);
+      } catch (error) {
+        console.error("Failed to fetch the player: ", error);
+      }
+    };
+    fetchCurrentPlayer();
+  }, [address, authToken]);
+
+  useEffect(() => {
+    const fetchCurrentMonsters = async () => {
+      try {
+        const json = await getMonsters();
+        setMonsters(json.monsters);
+        setZoneMonsters(json.zone_monsters);
+        if (player.s_zone) {
+          setSMonsters(json.s_monsters);
+        }
+      } catch (error) {
+        setMonsters(null);
+        console.error("Failed to fetch the game: ", error);
+      }
+    };
+    if (player) {
+      fetchCurrentMonsters();
+    }
+  }, [player]);
+
+  useEffect(() => {
+    const fetchCurrentGame = async () => {
+      try {
+        const json = await getGame();
+        setGame(json);
+      } catch (error) {
+        setGame(null);
+        console.error("Failed to fetch the game: ", error);
+      }
+    };
+    if (player) {
+      fetchCurrentGame();
+    }
+  }, [player]);
+
+  useEffect(() => {
+    if (player) {
+      setPvp(player.in_pvp);
+    }
+  }, [player]);
+
+
   // async function selectZone(zone) {
   //   if (player.in_game == false) {
   //     const response = await fetch(`${`http://localhost:3000/api/v1/select_zone?address=${address}&token=${authToken}&zone=${zone}`}`,
@@ -118,11 +148,26 @@ const Zones = () => {
   //     }
   //   }
   // }
+
+  const eliteCardStyle = {
+    border: '1px solid #ddd',
+    padding: '20px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
+  };
+
+  const gridContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(5, 1fr)',
+    gap: '10px',
+    margin: '20px',
+  };
   return (
     <Layout pvp={pvp}>
       {player ? (
         <>
-          <h2>Name: {player.name} Energy: {player.energy} Elite Points: {player.elite_points} Zone Max: {player.zones.slice(-1)[0]} Monsters: {player.monsters.length}</h2>
+          <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}</h2>
           <p>current ability: {player.ability}
             {player.zone_position == "A1" && player.in_pvp == "false" && player.in_game == false &&
               <Link href="/player/[id]" as={`/player/${player.id}`}>
@@ -138,22 +183,9 @@ const Zones = () => {
               </Link>
             }
             <br />
-            current position: {player.zone_position}
-            {player.s_zone && player.in_pvp == "false" && player.in_game == false &&
-              <>
-                (safe zone)
-                <Link href="/player/[id]" as={`/player/${player.id}`}>
-                  <button style={{
-                    color: "#F9DC5C",
-                    backgroundColor: "blue",
-                    padding: "10px 50px",
-                    margin: 10,
-                    transition: "background-color 0.3s ease",
-                    borderRadius: 5,
-                    textDecoration: "none"
-                  }} > Boost Team </button>
-                </Link>
-              </>
+            current zone: {player.zone_position}
+            {player.zones.includes(player.zone_position) && monsters && zoneMonsters &&
+              <p>Monsters in this zone {monsters.length} / {zoneMonsters.length}</p>
             }
           </p>
 
@@ -178,18 +210,66 @@ const Zones = () => {
               transition: "background-color 0.3s ease",
               borderRadius: 5,
               textDecoration: "none"
-            }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} { player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+            }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
           )}
+          {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters &&
+            <>
+              <h2>Market</h2>
+              <div style={{ display: 'flex' }}>
+                <div style={gridContainerStyle}>
+                  {sMonsters.map(card => (
+                    <>
+                      <div key={card.id} style={eliteCardStyle} className="card">
+                        <p style={{ background: "white", margin: '5px' }}> {card.name}
+                        </p>
+                        <Flex>
+                          <Card card={card} />
+                        </Flex>
+                        <Link href="/monster/[id]" as={`/monster/${card.id}`}>
+                          <button style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "green",
+                            padding: "10px 50px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} > Details </button>
+                        </Link>
+                      </div>
+                    </>
+                  ))}
+                </div >
+              </div>
+            </>
+          }
           {player.zone_position != "A1" &&
-            <button onClick={() => quitGame()} style={{
-              color: "#F9DC5C",
-              backgroundColor: "red",
-              padding: "10px 50px",
-              margin: 10,
-              transition: "background-color 0.3s ease",
-              borderRadius: 5,
-              textDecoration: "none"
-            }} > Quit and Back to A1 </button>
+            <>
+              <div style={{ display: 'flex' }}>
+                <button onClick={() => quitGame()} style={{
+                  color: "#F9DC5C",
+                  backgroundColor: "red",
+                  padding: "10px 50px",
+                  margin: 10,
+                  transition: "background-color 0.3s ease",
+                  borderRadius: 5,
+                  textDecoration: "none"
+                }} > Quit and Back to A1 </button>
+                {player.s_zone && player.in_pvp == "false" && player.in_game == false &&
+                  <Link href="/player/[id]" as={`/player/${player.id}`}>
+                    <button style={{
+                      color: "#F9DC5C",
+                      backgroundColor: "blue",
+                      padding: "10px 50px",
+                      margin: 10,
+                      transition: "background-color 0.3s ease",
+                      borderRadius: 5,
+                      textDecoration: "none"
+                    }} > Boost Team </button>
+                  </Link>
+                }
+              </div>
+            </>
           }
         </>
       ) : (

@@ -22,6 +22,7 @@ const monster = () => {
     const [player, setPlayer] = useState(null);
     const [monster, setMonster] = useState(null)
     const [energy, setEnergy] = useState(null);
+    const [addAlert, setAddAlert] = useState("");
 
 
     async function getPlayer() {
@@ -46,10 +47,30 @@ const monster = () => {
         if (response.ok) {
             const responseData = await response.json();
             setMonster(responseData.monster)
+
+            if (responseData.message != "") {
+                setAddAlert(responseData.message);
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
+            }
         }
     }
 
-
+    async function sell() {
+        const response = await fetch(`${`http://localhost:3000/api/v1/sell_card?token=${authToken}&id=${monster.id}`}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (response.ok) {
+            const responseData = await response.json();
+            setMonster(responseData.monster)
+        }
+    }
 
     useEffect(() => {
 
@@ -81,15 +102,15 @@ const monster = () => {
     }, [address, authToken, player]);
 
     useEffect(() => {
-            const fetchCurrentPlayer = async () => {
-                try {
-                    const json = await getPlayer();
-                    setEnergy(json.energy)
-                } catch (error) {
-                    console.error("Failed to fetch the player: ", error);
-                }
-            };
-            fetchCurrentPlayer();
+        const fetchCurrentPlayer = async () => {
+            try {
+                const json = await getPlayer();
+                setEnergy(json.energy)
+            } catch (error) {
+                console.error("Failed to fetch the player: ", error);
+            }
+        };
+        fetchCurrentPlayer();
     }, [player, monster]);
 
     const monsterCardStyle = {
@@ -123,7 +144,7 @@ const monster = () => {
                         </Flex>
                     </div>
                     <div>
-                        points: {monster.copy} / energy: {energy}
+                        points: {monster.copy} / energy: {energy} {addAlert}
                         {monster.up_points < (30 / monster.rank) ? (
                             <p>boost up: {monster.up_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
@@ -221,7 +242,17 @@ const monster = () => {
                         }
                     </div>
                 </div>
-
+                {monster.copy > 0 && <button onClick={() => sell()} style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "blue",
+                    padding: "10px 10px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                }} > sell 1 copy (+{monster.rank * 50} energy)
+                </button>
+                }
             </Layout>
         </>
     )
