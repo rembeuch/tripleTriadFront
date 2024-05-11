@@ -26,6 +26,8 @@ const Zones = () => {
   const [monsters, setMonsters] = useState(null);
   const [zoneMonsters, setZoneMonsters] = useState(null);
   const [sMonsters, setSMonsters] = useState(null);
+  const [copy, setCopy] = useState(null);
+  const [addAlert, setAddAlert] = useState("");
   const [numberOfRounds, setNumberOfRounds] = useState(1);
 
   async function getPlayer() {
@@ -77,6 +79,45 @@ const Zones = () => {
     window.location.href = "/game/Zones";
   }
 
+  async function sellMarket(index) {
+    const response = await fetch(`${`http://localhost:3000/api/v1/sell_market?token=${authToken}&index=${index}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setAddAlert(responseData.message);
+      setTimeout(() => {
+        setAddAlert("")
+      }, 3000);
+
+    }
+
+  }
+
+  async function buyMarket(index) {
+    const response = await fetch(`${`http://localhost:3000/api/v1/buy_market?token=${authToken}&index=${index}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setAddAlert(responseData.message);
+      setTimeout(() => {
+        setAddAlert("")
+      }, 3000);
+
+    }
+  }
+
 
   useEffect(() => {
 
@@ -89,7 +130,7 @@ const Zones = () => {
       }
     };
     fetchCurrentPlayer();
-  }, [address, authToken]);
+  }, [address, authToken, addAlert]);
 
   useEffect(() => {
     const fetchCurrentMonsters = async () => {
@@ -99,6 +140,7 @@ const Zones = () => {
         setZoneMonsters(json.zone_monsters);
         if (player.s_zone) {
           setSMonsters(json.s_monsters);
+          setCopy(json.copy);
         }
       } catch (error) {
         setMonsters(null);
@@ -108,7 +150,7 @@ const Zones = () => {
     if (player) {
       fetchCurrentMonsters();
     }
-  }, [player]);
+  }, [player, addAlert]);
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
@@ -159,9 +201,9 @@ const Zones = () => {
 
   const gridContainerStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(5, 1fr)',
+    gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '10px',
-    margin: '20px',
+    margin: '5px'
   };
   return (
     <Layout pvp={pvp}>
@@ -212,33 +254,58 @@ const Zones = () => {
               textDecoration: "none"
             }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
           )}
-          {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters &&
+          {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
             <>
               <h2>Market</h2>
+              {addAlert}
               <div style={{ display: 'flex' }}>
                 <div style={gridContainerStyle}>
-                  {sMonsters.map(card => (
+                  {sMonsters.slice(0, 2).map((card, index) => (
                     <>
                       <div key={card.id} style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {card.name}
-                        </p>
+                        <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}`  : "not in your deck")}</p>
                         <Flex>
                           <Card card={card} />
                         </Flex>
-                        <Link href="/monster/[id]" as={`/monster/${card.id}`}>
-                          <button style={{
-                            color: "#F9DC5C",
-                            backgroundColor: "green",
-                            padding: "10px 50px",
-                            margin: 10,
-                            transition: "background-color 0.3s ease",
-                            borderRadius: 5,
-                            textDecoration: "none"
-                          }} > Details </button>
-                        </Link>
+                        <button onClick={() => buyMarket(index)} style={{
+                          color: "#F9DC5C",
+                          backgroundColor: "blue",
+                          padding: "10px 10px",
+                          margin: 10,
+                          transition: "background-color 0.3s ease",
+                          borderRadius: 5,
+                          textDecoration: "none"
+                        }} >
+                          <p style={{ margin: '5px' }}> Buy for {' '}
+                            {card.rank * 100 + (player.monsters.includes(card.name) ? 100 : 200)} energy
+                          </p>
+                        </button>
                       </div>
                     </>
                   ))}
+                </div >
+                <div style={gridContainerStyle}>
+                  {sMonsters.slice(2, 4).map((card, index) => (
+                    <>
+                      <div key={card.id} style={eliteCardStyle} className="card">
+                        <p style={{ background: "white", margin: '5px' }}> {card.name} / copy {copy[index + 2]}</p>
+                        <Flex>
+                          <Card card={card} />
+                        </Flex>
+                        <button onClick={() => sellMarket(index + 2)} style={{
+                          color: "#F9DC5C",
+                          backgroundColor: "purple",
+                          padding: "10px 10px",
+                          margin: 10,
+                          transition: "background-color 0.3s ease",
+                          borderRadius: 5,
+                          textDecoration: "none"
+                        }} > sell 1 copy (+{card.rank * 100} energy)
+                        </button>
+                      </div>
+                    </>
+                  ))}
+
                 </div >
               </div>
             </>
