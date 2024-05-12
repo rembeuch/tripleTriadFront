@@ -272,7 +272,7 @@ const elite = () => {
                         points: {player.elite_points} / energy: {player.energy} {addAlert}
 
                         {elite.fight < 100 ? (
-                            <p>Fight (up): {elite.fight} / 100
+                            <p>Fight: {elite.fight} / 100
                                 {player.elite_points > 0 &&
                                     <>
                                         <button onClick={() => increment(0)} style={{
@@ -289,9 +289,9 @@ const elite = () => {
                                             <span> (- {elite.fight * 5} energy )</span>
                                         ) : (
                                             <span> (- {elite.fight * 10} energy )</span>
-                                        )}
-                                    </>
+                                        )} </>
                                 }
+                                {''}Card up {elite.up} to {parseInt(elite.up) + 1} with {(parseInt(elite.up) + 1) * 10 - elite.fight} more point(s)!
                             </p>) : (
                             <p>
                                 Fight Max!
@@ -318,6 +318,7 @@ const elite = () => {
                                             <span> (- {elite.diplomacy * 10} energy )</span>
                                         )}                                    </>
                                 }
+                                {''}Card right {elite.right} to {parseInt(elite.right) + 1} with {(parseInt(elite.right) + 1) * 10 - elite.diplomacy} more point(s)!
                             </p>) : (
                             <p>
                                 Diplomacy Max!
@@ -344,6 +345,8 @@ const elite = () => {
                                             <span> (- {elite.espionage * 10} energy )</span>
                                         )}                                    </>
                                 }
+                                {''}Card down {elite.down} to {parseInt(elite.down) + 1} with {(parseInt(elite.down) + 1) * 10 - elite.espionage} more point(s)!
+
                             </p>) : (
                             <p>
                                 Espionage Max!
@@ -371,6 +374,8 @@ const elite = () => {
                                             <span> (- {elite.leadership * 10} energy )</span>
                                         )}                                    </>
                                 }
+                                {''}Card left {elite.left} to {parseInt(elite.left) + 1} with {(parseInt(elite.left) + 1) * 10 - elite.leadership} more point(s)!
+
                             </p>) : (
                             <p>
                                 Leadership Max!
@@ -380,9 +385,7 @@ const elite = () => {
                     </div>
                 </div>
                 <h2>{ability && `Current power: ${ability}`} </h2>
-                {hoveredPower && <div>
-                    {addAlert}
-                </div>}
+
                 <div className="button-column" style={{
                     display: "flex"
                 }}>
@@ -390,164 +393,112 @@ const elite = () => {
                     <div className="column" style={{
                         flexDirection: "column"
                     }}>
-                        {powers.filter(power => power[0] === "f").length > 0 ? (
-                            <>
-                                {powers.filter(power => power[0] === "f").map(power => (
-                                    <>
-                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                                {power}
-                                                {hoveredPower === power &&
-                                                    <PowerModal power={power} isHovered={isHovered} />
-                                                }
-                                            </button>
-                                        </div >
-                                    </>
-                                ))}
-                                {powers.filter(power => power[0] === "f").length < 10 &&
-                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)} onMouseLeave={() => handleMouseLeave("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)}>
-                                        {"fight" + `${powers.filter(power => power[0] === "f").length + 1}`}
-                                        {hoveredPower === "fight" + `${powers.filter(power => power[0] === "f").length + 1}` &&
-                                            <PowerModal power={"fight" + `${powers.filter(power => power[0] === "f").length + 1}`} isHovered={isHovered} />
-                                        }
-                                    </button>
-                                }
-                            </>)
-                            :
-                            (<div className="card" >
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight1")} onMouseLeave={() => handleMouseLeave("fight1")}>
-                                    {"fight1"}
-                                    {hoveredPower === "fight1" &&
-                                        <PowerModal power={"fight1"} isHovered={isHovered} />
+                        <>
+                            {powers.filter(power => power[0] === "f").map(power => (
+                                <>
+                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                            {power}
+                                            {hoveredPower === power &&
+                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                            }
+                                        </button>
+                                    </div >
+                                </>
+                            ))}
+                            {powers.filter(power => power[0] === "f").length < 10 &&
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)} onMouseLeave={() => handleMouseLeave("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)}>
+                                    {"fight" + `${powers.filter(power => power[0] === "f").length + 1}`}
+                                    {hoveredPower === "fight" + `${powers.filter(power => power[0] === "f").length + 1}` &&
+                                        <PowerModal power={"fight" + `${powers.filter(power => power[0] === "f").length + 1}`} isHovered={isHovered} isGrey={true} />
                                     }
                                 </button>
-                            </div >
-                            )}
+                            }
+                        </>
                     </div>
                     {/* Deuxième colonne */}
                     <div className="column" style={{
                         flexDirection: "column"
                     }}>
-                        {powers.filter(power => power[0] === "d").length > 0 ? (
-                            <>
-                                {powers.filter(power => power[0] === "d").map(power => (
-                                    <>
-                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                                {power}
-                                                {hoveredPower === power &&
-                                                    <PowerModal power={power} isHovered={isHovered} />
-                                                }
-                                            </button>
+                        <>
+                            {powers.filter(power => power[0] === "d").map(power => (
+                                <>
+                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                            {power}
+                                            {hoveredPower === power &&
+                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                            }
+                                        </button>
 
-                                        </div >
-                                    </>
-                                ))}
-                                {powers.filter(power => power[0] === "d").length < 10 &&
-                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
-                                        {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
-                                        {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
-                                            <PowerModal power={"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`} isHovered={isHovered} />
-                                        }
-                                    </button>
-                                }
-                            </>)
-                            :
-                            (<div className="card" >
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy1")} onMouseLeave={() => handleMouseLeave("diplomacy1")}>
-                                    {"diplomacy1"}
-                                    {hoveredPower === "diplomacy1" &&
-                                        <PowerModal power={"diplomacy1"} isHovered={isHovered} />
+                                    </div >
+                                </>
+                            ))}
+                            {powers.filter(power => power[0] === "d").length < 10 &&
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
+                                    {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
+                                    {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
+                                        <PowerModal power={"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`} isHovered={isHovered} isGrey={true} />
                                     }
                                 </button>
-                            </div >
-                            )}
+                            }
+                        </>
                     </div>
                     {/* Troisième colonne */}
                     <div className="column" style={{
                         flexDirection: "column"
                     }}>
-                        {powers.filter(power => power[0] === "e").length > 0 ? (
-                            <>
-                                {powers.filter(power => power[0] === "e").map(power => (
-                                    <>
-                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                                {power}
-                                                {hoveredPower === power &&
-                                                    <PowerModal power={power} isHovered={isHovered} />
-                                                }
-                                            </button>
+                        <>
+                            {powers.filter(power => power[0] === "e").map(power => (
+                                <>
+                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                            {power}
+                                            {hoveredPower === power &&
+                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                            }
+                                        </button>
 
-                                        </div >
-                                    </>
-                                ))}
-                                {powers.filter(power => power[0] === "e").length < 10 &&
-                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
-                                        {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
-                                        {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
-                                            <PowerModal power={"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`} isHovered={isHovered} />
-                                        }
-                                    </button>
-                                }
-                            </>)
-                            :
-                            (< div className="card">
-                                <button style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "grey",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    display: 'block',
-                                    textDecoration: "none"
-                                }} > espionage1 </button>
-                            </div >
-                            )}
+                                    </div >
+                                </>
+                            ))}
+                            {powers.filter(power => power[0] === "e").length < 10 &&
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
+                                    {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
+                                    {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
+                                        <PowerModal power={"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                    }
+                                </button>
+                            }
+                        </>
                     </div>
                     {/* Quatrième colonne */}
                     <div className="column" style={{
                         flexDirection: "column"
                     }}>
-                        {powers.filter(power => power[0] === "l").length > 0 ? (
-                            <>
-                                {powers.filter(power => power[0] === "l").map(power => (
-                                    <>
-                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                            <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                                {power}
-                                                {hoveredPower === power &&
-                                                    <PowerModal power={power} isHovered={isHovered} />
-                                                }
-                                            </button>
+                        <>
+                            {powers.filter(power => power[0] === "l").map(power => (
+                                <>
+                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                            {power}
+                                            {hoveredPower === power &&
+                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                            }
+                                        </button>
 
-                                        </div >
-                                    </>
-                                ))}
-                                {powers.filter(power => power[0] === "l").length < 10 &&
-                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
-                                        {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
-                                        {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
-                                            <PowerModal power={"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`} isHovered={isHovered} />
-                                        }
-                                    </button>
-                                }
-                            </>)
-                            :
-                            (< div className="card">
-                                <button style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "grey",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    display: 'block',
-                                    textDecoration: "none"
-                                }} > leadership1 </button>
-                            </div >
-                            )}
+                                    </div >
+                                </>
+                            ))}
+                            {powers.filter(power => power[0] === "l").length < 10 &&
+                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
+                                    {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
+                                    {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
+                                        <PowerModal power={"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                    }
+                                </button>
+                            }
+                        </>
                     </div>
                 </div>
             </Layout >

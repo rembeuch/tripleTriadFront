@@ -72,9 +72,12 @@ const Auth = () => {
     return (
         <>
             <div>
-                <button onClick={toggleForm}>
-                    {isSignupFormVisible ? 'Create account' : ''}
-                </button>
+                {isSignupFormVisible &&
+                    <button style={buttonStyle} onClick={toggleForm}>
+                        Create account
+                    </button>
+                }
+
                 {isSignupFormVisible ? (
                     <></>
                 ) : (

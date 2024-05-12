@@ -292,7 +292,7 @@ function Player() {
             }
             <hr></hr>
             <div style={gridContainerStyle}>
-              {deck.map(card => (
+              {deck.length >= 1 && deck.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
                   <p style={{ background: "white", margin: '5px' }}> {card.name}</p>
                   <Flex>

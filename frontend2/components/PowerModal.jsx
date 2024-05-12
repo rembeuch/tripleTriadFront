@@ -1,6 +1,6 @@
 import React from 'react'
 
-const PowerModal = ({ power, isHovered }) => {
+const PowerModal = ({ power, isHovered, isGrey, alert }) => {
   const modalStyle = {
     display: 'none',
   };
@@ -71,9 +71,9 @@ const PowerModal = ({ power, isHovered }) => {
 
   return (
     <div style={isHovered ? hoverModalStyle : modalStyle}>
-      <h3>{power}</h3>
+      <h3>{power} {isGrey && `🔒${power[power.length - 1] * 10}`}</h3>
       <p>
-        {powerText}
+        {alert ? (alert) : (powerText)}
       </p>
     </div>
   )

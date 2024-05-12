@@ -27,6 +27,7 @@ const Zones = () => {
   const [zoneMonsters, setZoneMonsters] = useState(null);
   const [sMonsters, setSMonsters] = useState(null);
   const [copy, setCopy] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
   const [addAlert, setAddAlert] = useState("");
   const [numberOfRounds, setNumberOfRounds] = useState(1);
 
@@ -209,6 +210,13 @@ const Zones = () => {
     <Layout pvp={pvp}>
       {player ? (
         <>
+          {showAlert && <div>
+            <Alert status='warning' width="50%">
+              <AlertIcon />
+              Your Team is not complete!
+            </Alert>
+          </div>
+          }
           <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}</h2>
           <p>current ability: {player.ability}
             {player.zone_position == "A1" && player.in_pvp == "false" && player.in_game == false &&
@@ -252,7 +260,7 @@ const Zones = () => {
               transition: "background-color 0.3s ease",
               borderRadius: 5,
               textDecoration: "none"
-            }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+            }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
           )}
           {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
             <>
@@ -263,7 +271,7 @@ const Zones = () => {
                   {sMonsters.slice(0, 2).map((card, index) => (
                     <>
                       <div key={card.id} style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}`  : "not in your deck")}</p>
+                        <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}` : "not in your deck")}</p>
                         <Flex>
                           <Card card={card} />
                         </Flex>

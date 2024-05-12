@@ -474,6 +474,7 @@ const Game = () => {
         ...cardStyle,
         marginLeft: "15px",
         backgroundColor: '#FFC0CB',
+        display: 'block'
 
     };
     const playerCardStyle = (card) => ({
@@ -618,7 +619,7 @@ const Game = () => {
                                                                                         textDecoration: "none"
                                                                                     }}>Boss {bZoneMessage} 💀</button>
                                                                                 }
-                                                                                {player.zones[1].slice(0, 5) == "bossB" &&
+                                                                                {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" &&
                                                                                     <button onClick={() => nextGame("Bboss")} style={{
                                                                                         color: "#F9DC5C",
                                                                                         backgroundColor: "purple",
@@ -705,14 +706,16 @@ const Game = () => {
                                         < div style={gameStyle} >
                                             <div className="left-cards">
                                                 {leftCards.map((card) => (
-                                                    <div
-                                                        key={card.id}
-                                                        style={selectedCard === card ? selectedCardStyle : leftCardStyle}
-                                                        onClick={() => handleCardClick(card)}
-                                                    >
-                                                        # {card.name}:
-                                                        <Card card={card} />
-                                                    </div>
+                                                    <>
+                                                        <div
+                                                            key={card.id}
+                                                            style={selectedCard === card ? selectedCardStyle : leftCardStyle}
+                                                            onClick={() => handleCardClick(card)}
+                                                        >
+                                                            <p> {card.name} </p>
+                                                            <Card card={card} />
+                                                        </div>
+                                                    </>
                                                 ))}
                                             </div>
                                             <div>
@@ -882,12 +885,17 @@ const Game = () => {
 
                                             <div className="right-cards">
                                                 {rightCards.map((card) => (
-                                                    <div
-                                                        key={card.id}
-                                                        style={rightCardStyle}
-                                                    >
-                                                        <Card card={card} />
-                                                    </div>
+                                                    <>
+                                                        <div
+                                                            key={card.id}
+                                                            style={rightCardStyle}
+                                                        >
+                                                            <p style={{  }}>
+                                                                {!card.hide && card.name}
+                                                            </p>
+                                                            <Card card={card} />
+                                                        </div>
+                                                    </>
                                                 ))}
                                             </div>
                                         </div>
