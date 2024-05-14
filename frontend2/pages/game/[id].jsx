@@ -50,7 +50,7 @@ const Game = () => {
     }
 
     async function getGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_game?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find_game?id=${player.id}`}`);
         return response.json();
     }
 
@@ -338,7 +338,7 @@ const Game = () => {
             }
         };
         fetchCurrentPlayer();
-    }, [address, authToken, reward]);
+    }, [ authToken, reward]);
 
     useEffect(() => {
         const fetchCurrentGame = async () => {
@@ -354,13 +354,13 @@ const Game = () => {
         if (player) {
             fetchCurrentGame();
         }
-    }, [address, authToken, player, endgame]);
+    }, [ authToken, player, endgame]);
 
     useEffect(() => {
         if (player) {
             getScore()
         }
-    }, [address, endgame]);
+    }, [ endgame]);
 
     useEffect(() => {
         if (game) {
@@ -390,20 +390,20 @@ const Game = () => {
         if (player) {
             fetchPlayerDeck();
         }
-    }, [address, authToken, player, playerPower]);
+    }, [ authToken, player, playerPower]);
 
 
     useEffect(() => {
         if (player) {
             fetchComputerDeck();
         }
-    }, [address, authToken, player, playerPower]);
+    }, [ authToken, player, playerPower]);
 
     useEffect(() => {
         if (player) {
             updateBoard();
         }
-    }, [address, authToken, player]);
+    }, [ authToken, player]);
 
     useEffect(() => {
         if (player) {

@@ -37,7 +37,7 @@ const Zones = () => {
   }
 
   async function getGame() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?id=${player.id}`}`);
     return response.json();
   }
 

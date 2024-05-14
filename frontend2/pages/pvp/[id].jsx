@@ -353,6 +353,9 @@ const Pvp = () => {
                 if (message.message == "win" && message.id == pvp.id) {
                     setEndgame(true);
                 }
+                if (message.message == "quit" && message.id == pvp.id) {
+                    window.location.href = "/";
+                }
             }
         };
     }, [isWebSocketActive]);

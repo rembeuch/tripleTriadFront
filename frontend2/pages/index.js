@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   async function getGame() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_game?id=${player.id}`}`);
     return response.json();
   }
 
@@ -44,18 +44,13 @@ export default function Home() {
 }
 
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?token=${authToken}`}`);
-    return response.json();
-  }
-
-  async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/deck?id=${player.id}`}`);
     return response.json();
   }
 
   async function createPvp() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/pvps?token=${authToken}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/pvps?id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -75,7 +70,7 @@ export default function Home() {
 
   async function stopPvp() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/stop_pvp?token=${authToken}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/stop_pvp?id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -108,7 +103,7 @@ export default function Home() {
       }
     };
     fetchCurrentPlayer();
-  }, [address, authToken]);
+  }, [authToken]);
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
@@ -124,7 +119,7 @@ export default function Home() {
     if (player) {
       fetchCurrentGame();
     }
-  }, [address, authToken, isConnected, player]);
+  }, [player]);
 
   useEffect(() => {
     const fetchDeck = async () => {
@@ -155,20 +150,7 @@ export default function Home() {
     }
   }, [player]);
 
-  useEffect(() => {
-    const fetchCurrentElites = async () => {
-      try {
-        const json = await getElites();
-        setElites(json);
-      } catch (error) {
-        setElites(null);
-        console.error("Failed to fetch the player: ", error);
-      }
-    };
-    if (player) {
-      fetchCurrentElites();
-    }
-  }, [player]);
+  
 
   return (
     <>
@@ -213,7 +195,7 @@ export default function Home() {
                     </Link>
                   ) : (
                     <>
-                      {deck && elites &&
+                      {deck &&
                         <>
                           <button
                             onClick={redirectZones}
@@ -231,7 +213,7 @@ export default function Home() {
                     </>
                   )
                   }
-                  {deck && elites &&
+                  {deck &&
                     <>
                       {
                         player.in_pvp == 'false' &&

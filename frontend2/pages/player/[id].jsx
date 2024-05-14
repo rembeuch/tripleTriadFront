@@ -25,7 +25,7 @@ function Player() {
   const [elites, setElites] = useState([]);
   const [cards, setCards] = useState([]);
   const [deck, setDeck] = useState([]);
-  const [removeAlert, setRemoveAlert] = useState(false);
+  const [removeAlert, setRemoveAlert] = useState("");
   const [addAlert, setAddAlert] = useState("");
   const [removeCardAlert, setRemoveCardAlert] = useState("");
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -39,23 +39,23 @@ function Player() {
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?id=${player.id}`}`);
     return response.json();
   }
 
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/deck?id=${player.id}`}`);
     return response.json();
   }
 
   async function getCards() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/cards?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/cards?id=${player.id}`}`);
     return response.json();
   }
 
   async function RecruitElite() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?token=${authToken}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -72,7 +72,7 @@ function Player() {
 
   async function addCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?token=${authToken}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?id=${player.id}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -98,7 +98,7 @@ function Player() {
 
   async function removeCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?token=${authToken}&card_id=${id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?id=${player.id}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -228,7 +228,7 @@ function Player() {
   return (
     <>
       <Layout pvp={pvp}>
-        {isConnected || player ? (
+        {player ? (
           <div>
             <div>
               <h2>{player.name}</h2>

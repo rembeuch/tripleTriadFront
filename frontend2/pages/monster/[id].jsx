@@ -31,7 +31,7 @@ const monster = () => {
     }
 
     async function getMonster() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/cards/${id}?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/cards/${id}?player_id=${player.id}`}`);
         return response.json();
     }
 
