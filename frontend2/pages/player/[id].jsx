@@ -34,12 +34,12 @@ function Player() {
 
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
     return response.json();
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?id=${player.id}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?player_id=${player.id}`}`);
     return response.json();
   }
 
@@ -49,13 +49,13 @@ function Player() {
   }
 
   async function getCards() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/cards?id=${player.id}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/cards?player_id=${player.id}`}`);
     return response.json();
   }
 
   async function RecruitElite() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?id=${player.id}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/elites?player_id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -141,7 +141,7 @@ function Player() {
       }
     };
     fetchCurrentPlayer();
-  }, [address, authToken]);
+  }, [authToken]);
 
   useEffect(() => {
     const fetchCurrentElites = async () => {

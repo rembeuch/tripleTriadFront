@@ -32,7 +32,7 @@ const Zones = () => {
   const [numberOfRounds, setNumberOfRounds] = useState(1);
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
     return response.json();
   }
 
@@ -42,13 +42,13 @@ const Zones = () => {
   }
 
   async function getMonsters() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find_monsters?address=${address}&token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_monsters?player_id=${player.id}`}`);
     return response.json();
   }
 
   async function createGame() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/games?address=${address}&token=${authToken}&rounds=${numberOfRounds}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/games?id=${player.id}&rounds=${numberOfRounds}`}`,
       {
         method: "POST",
         headers: {
@@ -69,7 +69,7 @@ const Zones = () => {
   }
 
   async function quitGame() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?token=${authToken}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -81,7 +81,7 @@ const Zones = () => {
   }
 
   async function sellMarket(index) {
-    const response = await fetch(`${`http://localhost:3000/api/v1/sell_market?token=${authToken}&index=${index}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/sell_market?player_id=${player.id}&index=${index}`}`,
       {
         method: "POST",
         headers: {
@@ -101,7 +101,7 @@ const Zones = () => {
   }
 
   async function buyMarket(index) {
-    const response = await fetch(`${`http://localhost:3000/api/v1/buy_market?token=${authToken}&index=${index}`}`,
+    const response = await fetch(`${`http://localhost:3000/api/v1/buy_market?player_id=${player.id}&index=${index}`}`,
       {
         method: "POST",
         headers: {

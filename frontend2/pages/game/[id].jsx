@@ -9,6 +9,7 @@ import {
     AlertTitle,
     AlertDescription,
 } from '@chakra-ui/react'
+import SuperPowerModal from '@/components/SuperPowerModal';
 import { useAuth } from '@/contexts/authContext';
 import Layout from '@/components/Layout/Layout';
 
@@ -39,13 +40,15 @@ const Game = () => {
     const [rewardMessage, setRewardMessage] = useState(null);
     const [zoneMessage, setZoneMessage] = useState(null);
     const [bZoneMessage, setBZoneMessage] = useState(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const [superPowerCard, setSuperPowerCard] = useState(null);
 
 
 
     const { address, } = useAccount()
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
         return response.json();
     }
 
@@ -56,7 +59,7 @@ const Game = () => {
 
     async function fetchPlayerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/deck_in_game?token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/deck_in_game?id=${player.id}`}`);
             const json = await response.json();
             setLeftCards(json);
         } catch (error) {
@@ -66,7 +69,7 @@ const Game = () => {
 
     async function fetchComputerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/computer_deck?token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/computer_deck?id=${player.id}`}`);
             const json = await response.json();
             setRightCards(json);
         } catch (error) {
@@ -76,7 +79,7 @@ const Game = () => {
 
     async function updateBoard() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/board_position?token=${authToken}`}`);
+            const response = await fetch(`${`http://localhost:3000/api/v1/board_position?id=${player.id}`}`);
             const json = await response.json();
             setBoard(json);
         } catch (error) {
@@ -85,7 +88,7 @@ const Game = () => {
     };
 
     async function getScore() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/get_score?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/get_score?id=${player.id}`}`);
         if (response.ok) {
             const responseScore = await response.json();
             setPlayerScore(responseScore.player_score)
@@ -101,7 +104,7 @@ const Game = () => {
     }
 
     async function win() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/win?token=${authToken}`}`)
+        const response = await fetch(`${`http://localhost:3000/api/v1/win?id=${player.id}`}`)
         const responseWin = await response.json();
         setEndAlert(responseWin.message)
         if (responseWin.message != "") {
@@ -143,7 +146,7 @@ const Game = () => {
 
     async function updatePosition(card_id, position) {
         setTurn(false)
-        const response = await fetch(`${`http://localhost:3000/api/v1/update_position?token=${authToken}&card_id=${card_id}&position=${position}`}`, {
+        const response = await fetch(`${`http://localhost:3000/api/v1/update_position?id=${player.id}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -158,7 +161,7 @@ const Game = () => {
         document.querySelector('#alertComputer').innerText = ""
 
 
-        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?token=${authToken}`}`, {
+        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?id=${player.id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -193,7 +196,7 @@ const Game = () => {
     }
 
     async function processUpdatedCards(card_id) {
-        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?token=${authToken}&card_id=${card_id}`}`, {
+        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?id=${player.id}&card_id=${card_id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -223,7 +226,7 @@ const Game = () => {
 
     async function processUpdatedCardsComputer(card_id) {
 
-        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?token=${authToken}&card_id=${card_id}`}`, {
+        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?id=${player.id}&card_id=${card_id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -236,7 +239,7 @@ const Game = () => {
     }
 
     async function nextGame(zone_message) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?token=${authToken}&zone_message=${zone_message}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?id=${player.id}&zone_message=${zone_message}`}`,
             {
                 method: "POST",
                 headers: {
@@ -261,21 +264,55 @@ const Game = () => {
 
     async function superPower() {
         if (turn == true && next == false) {
-
-            const response = await fetch(`${`http://localhost:3000/api/v1/super_power?token=${authToken}`}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            if (superPowerCard)
+            {
+                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard.id}`}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+            }
+            else {
+                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}`}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+            }
             setPlayerPowerPoints(0)
             setPlayerPower(false)
+            setSuperPowerCard(null)
             await getPlayer()
             await updateBoard();
         }
     }
+
+    const handleMouseEnter = () => {
+        if (superPowerCard == null) {
+            setIsHovered(true);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+    const changeSuperPowerCards = (cardSide) => {
+        setSelectedCard(null);
+        setSuperPowerCard(cardSide);
+        setIsHovered(false);
+    };
+
+    const cancelSuperPowerCards = () => {
+        setSuperPowerCard(null);
+        setIsHovered(false);
+    };
 
     async function getRewardMessage(message) {
         setRewardMessage(message)
@@ -290,7 +327,7 @@ const Game = () => {
     }
 
     async function getReward(monster) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/reward?token=${authToken}&id=${monster.id}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/reward?id=${player.id}&monster_id=${monster.id}`}`,
             {
                 method: "POST",
                 headers: {
@@ -314,7 +351,7 @@ const Game = () => {
     }
 
     async function quitGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?token=${authToken}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?id=${player.id}`}`,
             {
                 method: "POST",
                 headers: {
@@ -332,13 +369,12 @@ const Game = () => {
             try {
                 const json = await getPlayer();
                 setPlayer(json);
-                console.log(player.zones[0].slice(0, 5) == "bossB")
             } catch (error) {
                 console.error("Failed to fetch the player: ", error);
             }
         };
         fetchCurrentPlayer();
-    }, [ authToken, reward]);
+    }, [authToken, reward]);
 
     useEffect(() => {
         const fetchCurrentGame = async () => {
@@ -354,13 +390,13 @@ const Game = () => {
         if (player) {
             fetchCurrentGame();
         }
-    }, [ authToken, player, endgame]);
+    }, [authToken, player, endgame]);
 
     useEffect(() => {
         if (player) {
             getScore()
         }
-    }, [ endgame]);
+    }, [endgame]);
 
     useEffect(() => {
         if (game) {
@@ -390,20 +426,20 @@ const Game = () => {
         if (player) {
             fetchPlayerDeck();
         }
-    }, [ authToken, player, playerPower]);
+    }, [authToken, player, playerPower]);
 
 
     useEffect(() => {
         if (player) {
             fetchComputerDeck();
         }
-    }, [ authToken, player, playerPower]);
+    }, [authToken, player, playerPower]);
 
     useEffect(() => {
         if (player) {
             updateBoard();
         }
-    }, [ authToken, player]);
+    }, [authToken, player]);
 
     useEffect(() => {
         if (player) {
@@ -416,7 +452,13 @@ const Game = () => {
             return
         }
         if (turn) {
-            setSelectedCard(card);
+            if (superPowerCard == null) {
+                setSelectedCard(card);
+            }
+            else {
+                setSelectedCard(null);
+                changeSuperPowerCards(card)
+            }
         }
     };
 
@@ -467,9 +509,10 @@ const Game = () => {
     const leftCardStyle = {
         ...cardStyle,
         marginRight: "25px",
-        backgroundColor: '#87CEEB',
+        backgroundColor: typeof superPowerCard === 'string' && superPowerCard.includes("left") ? 'purple' : '#87CEEB',
 
     };
+
     const rightCardStyle = {
         ...cardStyle,
         marginLeft: "15px",
@@ -477,6 +520,7 @@ const Game = () => {
         display: 'block'
 
     };
+
     const playerCardStyle = (card) => ({
         backgroundColor: card.computer ? '#FFC0CB' : '#87CEEB',
         width: '220px',
@@ -500,6 +544,12 @@ const Game = () => {
         fontSize: '24px',
         cursor: 'pointer',
     }
+
+    const powerButtonStyle = {
+        position: 'relative',
+        transition: "background-color 0.3s ease",
+        textDecoration: "none",
+    };
 
     if (!game) return <h2>Loading...</h2>;
     if (!player) return <h2>Loading...</h2>;
@@ -721,12 +771,22 @@ const Game = () => {
                                             <div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
 
-                                                    <p> {player.ability} {playerPower ? (<> <button onClick={() => superPower()}> 🔥</button> <span className='' id='alertPlayer' width="100%"></span> </>)
+                                                    <div> {player.ability} {playerPower ? (
+                                                        <>
+                                                            <button style={powerButtonStyle} onMouseEnter={() => handleMouseEnter()} onMouseLeave={() => handleMouseLeave()} >
+                                                                🔥<SuperPowerModal power={player.ability} isHovered={isHovered} superPower={superPower} superPowerCard={superPowerCard} changeSuperPowerCards={changeSuperPowerCards} cancelSuperPowerCards={cancelSuperPowerCards}/></button>
+                                                            <span className='' id='alertPlayer' width="100%"></span>
+                                                        </>
+                                                    )
                                                         : (<span className='' id='alertPlayer' width="100%">
-                                                        </span>)}</p>
-                                                    {playerComputerPower ? (<p><span className='' id='alertComputer' width="100%">
-                                                    </span>🔥 </p>) : (<p> <span className='' id='alertComputer' width="100%">
-                                                    </span></p>)}
+                                                        </span>)}
+                                                    </div>
+                                                    {playerComputerPower ?
+                                                        (<p><span className='' id='alertComputer' width="100%">
+                                                        </span>🔥 </p>)
+                                                        :
+                                                        (<p> <span className='' id='alertComputer' width="100%">
+                                                        </span></p>)}
                                                 </div>
 
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -890,7 +950,7 @@ const Game = () => {
                                                             key={card.id}
                                                             style={rightCardStyle}
                                                         >
-                                                            <p style={{  }}>
+                                                            <p style={{}}>
                                                                 {!card.hide && card.name}
                                                             </p>
                                                             <Card card={card} />

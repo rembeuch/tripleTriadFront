@@ -36,18 +36,18 @@ const elite = () => {
 
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
         return response.json();
     }
 
     async function getElite() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/elites/${id}?token=${authToken}`}`);
+        const response = await fetch(`${`http://localhost:3000/api/v1/elites/${id}?player_id=${player.id}`}`);
         return response.json();
     }
 
     async function playerAbility(power) {
 
-        const response = await fetch(`${`http://localhost:3000/api/v1/ability?token=${authToken}&power=${power}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/ability?player_id=${player.id}&power=${power}`}`,
             {
                 method: "POST",
                 headers: {
@@ -71,7 +71,7 @@ const elite = () => {
     }
 
     async function increment(stat) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/increment_elite?token=${authToken}&stat=${stat}&id=${elite.id}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/increment_elite?player_id=${player.id}&stat=${stat}&id=${elite.id}`}`,
             {
                 method: "POST",
                 headers: {
@@ -105,7 +105,7 @@ const elite = () => {
     }
 
     async function checkNftElite(id) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/nft_elite?token=${authToken}&id=${id}`}`,
+        const response = await fetch(`${`http://localhost:3000/api/v1/nft_elite?player_id=${player.id}&id=${id}`}`,
             {
                 method: "POST",
                 headers: {

@@ -29,7 +29,7 @@ export default function Home() {
   const { address, isConnected } = useAccount()
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find?token=${authToken}`}`);
+    const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
     return response.json();
   }
 
