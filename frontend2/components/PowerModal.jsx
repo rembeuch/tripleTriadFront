@@ -31,6 +31,15 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
     case "fight4":
       powerText = "Increase 4 random attributes of a random card in your hand by 1 for this round."
       break;
+    case "fight5":
+      powerText = "Increase 4 attributes of a selected card in your hand by 1 for this round."
+      break;
+    case "fight6":
+      powerText = "Increase 4 attributes of a selected card in your hand by 2 for this round."
+      break;
+    case "fight7":
+      powerText = "Increase 4 attributes of a selected card in your hand by 2 permanently."
+      break;
     case "diplomacy1":
       powerText = "Reduce 1 random attribute of a random card in your opponent's hand by 1 for this round."
       break;
@@ -42,6 +51,15 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
       break;
     case "diplomacy4":
       powerText = "Reduce 4 random attributes of a random card in your opponent's hand by 1 for this round."
+      break;
+    case "diplomacy5":
+      powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 1 for this round."
+      break;
+    case "diplomacy6":
+      powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 2 for this round."
+      break;
+    case "diplomacy7":
+      powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 2 permanently."
       break;
     case "espionage1":
       powerText = "Reveal 1 random card in your opponent's hand permanently."
@@ -55,6 +73,12 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
     case "espionage4":
       powerText = "Reveal 2 random cards in your opponent's hand permanently and reduce his power by 2 points."
       break;
+    case "espionage5":
+      powerText = "Reveal 2 random cards in your opponent's hand permanently and reduce his power by 2 points. (Reveal permanently the opponent's ability)"
+      break;
+    case "espionage6":
+      powerText = "Reveal 3 random cards in your opponent's hand permanently and reduce his power by 3 points. (Reveal permanently the opponent's ability)"
+      break;
     case "leadership1":
       powerText = "1 random card on the board swap 1 of its attributes with a random attribute from one of your opponent's cards for this round."
       break;
@@ -66,6 +90,12 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
       break;
     case "leadership4":
       powerText = "1 random card on the board swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
+      break;
+    case "leadership5":
+      powerText = "Select 1 opponent's card on the board and swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
+      break;
+    case "leadership6":
+      powerText = "Select 1 card on the board and swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
       break;
   }
 

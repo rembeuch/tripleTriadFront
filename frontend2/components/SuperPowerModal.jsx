@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeSuperPowerCards, cancelSuperPowerCards}) => {
+const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeSuperPowerCards, cancelSuperPowerCards }) => {
     const modalStyle = {
         display: 'none',
     };
@@ -44,6 +44,16 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             buttonText = "Select Card"
             cardSide = "left"
             break;
+        case "fight6":
+            powerText = "Increase 4 attributes of a selected card in your hand by 2 for this round."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
+        case "fight7":
+            powerText = "Increase 4 attributes of a selected card in your hand by 2 permanently."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
         case "diplomacy1":
             powerText = "Reduce 1 random attribute of a random card in your opponent's hand by 1 for this round."
             buttonText = "Use Power"
@@ -59,6 +69,21 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
         case "diplomacy4":
             powerText = "Reduce 4 attributes of a random card in your opponent's hand by 1 for this round."
             buttonText = "Use Power"
+            break;
+        case "diplomacy5":
+            powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 1 for this round."
+            buttonText = "Select Card"
+            cardSide = "board right"
+            break;
+        case "diplomacy6":
+            powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 2 for this round."
+            buttonText = "Select Card"
+            cardSide = "board right"
+            break;
+        case "diplomacy7":
+            powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 2 permanently."
+            buttonText = "Select Card"
+            cardSide = "board right"
             break;
         case "espionage1":
             powerText = "Reveal 1 random card in your opponent's hand permanently."
@@ -76,6 +101,14 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             powerText = "Reveal 2 random cards in your opponent's hand permanently and reduce his power by 2 points."
             buttonText = "Use Power"
             break;
+        case "espionage5":
+            powerText = "Reveal 2 random cards in your opponent's hand permanently and reduce his power by 2 points."
+            buttonText = "Use Power"
+            break;
+        case "espionage6":
+            powerText = "Reveal 3 random cards in your opponent's hand permanently and reduce his power by 3 points."
+            buttonText = "Use Power"
+            break;
         case "leadership1":
             powerText = "1 random card on the board swap 1 of its attributes with a random attribute from one of your opponent's cards for this round."
             buttonText = "Use Power"
@@ -91,6 +124,16 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
         case "leadership4":
             powerText = "1 random card on the board swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
             buttonText = "Use Power"
+            break;
+        case "leadership5":
+            powerText = "Select 1 opponent's card on the board and swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
+            buttonText = "Select Card"
+            cardSide = "board"
+            break;
+        case "leadership6":
+            powerText = "Select 1 card on the board and swap 4 of its attributes with a random attribute from one of your opponent's cards for this round."
+            buttonText = "Select Card"
+            cardSide = "board"
             break;
     }
 
@@ -127,7 +170,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             {superPowerCard != null &&
                 <>
                     <div style={hoverModalStyle}>
-                    <button onClick={cancelSuperPowerCards} > Cancel X </button>
+                        <button onClick={cancelSuperPowerCards} > Cancel X </button>
                         {typeof superPowerCard === 'string' ?
                             (<button onClick={changeSuperPowerCards(cardSide)} style={{
                                 color: "#F9DC5C",
@@ -148,7 +191,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
                                     transition: "background-color 0.3s ease",
                                     borderRadius: 5,
                                     textDecoration: "none"
-                                }} > Use Power on {superPowerCard.name} </button>
+                                }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name} </button>
                             )
                         }
                     </div>

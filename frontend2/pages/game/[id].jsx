@@ -264,8 +264,7 @@ const Game = () => {
 
     async function superPower() {
         if (turn == true && next == false) {
-            if (superPowerCard)
-            {
+            if (superPowerCard) {
                 const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard.id}`}`,
                     {
                         method: "POST",
@@ -455,10 +454,15 @@ const Game = () => {
             if (superPowerCard == null) {
                 setSelectedCard(card);
             }
-            else {
+        }
+    };
+
+    const handleSuperPowerCard = (card) => {
+        if (turn && card) {    
+            if (player.ability.startsWith("leadership5") && card.computer == false) 
+            {return}
                 setSelectedCard(null);
                 changeSuperPowerCards(card)
-            }
         }
     };
 
@@ -516,13 +520,22 @@ const Game = () => {
     const rightCardStyle = {
         ...cardStyle,
         marginLeft: "15px",
-        backgroundColor: '#FFC0CB',
-        display: 'block'
-
+        display: 'block',
+        backgroundColor: typeof superPowerCard === 'string' && superPowerCard.includes("right") ? 'purple' : '#FFC0CB',
     };
 
+    const getBackGroundPlayerCard = (card) => {
+        if (typeof superPowerCard === 'string' && superPowerCard.includes("board")) {
+            if (player.ability == "leadership5") {
+                return card.computer ? 'purple' : '#87CEEB';
+            }
+            return 'purple';
+        }
+        return card.computer ? '#FFC0CB' : '#87CEEB';
+    }
+
     const playerCardStyle = (card) => ({
-        backgroundColor: card.computer ? '#FFC0CB' : '#87CEEB',
+        backgroundColor: getBackGroundPlayerCard(card),
         width: '220px',
         height: '220px',
         border: '1px solid #aaa',
@@ -760,7 +773,7 @@ const Game = () => {
                                                         <div
                                                             key={card.id}
                                                             style={selectedCard === card ? selectedCardStyle : leftCardStyle}
-                                                            onClick={() => handleCardClick(card)}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("left") ? () => handleSuperPowerCard(card) : () => handleCardClick(card)}
                                                         >
                                                             <p> {card.name} </p>
                                                             <Card card={card} />
@@ -774,7 +787,7 @@ const Game = () => {
                                                     <div> {player.ability} {playerPower ? (
                                                         <>
                                                             <button style={powerButtonStyle} onMouseEnter={() => handleMouseEnter()} onMouseLeave={() => handleMouseLeave()} >
-                                                                🔥<SuperPowerModal power={player.ability} isHovered={isHovered} superPower={superPower} superPowerCard={superPowerCard} changeSuperPowerCards={changeSuperPowerCards} cancelSuperPowerCards={cancelSuperPowerCards}/></button>
+                                                                🔥<SuperPowerModal power={player.ability} isHovered={isHovered} superPower={superPower} superPowerCard={superPowerCard} changeSuperPowerCards={changeSuperPowerCards} cancelSuperPowerCards={cancelSuperPowerCards} /></button>
                                                             <span className='' id='alertPlayer' width="100%"></span>
                                                         </>
                                                     )
@@ -783,10 +796,10 @@ const Game = () => {
                                                     </div>
                                                     {playerComputerPower ?
                                                         (<p><span className='' id='alertComputer' width="100%">
-                                                        </span>🔥 </p>)
+                                                        </span>🔥 {player.ability.startsWith("espionage") && parseInt(player.ability[9] + player.ability[10]) >= 5 && player.computer_ability}</p>)
                                                         :
                                                         (<p> <span className='' id='alertComputer' width="100%">
-                                                        </span></p>)}
+                                                        </span>{player.ability.startsWith("espionage") && parseInt(player.ability[9] + player.ability[10]) >= 5 && player.computer_ability}</p>)}
                                                 </div>
 
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -912,7 +925,7 @@ const Game = () => {
                                                     {board.slice(0, 3).map((card, index) => (
                                                         <div
                                                             key={index}
-                                                            onClick={() => handleTileClick(index)}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("board") ? () => handleSuperPowerCard(card) : () => handleTileClick(index)}
                                                             style={card ? playerCardStyle(card) : tyleCardStyle}
                                                         >
                                                             {card !== false ? <Card card={card} played={true} /> : ""}
@@ -923,7 +936,7 @@ const Game = () => {
                                                     {board.slice(3, 6).map((card, index) => (
                                                         <div
                                                             key={index + 3}
-                                                            onClick={() => handleTileClick(index + 3)}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("board") ? () => handleSuperPowerCard(card) : () => handleTileClick(index + 3)}
                                                             style={card ? playerCardStyle(card) : tyleCardStyle}
                                                         >
                                                             {card !== false ? <Card card={card} played={true} /> : ''}
@@ -934,7 +947,7 @@ const Game = () => {
                                                     {board.slice(6, 9).map((card, index) => (
                                                         <div
                                                             key={index + 6}
-                                                            onClick={() => handleTileClick(index + 6)}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("board") ? () => handleSuperPowerCard(card) : () => handleTileClick(index + 6)}
                                                             style={card ? playerCardStyle(card) : tyleCardStyle}
                                                         >
                                                             {card !== false ? <Card card={card} played={true} /> : ''}
@@ -949,6 +962,7 @@ const Game = () => {
                                                         <div
                                                             key={card.id}
                                                             style={rightCardStyle}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("right") ? () => handleSuperPowerCard(card) : () => handleCardClick(card)}
                                                         >
                                                             <p style={{}}>
                                                                 {!card.hide && card.name}
