@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeSuperPowerCards, cancelSuperPowerCards }) => {
+const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPowerCardInfo, changeSuperPowerCards, cancelSuperPowerCards, pushSuperPowerCards }) => {
     const modalStyle = {
         display: 'none',
     };
@@ -54,6 +54,21 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             buttonText = "Select Card"
             cardSide = "left"
             break;
+        case "fight8":
+            powerText = "Increase 4 attributes of a selected card in your hand by 3 permanently."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
+        case "fight9":
+            powerText = "Increase 4 attributes of a selected card in your hand by 4 permanently."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
+        case "fight10":
+            powerText = "Increase 4 attributes of 2 selected cards in your hand by 4 permanently or increase 4 attributes of 1 card in your hand by 5 permanently."
+            buttonText = "Select Cards"
+            cardSide = "left"
+            break;
         case "diplomacy1":
             powerText = "Reduce 1 random attribute of a random card in your opponent's hand by 1 for this round."
             buttonText = "Use Power"
@@ -85,6 +100,16 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             buttonText = "Select Card"
             cardSide = "board right"
             break;
+        case "diplomacy8":
+            powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 3 permanently."
+            buttonText = "Select Card"
+            cardSide = "board right"
+            break;
+        case "diplomacy9":
+            powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 4 permanently."
+            buttonText = "Select Card"
+            cardSide = "board right"
+            break;
         case "espionage1":
             powerText = "Reveal 1 random card in your opponent's hand permanently."
             buttonText = "Use Power"
@@ -108,6 +133,21 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
         case "espionage6":
             powerText = "Reveal 3 random cards in your opponent's hand permanently and reduce his power by 3 points."
             buttonText = "Use Power"
+            break;
+        case "espionage7":
+            powerText = "Reveal 3 random cards in your opponent's hand permanently and reduce his power by 3 points. You can change a card in your hand with one random card in your opponent's hand for this round."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
+        case "espionage8":
+            powerText = "Reveal 4 random cards in your opponent's hand permanently and reduce his power by 4 points. You can change a card in your hand with one random card in your opponent's hand for this round."
+            buttonText = "Select Card"
+            cardSide = "left"
+            break;
+        case "espionage9":
+            powerText = "Reveal 5 cards in your opponent's hand permanently and reduce his power to 0. You can change a card in your hand with one random card in your opponent's hand for this round."
+            buttonText = "Select Card"
+            cardSide = "left"
             break;
         case "leadership1":
             powerText = "1 random card on the board swap 1 of its attributes with a random attribute from one of your opponent's cards for this round."
@@ -135,6 +175,21 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
             buttonText = "Select Card"
             cardSide = "board"
             break;
+        case "leadership7":
+            powerText = "Select 1 card in your hand or on the board and switch randomly the attributes verticaly or horizontaly for this round."
+            buttonText = "Select Card"
+            cardSide = "left board"
+            break;
+        case "leadership8":
+            powerText = "Select 1 card in your hand or on the board and switch the attributes verticaly and horizontaly for this round."
+            buttonText = "Select Card"
+            cardSide = "left board"
+            break;
+        case "leadership9":
+            powerText = "Select 1 card in your hand or on the board and swap the attributes with 1, 2, or 3 turns on the right for this round."
+            buttonText = "Select Card"
+            cardSide = "left board"
+            break;
     }
 
     return (
@@ -144,15 +199,29 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
                     <div style={isHovered ? hoverModalStyle : modalStyle}>
                         {powerText}
                         {buttonText != "Use Power" &&
-                            <button onClick={() => changeSuperPowerCards(cardSide)} style={{
-                                color: "#F9DC5C",
-                                backgroundColor: "blue",
-                                padding: "10px 50px",
-                                margin: 10,
-                                transition: "background-color 0.3s ease",
-                                borderRadius: 5,
-                                textDecoration: "none"
-                            }} > {buttonText} </button>}
+                            <>
+                                <button onClick={() => changeSuperPowerCards(cardSide)} style={{
+                                    color: "#F9DC5C",
+                                    backgroundColor: "blue",
+                                    padding: "10px 50px",
+                                    margin: 10,
+                                    transition: "background-color 0.3s ease",
+                                    borderRadius: 5,
+                                    textDecoration: "none"
+                                }} > {buttonText} </button>
+                                {power.startsWith("espionage") && parseInt(power[9] + power[10]) >= 7 &&
+                                    <button onClick={superPower} style={{
+                                        color: "#F9DC5C",
+                                        backgroundColor: "blue",
+                                        padding: "10px 50px",
+                                        margin: 10,
+                                        transition: "background-color 0.3s ease",
+                                        borderRadius: 5,
+                                        textDecoration: "none"
+                                    }} > Skip and User Power </button>
+                                }
+                            </>
+                        }
 
                         {buttonText == "Use Power" && superPowerCard == null &&
                             <button onClick={superPower} style={{
@@ -171,6 +240,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
                 <>
                     <div style={hoverModalStyle}>
                         <button onClick={cancelSuperPowerCards} > Cancel X </button>
+
                         {typeof superPowerCard === 'string' ?
                             (<button onClick={changeSuperPowerCards(cardSide)} style={{
                                 color: "#F9DC5C",
@@ -180,18 +250,55 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, changeS
                                 transition: "background-color 0.3s ease",
                                 borderRadius: 5,
                                 textDecoration: "none"
-                            }} > Select Card </button>)
+                            }} > {buttonText} {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]} </button>
+
+                            )
                             :
                             (
-                                <button onClick={superPower} style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "green",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    textDecoration: "none"
-                                }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name} </button>
+                                <>
+                                    <button onClick={superPower} style={{
+                                        color: "#F9DC5C",
+                                        backgroundColor: "green",
+                                        padding: "10px 50px",
+                                        margin: 10,
+                                        transition: "background-color 0.3s ease",
+                                        borderRadius: 5,
+                                        textDecoration: "none"
+                                    }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name} {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]} </button>
+                                    
+                                    {power.startsWith("leadership") && parseInt(power[10] + power[11]) >= 9 && superPowerCardInfo.length == 0 &&
+                                        <div style={{ display: 'flex' }}>
+                                            Select turn (right):
+                                            <button onClick={() => pushSuperPowerCards("turn1")} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "blue",
+                                                padding: "10px 50px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > 1 </button>
+                                            <button onClick={() => pushSuperPowerCards("turn2")} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "blue",
+                                                padding: "10px 50px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > 2 </button>
+                                            <button onClick={() => pushSuperPowerCards("turn3")} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "blue",
+                                                padding: "10px 50px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > 3 </button>
+                                        </div>
+                                    }
+                                </>
                             )
                         }
                     </div>

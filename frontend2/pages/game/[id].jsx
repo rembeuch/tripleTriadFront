@@ -42,6 +42,7 @@ const Game = () => {
     const [bZoneMessage, setBZoneMessage] = useState(null);
     const [isHovered, setIsHovered] = useState(false);
     const [superPowerCard, setSuperPowerCard] = useState(null);
+    const [superPowerCardInfo, setSuperPowerCardInfo] = useState([]);
 
 
 
@@ -265,7 +266,9 @@ const Game = () => {
     async function superPower() {
         if (turn == true && next == false) {
             if (superPowerCard) {
-                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard.id}`}`,
+                const cardInfoString = encodeURIComponent(JSON.stringify(superPowerCardInfo));
+
+                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard.id}&card_info=${cardInfoString}`}`,
                     {
                         method: "POST",
                         headers: {
@@ -287,6 +290,7 @@ const Game = () => {
             setPlayerPowerPoints(0)
             setPlayerPower(false)
             setSuperPowerCard(null)
+            setSuperPowerCardInfo([])
             await getPlayer()
             await updateBoard();
         }
@@ -303,15 +307,66 @@ const Game = () => {
     };
 
     const changeSuperPowerCards = (cardSide) => {
-        setSelectedCard(null);
-        setSuperPowerCard(cardSide);
-        setIsHovered(false);
+        if (player.ability[player.ability.length - 1] == "0" && typeof cardSide !== 'string') {
+            if (superPowerCardInfo.length == 0) {
+                setSuperPowerCardInfo([...superPowerCardInfo, cardSide.name]);
+            }
+            else {
+                setSelectedCard(null);
+                setSuperPowerCard(cardSide);
+                setIsHovered(false);
+            }
+        }
+        else {
+            setSelectedCard(null);
+            setSuperPowerCard(cardSide);
+            setIsHovered(false);
+        }
+    };
+
+    const pushSuperPowerCards = (info) => {
+        setSuperPowerCardInfo([...superPowerCardInfo, info]);
     };
 
     const cancelSuperPowerCards = () => {
         setSuperPowerCard(null);
+        setSuperPowerCardInfo([]);
         setIsHovered(false);
     };
+
+    const handleSuperPowerCard = (card) => {
+        if (turn && card) {
+            if (player.ability.startsWith("leadership5") && card.computer == false) { return }
+            setSelectedCard(null);
+            changeSuperPowerCards(card)
+        }
+    };
+
+    const handleCardClick = (card) => {
+        if (game.boss && bossLife <= 0) {
+            return
+        }
+        if (turn) {
+            if (superPowerCard == null) {
+                setSelectedCard(card);
+            }
+        }
+    };
+
+    const handleTileClick = (index) => {
+        if (turn) {
+            if (selectedCard !== null && board[index] === false) {
+                const updatedBoard = [...board];
+                updatedBoard[index] = selectedCard;
+                setBoard(updatedBoard);
+                setSelectedCard(null);
+                updatePosition(selectedCard.id, index)
+                const updatedLeftCards = leftCards.filter((card) => card.id !== selectedCard.id)
+                setLeftCards(updatedLeftCards);
+            }
+        }
+    };
+
 
     async function getRewardMessage(message) {
         setRewardMessage(message)
@@ -446,39 +501,6 @@ const Game = () => {
         }
     }, [playerScore, computerScore, authToken, player, playerPower, playerComputerPower]);
 
-    const handleCardClick = (card) => {
-        if (game.boss && bossLife <= 0) {
-            return
-        }
-        if (turn) {
-            if (superPowerCard == null) {
-                setSelectedCard(card);
-            }
-        }
-    };
-
-    const handleSuperPowerCard = (card) => {
-        if (turn && card) {    
-            if (player.ability.startsWith("leadership5") && card.computer == false) 
-            {return}
-                setSelectedCard(null);
-                changeSuperPowerCards(card)
-        }
-    };
-
-    const handleTileClick = (index) => {
-        if (turn) {
-            if (selectedCard !== null && board[index] === false) {
-                const updatedBoard = [...board];
-                updatedBoard[index] = selectedCard;
-                setBoard(updatedBoard);
-                setSelectedCard(null);
-                updatePosition(selectedCard.id, index)
-                const updatedLeftCards = leftCards.filter((card) => card.id !== selectedCard.id)
-                setLeftCards(updatedLeftCards);
-            }
-        }
-    };
 
 
 
@@ -787,7 +809,7 @@ const Game = () => {
                                                     <div> {player.ability} {playerPower ? (
                                                         <>
                                                             <button style={powerButtonStyle} onMouseEnter={() => handleMouseEnter()} onMouseLeave={() => handleMouseLeave()} >
-                                                                🔥<SuperPowerModal power={player.ability} isHovered={isHovered} superPower={superPower} superPowerCard={superPowerCard} changeSuperPowerCards={changeSuperPowerCards} cancelSuperPowerCards={cancelSuperPowerCards} /></button>
+                                                                🔥<SuperPowerModal power={player.ability} isHovered={isHovered} superPower={superPower} superPowerCard={superPowerCard} superPowerCardInfo={superPowerCardInfo} changeSuperPowerCards={changeSuperPowerCards} cancelSuperPowerCards={cancelSuperPowerCards} pushSuperPowerCards={pushSuperPowerCards} /></button>
                                                             <span className='' id='alertPlayer' width="100%"></span>
                                                         </>
                                                     )
@@ -799,7 +821,8 @@ const Game = () => {
                                                         </span>🔥 {player.ability.startsWith("espionage") && parseInt(player.ability[9] + player.ability[10]) >= 5 && player.computer_ability}</p>)
                                                         :
                                                         (<p> <span className='' id='alertComputer' width="100%">
-                                                        </span>{player.ability.startsWith("espionage") && parseInt(player.ability[9] + player.ability[10]) >= 5 && player.computer_ability}</p>)}
+                                                        </span>{player.ability.startsWith("espionage") && parseInt(player.ability[9] + player.ability[10]) >= 5 && player.computer_ability}</p>)
+                                                    }
                                                 </div>
 
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
