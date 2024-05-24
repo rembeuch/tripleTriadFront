@@ -309,7 +309,12 @@ const Game = () => {
     const changeSuperPowerCards = (cardSide) => {
         if (player.ability[player.ability.length - 1] == "0" && typeof cardSide !== 'string') {
             if (superPowerCardInfo.length == 0) {
-                setSuperPowerCardInfo([...superPowerCardInfo, cardSide.name]);
+                if (cardSide.position == "9" && cardSide.computer) {
+                    setSuperPowerCardInfo([...superPowerCardInfo, `hide${cardSide.name}`]);
+                }
+                else {
+                    setSuperPowerCardInfo([...superPowerCardInfo, cardSide.name]);
+                }
             }
             else {
                 setSelectedCard(null);
@@ -380,8 +385,8 @@ const Game = () => {
         setBZoneMessage(message)
     }
 
-    async function getReward(monster) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/reward?id=${player.id}&monster_id=${monster.id}`}`,
+    async function getReward(index) {
+        const response = await fetch(`${`http://localhost:3000/api/v1/reward?id=${player.id}&monster_index=${index}`}`,
             {
                 method: "POST",
                 headers: {
@@ -389,9 +394,9 @@ const Game = () => {
                 },
             }
         );
-        setReward(monster)
         if (response.ok) {
             const responseData = await response.json();
+            setReward(responseData.monster)
             if (responseData.message != "") {
                 await getRewardMessage(responseData.message)
             }
@@ -630,22 +635,37 @@ const Game = () => {
                                                                     {!reward &&
                                                                         <div id='reward' className="left-cards" style={{ display: 'flex' }}>
                                                                             <h2>Get Reward</h2>
-                                                                            {game.boss ? (<div
-                                                                                onClick={() => getReward(game.monsters[0])}
+                                                                            {game.boss && <div
+                                                                                onClick={() => getReward(0)}
                                                                                 style={leftCardStyle}
                                                                             >
                                                                                 <Card reveal={true} />
-                                                                            </div>) : (<>
-                                                                                {game.monsters.map((monster) => (
-                                                                                    <div
-                                                                                        key={monster.id}
-                                                                                        onClick={() => getReward(monster)}
-                                                                                        style={leftCardStyle}
-                                                                                    >
-                                                                                        <Card reveal={true} />
-                                                                                    </div>
-                                                                                ))}
-                                                                            </>)}
+                                                                            </div>}
+                                                                            <>
+                                                                                {!game.boss &&
+                                                                                    <>
+                                                                                        {
+                                                                                            game.monsters ?
+                                                                                                (<div
+                                                                                                    onClick={() => getReward(0)}
+                                                                                                    style={leftCardStyle}
+                                                                                                >
+                                                                                                    <Card reveal={true} />
+                                                                                                </div>
+                                                                                                ) : ([0, 1, 2, 3, 4].map((index) => (
+                                                                                                    <div
+                                                                                                        key={index}
+                                                                                                        onClick={() => getReward(index)}
+                                                                                                        style={leftCardStyle}
+                                                                                                    >
+                                                                                                        <Card reveal={true} />
+                                                                                                    </div>
+                                                                                                )))
+                                                                                        }
+                                                                                    </>
+                                                                                }
+                                                                            </>
+
                                                                         </div>
                                                                     }
                                                                     {reward &&
@@ -990,7 +1010,7 @@ const Game = () => {
                                                             <p style={{}}>
                                                                 {!card.hide && card.name}
                                                             </p>
-                                                            <Card card={card} />
+                                                            <Card reveal={true} />
                                                         </div>
                                                     </>
                                                 ))}

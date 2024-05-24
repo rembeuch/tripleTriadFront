@@ -89,6 +89,14 @@ const Card = ({ card, played, reveal }) => {
                                 <p style={leftStyle}>{card.left}</p>
                             </>
                         }
+                        {card.hide && card.computer && !played &&
+                            <>
+                                <p style={upStyle}>?</p>
+                                <p style={rightStyle}>?</p>
+                                <p style={downStyle}>?</p>
+                                <p style={leftStyle}>?</p>
+                            </>
+                        }
                     </div>
                 </>
             )}

@@ -110,6 +110,11 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
             buttonText = "Select Card"
             cardSide = "board right"
             break;
+        case "diplomacy10":
+            powerText = "Reduce 4 attributes of 2 selected cards on the board or in your opponent's hand by 4 permanently or reduce 4 attributes of 1 card on the board or in your opponent's hand by 5 permanently"
+            buttonText = "Select Card"
+            cardSide = "board right"
+            break;
         case "espionage1":
             powerText = "Reveal 1 random card in your opponent's hand permanently."
             buttonText = "Use Power"
@@ -264,8 +269,11 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                         transition: "background-color 0.3s ease",
                                         borderRadius: 5,
                                         textDecoration: "none"
-                                    }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name} {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]} </button>
+                                    }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name}
                                     
+                                        {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]}
+                                    </button>
+
                                     {power.startsWith("leadership") && parseInt(power[10] + power[11]) >= 9 && superPowerCardInfo.length == 0 &&
                                         <div style={{ display: 'flex' }}>
                                             Select turn (right):

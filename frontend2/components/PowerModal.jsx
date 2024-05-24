@@ -47,7 +47,7 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
       powerText = "Increase 4 attributes of a selected card in your hand by 4 permanently."
       break;
     case "fight10":
-      powerText = "Increase 4 attributes of 2 selected cards in your hand by 4 permanently."
+      powerText = "Increase 4 attributes of 2 selected cards in your hand by 4 permanently or increase 4 attributes of 1 card in your hand by 5 permanently."
       break;
     case "diplomacy1":
       powerText = "Reduce 1 random attribute of a random card in your opponent's hand by 1 for this round."
@@ -75,6 +75,9 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
       break;
     case "diplomacy9":
       powerText = "Reduce 4 attributes of a selected card on the board or in your opponent's hand by 4 permanently."
+      break;
+      case "diplomacy10":
+      powerText = "Reduce 4 attributes of 2 selected cards on the board or in your opponent's hand by 4 permanently or reduce 4 attributes of 1 card on the board or in your opponent's hand by 5 permanently"
       break;
     case "espionage1":
       powerText = "Reveal 1 random card in your opponent's hand permanently."

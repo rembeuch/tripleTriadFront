@@ -235,7 +235,7 @@ const Zones = () => {
             <br />
             current zone: {player.zone_position}
             {player.zones.includes(player.zone_position) && monsters && zoneMonsters &&
-              <p>Monsters in this zone {monsters.length} / {zoneMonsters.length}</p>
+              <p>Monsters in this zone {monsters} / {zoneMonsters}</p>
             }
           </p>
 
