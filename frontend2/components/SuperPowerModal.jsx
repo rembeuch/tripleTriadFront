@@ -154,6 +154,11 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
             buttonText = "Select Card"
             cardSide = "left"
             break;
+        case "espionage10":
+            powerText = "Reveal 5 cards in your opponent's hand permanently and reduce his power to 0. You can change a card in your hand with a selected card in your opponent's hand for this round."
+            buttonText = "Select Cards"
+            cardSide = "left"
+            break;
         case "leadership1":
             powerText = "1 random card on the board swap 1 of its attributes with a random attribute from one of your opponent's cards for this round."
             buttonText = "Use Power"
@@ -247,7 +252,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                         <button onClick={cancelSuperPowerCards} > Cancel X </button>
 
                         {typeof superPowerCard === 'string' ?
-                            (<button onClick={changeSuperPowerCards(cardSide)} style={{
+                            (<button onClick={() => changeSuperPowerCards(cardSide)} style={{
                                 color: "#F9DC5C",
                                 backgroundColor: "blue",
                                 padding: "10px 50px",
@@ -255,7 +260,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                 transition: "background-color 0.3s ease",
                                 borderRadius: 5,
                                 textDecoration: "none"
-                            }} > {buttonText} {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]} </button>
+                            }} > {buttonText} </button>
 
                             )
                             :
@@ -269,9 +274,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                         transition: "background-color 0.3s ease",
                                         borderRadius: 5,
                                         textDecoration: "none"
-                                    }} > Use Power on {superPowerCard.position == "9" && superPowerCard.computer ? "hide#" : superPowerCard.name}
-                                    
-                                        {superPowerCardInfo.length > 1 ? `${superPowerCardInfo[0]} ${superPowerCardInfo[1]}` : superPowerCardInfo[0]}
+                                    }} > Use Power
                                     </button>
 
                                     {power.startsWith("leadership") && parseInt(power[10] + power[11]) >= 9 && superPowerCardInfo.length == 0 &&

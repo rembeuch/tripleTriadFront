@@ -268,7 +268,7 @@ const Game = () => {
             if (superPowerCard) {
                 const cardInfoString = encodeURIComponent(JSON.stringify(superPowerCardInfo));
 
-                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard.id}&card_info=${cardInfoString}`}`,
+                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard}&card_info=${cardInfoString}`}`,
                     {
                         method: "POST",
                         headers: {
@@ -309,23 +309,30 @@ const Game = () => {
     const changeSuperPowerCards = (cardSide) => {
         if (player.ability[player.ability.length - 1] == "0" && typeof cardSide !== 'string') {
             if (superPowerCardInfo.length == 0) {
-                if (cardSide.position == "9" && cardSide.computer) {
-                    setSuperPowerCardInfo([...superPowerCardInfo, `hide${cardSide.name}`]);
+                setSuperPowerCardInfo([...superPowerCardInfo, cardSide.id]);
+                if (player.ability == "espionage10") {
+                    if (!cardSide.computer) {
+                        setSuperPowerCard('right');
+                    }
                 }
-                else {
-                    setSuperPowerCardInfo([...superPowerCardInfo, cardSide.name]);
-                }
+            }
+            else {
+                setSelectedCard(null);
+                setSuperPowerCard(cardSide.id);
+                setIsHovered(false);
+            }
+        }
+        else {
+            if (typeof cardSide !== 'string') {
+                setSelectedCard(null);
+                setSuperPowerCard(cardSide.id);
+                setIsHovered(false);
             }
             else {
                 setSelectedCard(null);
                 setSuperPowerCard(cardSide);
                 setIsHovered(false);
             }
-        }
-        else {
-            setSelectedCard(null);
-            setSuperPowerCard(cardSide);
-            setIsHovered(false);
         }
     };
 
@@ -537,26 +544,67 @@ const Game = () => {
 
     };
 
-    const leftCardStyle = {
+    let leftCardStyle = (card) => ({
         ...cardStyle,
         marginRight: "25px",
-        backgroundColor: typeof superPowerCard === 'string' && superPowerCard.includes("left") ? 'purple' : '#87CEEB',
+        backgroundColor: getBackGroundLeftCard(card),
 
-    };
+    });
 
-    const rightCardStyle = {
+    let rightCardStyle = (card) => ({
         ...cardStyle,
         marginLeft: "15px",
         display: 'block',
-        backgroundColor: typeof superPowerCard === 'string' && superPowerCard.includes("right") ? 'purple' : '#FFC0CB',
-    };
+        backgroundColor: getBackGroundRightCard(card)
+    });
+
+    const getBackGroundLeftCard = (card) => {
+        if (player.ability[player.ability.length - 1] == "0" && card.id === superPowerCardInfo[0] && card.id === superPowerCard) {
+            return "#ff8800"
+        }
+        if (card && card.id === superPowerCardInfo[0]) {
+            return 'green'
+        }
+        if (card && typeof superPowerCard === 'string' && superPowerCard.includes("left")) {
+            return 'purple';
+        }
+        if (card && card.id === superPowerCard) {
+            return 'green'
+        }
+        return '#87CEEB'
+    }
+
+    const getBackGroundRightCard = (card) => {
+        if (player.ability[player.ability.length - 1] == "0" && card.id === superPowerCardInfo[0] && card.id === superPowerCard) {
+            return "#ff8800"
+        }
+        if (card.id == superPowerCardInfo[0]) {
+            return 'green'
+        }
+        if (typeof superPowerCard === 'string' && superPowerCard.includes("right")) {
+            return 'purple';
+        }
+        if (superPowerCard && card.id === superPowerCard || card.id === superPowerCardInfo[0]) {
+            return 'green'
+        }
+        return '#FFC0CB'
+    }
 
     const getBackGroundPlayerCard = (card) => {
+        if (player.ability[player.ability.length - 1] == "0" && card.id === superPowerCardInfo[0] && card.id === superPowerCard) {
+            return "#ff8800"
+        }
+        if (card.id === superPowerCardInfo[0]) {
+            return 'green'
+        }
         if (typeof superPowerCard === 'string' && superPowerCard.includes("board")) {
             if (player.ability == "leadership5") {
                 return card.computer ? 'purple' : '#87CEEB';
             }
             return 'purple';
+        }
+        if (superPowerCard && card.id === superPowerCard) {
+            return 'green'
         }
         return card.computer ? '#FFC0CB' : '#87CEEB';
     }
@@ -814,7 +862,7 @@ const Game = () => {
                                                     <>
                                                         <div
                                                             key={card.id}
-                                                            style={selectedCard === card ? selectedCardStyle : leftCardStyle}
+                                                            style={selectedCard === card ? selectedCardStyle : leftCardStyle(card)}
                                                             onClick={typeof superPowerCard === 'string' && superPowerCard.includes("left") ? () => handleSuperPowerCard(card) : () => handleCardClick(card)}
                                                         >
                                                             <p> {card.name} </p>
@@ -1004,7 +1052,7 @@ const Game = () => {
                                                     <>
                                                         <div
                                                             key={card.id}
-                                                            style={rightCardStyle}
+                                                            style={rightCardStyle(card)}
                                                             onClick={typeof superPowerCard === 'string' && superPowerCard.includes("right") ? () => handleSuperPowerCard(card) : () => handleCardClick(card)}
                                                         >
                                                             <p style={{}}>
