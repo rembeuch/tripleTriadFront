@@ -136,6 +136,9 @@ const PowerModal = ({ power, isHovered, isGrey, alert }) => {
     case "leadership9":
       powerText = "Select 1 card in your hand or on the board and swap the attributes with 1, 2, or 3 turns on the right for this round."
       break;
+    case "leadership10":
+      powerText = "Select 2 cards in your hand or on the board and swap the attributes with 1, 2, or 3 turns on the right for this round."
+      break;
   }
 
   return (

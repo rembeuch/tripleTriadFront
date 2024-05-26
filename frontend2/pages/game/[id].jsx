@@ -337,7 +337,17 @@ const Game = () => {
     };
 
     const pushSuperPowerCards = (info) => {
-        setSuperPowerCardInfo([...superPowerCardInfo, info]);
+        const isTurnInfo = typeof info === 'string' && info.includes('turn');
+    
+        let updatedSuperPowerCardInfo = superPowerCardInfo.filter(element => {
+            return !(typeof element === 'string' && element.includes('turn'));
+        });
+    
+        if (isTurnInfo || !superPowerCardInfo.includes(info)) {
+            updatedSuperPowerCardInfo = [...updatedSuperPowerCardInfo, info];
+        }
+    
+        setSuperPowerCardInfo(updatedSuperPowerCardInfo);
     };
 
     const cancelSuperPowerCards = () => {
@@ -558,6 +568,12 @@ const Game = () => {
         backgroundColor: getBackGroundRightCard(card)
     });
 
+    let rewardCardStyle = {
+        ...cardStyle,
+        marginRight: "25px",
+        backgroundColor: 'lightGreen',
+    }
+
     const getBackGroundLeftCard = (card) => {
         if (player.ability[player.ability.length - 1] == "0" && card.id === superPowerCardInfo[0] && card.id === superPowerCard) {
             return "#ff8800"
@@ -685,7 +701,7 @@ const Game = () => {
                                                                             <h2>Get Reward</h2>
                                                                             {game.boss && <div
                                                                                 onClick={() => getReward(0)}
-                                                                                style={leftCardStyle}
+                                                                                style={rewardCardStyle}
                                                                             >
                                                                                 <Card reveal={true} />
                                                                             </div>}
@@ -696,7 +712,7 @@ const Game = () => {
                                                                                             game.monsters ?
                                                                                                 (<div
                                                                                                     onClick={() => getReward(0)}
-                                                                                                    style={leftCardStyle}
+                                                                                                    style={rewardCardStyle}
                                                                                                 >
                                                                                                     <Card reveal={true} />
                                                                                                 </div>
@@ -704,7 +720,7 @@ const Game = () => {
                                                                                                     <div
                                                                                                         key={index}
                                                                                                         onClick={() => getReward(index)}
-                                                                                                        style={leftCardStyle}
+                                                                                                        style={rewardCardStyle}
                                                                                                     >
                                                                                                         <Card reveal={true} />
                                                                                                     </div>
@@ -1058,7 +1074,7 @@ const Game = () => {
                                                             <p style={{}}>
                                                                 {!card.hide && card.name}
                                                             </p>
-                                                            <Card reveal={true} />
+                                                            <Card reveal={card.hide? true : false} card={card.hide? null : card} />
                                                         </div>
                                                     </>
                                                 ))}

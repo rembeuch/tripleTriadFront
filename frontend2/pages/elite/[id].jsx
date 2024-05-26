@@ -192,7 +192,13 @@ const elite = () => {
         backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
     };
 
-    const buttonStyle = {
+    let playerPowerBG = (power) => {
+        if (player.ability == power) 
+        { return 'blue'} 
+        else { return 'green'}
+    }
+
+    const buttonStyle = (power) => ({
         position: 'relative',
         display: 'inline-block',
         color: "#F9DC5C",
@@ -202,8 +208,8 @@ const elite = () => {
         borderRadius: 5,
         display: 'block',
         textDecoration: "none",
-        backgroundColor: 'green'
-    };
+        backgroundColor: playerPowerBG(power), 
+    })
 
     const greyButtonStyle = {
         position: 'relative',
@@ -397,7 +403,7 @@ const elite = () => {
                             {powers.filter(power => power[0] === "f").map(power => (
                                 <>
                                     <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
                                             {power}
                                             {hoveredPower === power &&
                                                 <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
@@ -424,7 +430,7 @@ const elite = () => {
                             {powers.filter(power => power[0] === "d").map(power => (
                                 <>
                                     <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
                                             {power}
                                             {hoveredPower === power &&
                                                 <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
@@ -452,7 +458,7 @@ const elite = () => {
                             {powers.filter(power => power[0] === "e").map(power => (
                                 <>
                                     <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
                                             {power}
                                             {hoveredPower === power &&
                                                 <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
@@ -480,7 +486,7 @@ const elite = () => {
                             {powers.filter(power => power[0] === "l").map(power => (
                                 <>
                                     <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
                                             {power}
                                             {hoveredPower === power &&
                                                 <PowerModal power={power} isHovered={isHovered} alert={addAlert} />

@@ -200,6 +200,22 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
             buttonText = "Select Card"
             cardSide = "left board"
             break;
+        case "leadership10":
+            powerText = "Select 2 cards in your hand or on the board and swap the attributes with 1, 2, or 3 turns on the right for this round."
+            buttonText = "Select Cards"
+            cardSide = "left board"
+            break;
+    }
+
+    const checkBGTurn = (number) => {
+        if (superPowerCardInfo.some(element => {
+            return typeof element === 'string' && element.includes(`turn${number}`);
+        })) {
+            return 'green'
+        }
+        else {
+            return 'blue'
+        }
     }
 
     return (
@@ -277,12 +293,12 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                     }} > Use Power
                                     </button>
 
-                                    {power.startsWith("leadership") && parseInt(power[10] + power[11]) >= 9 && superPowerCardInfo.length == 0 &&
+                                    {power.startsWith("leadership") && parseInt(power[10] + power[11]) >= 9 &&
                                         <div style={{ display: 'flex' }}>
                                             Select turn (right):
                                             <button onClick={() => pushSuperPowerCards("turn1")} style={{
                                                 color: "#F9DC5C",
-                                                backgroundColor: "blue",
+                                                backgroundColor: checkBGTurn(1),
                                                 padding: "10px 50px",
                                                 margin: 10,
                                                 transition: "background-color 0.3s ease",
@@ -291,7 +307,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                             }} > 1 </button>
                                             <button onClick={() => pushSuperPowerCards("turn2")} style={{
                                                 color: "#F9DC5C",
-                                                backgroundColor: "blue",
+                                                backgroundColor: checkBGTurn(2),
                                                 padding: "10px 50px",
                                                 margin: 10,
                                                 transition: "background-color 0.3s ease",
@@ -300,7 +316,7 @@ const SuperPowerModal = ({ power, isHovered, superPower, superPowerCard, superPo
                                             }} > 2 </button>
                                             <button onClick={() => pushSuperPowerCards("turn3")} style={{
                                                 color: "#F9DC5C",
-                                                backgroundColor: "blue",
+                                                backgroundColor: checkBGTurn(3),
                                                 padding: "10px 50px",
                                                 margin: 10,
                                                 transition: "background-color 0.3s ease",
