@@ -53,6 +53,21 @@ function Player() {
     return response.json();
   }
 
+  async function rankCards(sort) {
+    const response = await fetch(`${`http://localhost:3000/api/v1/rank_cards?player_id=${player.id}&sort=${sort}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setCards(responseData)
+    }
+  }
+
   async function RecruitElite() {
 
     const response = await fetch(`${`http://localhost:3000/api/v1/elites?player_id=${player.id}`}`,
@@ -118,7 +133,7 @@ function Player() {
           setRemoveCardAlert("")
         }, 3000);
       }
-    } 
+    }
   }
 
   const wallet = async () => {
@@ -298,13 +313,13 @@ function Player() {
                   <Flex>
                     <Card card={card} />
                   </Flex>
-                  {removeCardAlert && selectedCardId == card.id && 
-                  <div>
-                    <Alert status='warning' width="50%">
-                      <AlertIcon />
-                      {removeCardAlert}
-                    </Alert>
-                  </div>
+                  {removeCardAlert && selectedCardId == card.id &&
+                    <div>
+                      <Alert status='warning' width="50%">
+                        <AlertIcon />
+                        {removeCardAlert}
+                      </Alert>
+                    </div>
                   }
                   <button onClick={() => removeCard(card.id)} style={{
                     color: "#F9DC5C",
@@ -320,12 +335,12 @@ function Player() {
               ))}
             </div>
             <hr></hr>
-            <p>Monsters: {player.monsters.length} </p>
+            <p>Monsters: {player.monsters.length} / sort by: <button onClick={() => rankCards("rank")}>rank</button> / <button onClick={() => rankCards("up")}>up</button> / <button onClick={() => rankCards("right")}>right</button> / <button onClick={() => rankCards("down")}>down</button> / <button onClick={() => rankCards("left")}>left</button>  / <button onClick={() => rankCards("copy")}>points</button> / <button onClick={() => rankCards("max")}>max</button> / <button onClick={() => rankCards("somme")}>no filter</button>  </p>
 
             <div style={gridContainerStyle}>
               {cards.map(card => (
                 <div key={card.id} style={cardStyle} className="card">
-                  <p style={{ background: "white", margin: '5px' }}> {card.name} points:{card.copy}</p>
+                  <p style={{ background: "white", margin: '5px' }}> {card.name} rank:{card.rank} 👾:{card.copy}</p>
                   <Flex>
                     <Card card={card} />
                   </Flex>
@@ -347,16 +362,18 @@ function Player() {
                       textDecoration: "none"
                     }} > Details </button>
                   </Link>
-                  <button onClick={() => addCard(card.id)} style={{
-                    color: "#F9DC5C",
-                    backgroundColor: "blue",
-                    padding: "10px 10px",
-                    marginTop: 10,
-                    transition: "background-color 0.3s ease",
-                    borderRadius: 5,
-                    textDecoration: "none"
-                  }} > Add
-                  </button>
+                  {!card.max &&
+                    <button onClick={() => addCard(card.id)} style={{
+                      color: "#F9DC5C",
+                      backgroundColor: "blue",
+                      padding: "10px 10px",
+                      marginTop: 10,
+                      transition: "background-color 0.3s ease",
+                      borderRadius: 5,
+                      textDecoration: "none"
+                    }} > Add
+                    </button>
+                  }
                 </div>
               ))}
             </div>

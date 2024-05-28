@@ -12,6 +12,7 @@ const Auth = () => {
     const [isSignupFormVisible, setSignupFormVisibility] = useState(true);
     const [emailLogin, setEmailLogin] = useState('');
     const [passwordLogin, setPasswordLogin] = useState('');
+    const [alert, setAlert] = useState('');
 
     const toggleForm = () => {
         setSignupFormVisibility(!isSignupFormVisible);
@@ -58,6 +59,10 @@ const Auth = () => {
             });
 
             if (!response.ok) {
+                setAlert('Registration failed')
+                setTimeout(() => {
+                    setAlert('')
+                }, 3000);
                 throw new Error('Registration failed');
             }
 
@@ -97,6 +102,7 @@ const Auth = () => {
 
                             <button type="submit" style={buttonStyle}>Sign Up</button>
                         </form>
+                        <p> {alert} </p>
                     </div>
                 )}
             </div>
@@ -109,6 +115,7 @@ const Auth = () => {
 
                 <button type="submit" style={buttonStyle}>Login</button>
             </form>
+            <p> {alert} </p>
         </>
     );
 };

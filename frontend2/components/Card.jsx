@@ -66,7 +66,7 @@ const Card = ({ card, played, reveal }) => {
                 <>
                     <div style={played ? tyleStyle : circleStyle}>
                         {played &&
-                            <>
+                            <>  
                                 <p style={upStyle}>{card.up}</p>
                                 <p style={rightStyle}>{card.right}</p>
                                 <p style={downStyle}>{card.down}</p>

@@ -72,6 +72,27 @@ const monster = () => {
         }
     }
 
+    async function awake() {
+        const response = await fetch(`${`http://localhost:3000/api/v1/awake_card?player_id=${player.id}&id=${monster.id}`}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (response.ok) {
+            const responseData = await response.json();
+            setMonster(responseData.monster)
+            if (responseData.message != "") {
+                setAddAlert(responseData.message);
+                setTimeout(() => {
+                    setAddAlert("")
+                }, 3000);
+            }
+        }
+    }
+
     useEffect(() => {
 
         const fetchCurrentPlayer = async () => {
@@ -138,14 +159,15 @@ const monster = () => {
                 <div style={gridContainerStyle}>
                     <h2> Your monster:</h2>
                     <div key={monster.id} style={monsterCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {monster.name}</p>
+                        <p style={{ background: "white", margin: '5px' }}> {monster.name} rank: {monster.rank}
+</p>
                         <Flex>
                             <Card card={monster} />
                         </Flex>
                     </div>
                     <div>
                         points: {monster.copy} / energy: {energy} {addAlert}
-                        {monster.up_points < (30 / monster.rank) ? (
+                        {!monster.max && monster.up_points < (30 / monster.rank) ? (
                             <p>boost up: {monster.up_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
@@ -159,7 +181,7 @@ const monster = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {monster.up_points * 100} energy )</span>
+                                        <span> (- {monster.up_points * 10 * monster.rank} energy )</span>
                                     </>
                                 }
                             </p>) : (
@@ -168,7 +190,7 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.right_points < (30 / monster.rank) ? (
+                        {!monster.max && monster.right_points < (30 / monster.rank) ? (
                             <p>boost right: {monster.right_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
@@ -182,7 +204,7 @@ const monster = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {monster.right_points * 100} energy )</span>
+                                        <span> (- {monster.right_points * 10 * monster.rank} energy )</span>
                                     </>
                                 }
                             </p>
@@ -192,7 +214,7 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.down_points < (30 / monster.rank) ? (
+                        {!monster.max && monster.down_points < (30 / monster.rank) ? (
                             <p>boost down: {monster.down_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
@@ -206,7 +228,7 @@ const monster = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {monster.down_points * 100} energy )</span>
+                                        <span> (- {monster.down_points * 10 * monster.rank} energy )</span>
                                     </>
                                 }
                             </p>
@@ -216,7 +238,7 @@ const monster = () => {
                             </p>
                         )
                         }
-                        {monster.left_points < (30 / monster.rank) ? (
+                        {!monster.max && monster.left_points < (30 / monster.rank) ? (
                             <p>boost left: {monster.left_points} / {30 / monster.rank}
                                 {monster.copy > 0 &&
                                     <>
@@ -230,7 +252,7 @@ const monster = () => {
                                             textDecoration: "none"
                                         }} > +
                                         </button>
-                                        <span> (- {monster.left_points * 100} energy )</span>
+                                        <span> (- {monster.left_points * 10 * monster.rank} energy )</span>
                                     </>
                                 }
                             </p>
@@ -242,7 +264,7 @@ const monster = () => {
                         }
                     </div>
                 </div>
-                {monster.copy > 0 && <button onClick={() => sell()} style={{
+                {!monster.max && monster.copy > 0 && <button onClick={() => sell()} style={{
                     color: "#F9DC5C",
                     backgroundColor: "blue",
                     padding: "10px 10px",
@@ -251,6 +273,18 @@ const monster = () => {
                     borderRadius: 5,
                     textDecoration: "none"
                 }} > sell 1 copy (+{monster.rank * 50} energy)
+                </button>
+                }
+                {!monster.max && (monster.up_points + monster.right_points + monster.down_points + monster.left_points ) == ((30 / monster.rank)* 4) &&
+                <button onClick={() => awake()} style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "purple",
+                    padding: "10px 10px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                }} > awake (-{(30 / monster.rank)* 4} points & -{4650 * monster.rank} energy)
                 </button>
                 }
             </Layout>

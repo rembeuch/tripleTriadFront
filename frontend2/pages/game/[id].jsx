@@ -675,9 +675,9 @@ const Game = () => {
                                             <p style={{ paddingLeft: '20px', paddingRight: '20px' }}>Boss Life ☠️ {bossLife}</p>
                                         )
                                         : (<>
-                                            <p style={{ paddingRight: '20px' }}>{player.name} rounds: {game.player_points}</p>
+                                            <p style={{ paddingRight: '20px' }}> {turn && "▶️"} {player.name} rounds: {game.player_points}</p>
                                             <p style={{ paddingLeft: '20px', paddingRight: '20px' }}>rounds to win: {game.rounds}</p>
-                                            <p style={{ paddingLeft: '20px' }}> rounds: {game.computer_points} The Machine </p>
+                                            <p style={{ paddingLeft: '20px' }}> rounds: {game.computer_points} The Machine {!turn && "◀️"} </p>
                                         </>
                                         )
                                     }
@@ -735,7 +735,7 @@ const Game = () => {
                                                                     {reward &&
                                                                         <>
                                                                             <div>{rewardMessage}</div>
-                                                                            <h2>Your Reward: Energy + {game.player_points * 10}</h2>
+                                                                            <h2>Your Reward: Energy + {game.player_points * 10} {player.bonus && "+20 bonus"} </h2>
                                                                             <div style={selectedCardStyle}>
                                                                                 {reward.name}:
                                                                                 <Card card={reward} />

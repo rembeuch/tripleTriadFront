@@ -217,7 +217,11 @@ const Zones = () => {
             </Alert>
           </div>
           }
-          <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}</h2>
+          <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}
+            {player.power_condition && player.monster_condition &&
+              <p>Bonus condition (+20 energy after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition} {player.ability == player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"} </p>
+            }
+          </h2>
           <p>current ability: {player.ability}
             {player.zone_position == "A1" && player.in_pvp == "false" && player.in_game == false &&
               <Link href="/player/[id]" as={`/player/${player.id}`}>
@@ -234,7 +238,7 @@ const Zones = () => {
             }
             <br />
             current zone: {player.zone_position}
-            {player.zones.includes(player.zone_position) && monsters && zoneMonsters &&
+            {player.zones.includes(player.zone_position) &&
               <p>Monsters in this zone {monsters} / {zoneMonsters}</p>
             }
           </p>
@@ -260,7 +264,7 @@ const Zones = () => {
               transition: "background-color 0.3s ease",
               borderRadius: 5,
               textDecoration: "none"
-            }} > Start Game {player.zones[0].slice(0, 5) == "bossA" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+            }} > Start Game {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
           )}
           {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
             <>
