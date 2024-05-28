@@ -151,6 +151,18 @@ const Header = ({ pvp }) => {
                         },
                     }}
                 >
+                    <Link href="/" passHref>
+                        Home
+                    </Link>
+                </Text>
+                <Text
+                    fontWeight="bold"
+                    sx={{
+                        ':hover': {
+                            textDecoration: 'underline',
+                        },
+                    }}
+                >
                     {player &&
                         <Link href="/player/[id]" as={`/player/${player.id}`}>
                             Deck
@@ -179,8 +191,8 @@ const Header = ({ pvp }) => {
                         },
                     }}
                 >
-                    <Link href="/" passHref>
-                        Home
+                    <Link href="/Rules" passHref>
+                        Rules
                     </Link>
                 </Text>
             </Flex>
