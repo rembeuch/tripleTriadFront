@@ -34,27 +34,27 @@ function Player() {
 
 
   async function getPlayer() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
     return response.json();
   }
 
   async function getElites() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?player_id=${player.id}`}`);
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/elites?player_id=${player.id}`}`);
     return response.json();
   }
 
   async function getDeck() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/deck?id=${player.id}`}`);
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/deck?id=${player.id}`}`);
     return response.json();
   }
 
   async function getCards() {
-    const response = await fetch(`${`http://localhost:3000/api/v1/cards?player_id=${player.id}`}`);
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cards?player_id=${player.id}`}`);
     return response.json();
   }
 
   async function rankCards(sort) {
-    const response = await fetch(`${`http://localhost:3000/api/v1/rank_cards?player_id=${player.id}&sort=${sort}`}`,
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/rank_cards?player_id=${player.id}&sort=${sort}`}`,
       {
         method: "POST",
         headers: {
@@ -70,7 +70,7 @@ function Player() {
 
   async function RecruitElite() {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/elites?player_id=${player.id}`}`,
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/elites?player_id=${player.id}`}`,
       {
         method: "POST",
         headers: {
@@ -87,7 +87,7 @@ function Player() {
 
   async function addCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/add_card?id=${player.id}&card_id=${id}`}`,
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/add_card?id=${player.id}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -113,7 +113,7 @@ function Player() {
 
   async function removeCard(id) {
 
-    const response = await fetch(`${`http://localhost:3000/api/v1/remove_card?id=${player.id}&card_id=${id}`}`,
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/remove_card?id=${player.id}&card_id=${id}`}`,
       {
         method: "POST",
         headers: {
@@ -138,7 +138,7 @@ function Player() {
 
   const wallet = async () => {
     try {
-      await fetch(`${`http://localhost:3000/api/v1/connect_wallet?token=${authToken}`}`);
+      await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/connect_wallet?token=${authToken}`}`);
     }
     catch (e) {
       console.log(e.reason)

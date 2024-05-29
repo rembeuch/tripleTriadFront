@@ -21,7 +21,7 @@ const Auth = () => {
     const signup = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/registrations?name=${name}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/registrations?name=${name}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const Auth = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/sessions?email=${emailLogin}&password=${passwordLogin}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/sessions?email=${emailLogin}&password=${passwordLogin}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

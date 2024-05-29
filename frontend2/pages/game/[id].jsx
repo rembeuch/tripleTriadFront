@@ -49,18 +49,18 @@ const Game = () => {
     const { address, } = useAccount()
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
         return response.json();
     }
 
     async function getGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_game?id=${player.id}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_game?id=${player.id}`}`);
         return response.json();
     }
 
     async function fetchPlayerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/deck_in_game?id=${player.id}`}`);
+            const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/deck_in_game?id=${player.id}`}`);
             const json = await response.json();
             setLeftCards(json);
         } catch (error) {
@@ -70,7 +70,7 @@ const Game = () => {
 
     async function fetchComputerDeck() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/computer_deck?id=${player.id}`}`);
+            const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/computer_deck?id=${player.id}`}`);
             const json = await response.json();
             setRightCards(json);
         } catch (error) {
@@ -80,7 +80,7 @@ const Game = () => {
 
     async function updateBoard() {
         try {
-            const response = await fetch(`${`http://localhost:3000/api/v1/board_position?id=${player.id}`}`);
+            const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/board_position?id=${player.id}`}`);
             const json = await response.json();
             setBoard(json);
         } catch (error) {
@@ -89,7 +89,7 @@ const Game = () => {
     };
 
     async function getScore() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/get_score?id=${player.id}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/get_score?id=${player.id}`}`);
         if (response.ok) {
             const responseScore = await response.json();
             setPlayerScore(responseScore.player_score)
@@ -105,7 +105,7 @@ const Game = () => {
     }
 
     async function win() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/win?id=${player.id}`}`)
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/win?id=${player.id}`}`)
         const responseWin = await response.json();
         setEndAlert(responseWin.message)
         if (responseWin.message != "") {
@@ -147,7 +147,7 @@ const Game = () => {
 
     async function updatePosition(card_id, position) {
         setTurn(false)
-        const response = await fetch(`${`http://localhost:3000/api/v1/update_position?id=${player.id}&card_id=${card_id}&position=${position}`}`, {
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/update_position?id=${player.id}&card_id=${card_id}&position=${position}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -162,7 +162,7 @@ const Game = () => {
         document.querySelector('#alertComputer').innerText = ""
 
 
-        const computerResponse = await fetch(`${`http://localhost:3000/api/v1/update_computer_position?id=${player.id}`}`, {
+        const computerResponse = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/update_computer_position?id=${player.id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -197,7 +197,7 @@ const Game = () => {
     }
 
     async function processUpdatedCards(card_id) {
-        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/player_combo?id=${player.id}&card_id=${card_id}`}`, {
+        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player_combo?id=${player.id}&card_id=${card_id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -227,7 +227,7 @@ const Game = () => {
 
     async function processUpdatedCardsComputer(card_id) {
 
-        const responseCombo = await fetch(`${`http://localhost:3000/api/v1/computer_combo?id=${player.id}&card_id=${card_id}`}`, {
+        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/computer_combo?id=${player.id}&card_id=${card_id}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -240,7 +240,7 @@ const Game = () => {
     }
 
     async function nextGame(zone_message) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/next_game?id=${player.id}&zone_message=${zone_message}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/next_game?id=${player.id}&zone_message=${zone_message}`}`,
             {
                 method: "POST",
                 headers: {
@@ -268,7 +268,7 @@ const Game = () => {
             if (superPowerCard) {
                 const cardInfoString = encodeURIComponent(JSON.stringify(superPowerCardInfo));
 
-                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}&card_id=${superPowerCard}&card_info=${cardInfoString}`}`,
+                const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/super_power?id=${player.id}&card_id=${superPowerCard}&card_info=${cardInfoString}`}`,
                     {
                         method: "POST",
                         headers: {
@@ -278,7 +278,7 @@ const Game = () => {
                 );
             }
             else {
-                const response = await fetch(`${`http://localhost:3000/api/v1/super_power?id=${player.id}`}`,
+                const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/super_power?id=${player.id}`}`,
                     {
                         method: "POST",
                         headers: {
@@ -403,7 +403,7 @@ const Game = () => {
     }
 
     async function getReward(index) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/reward?id=${player.id}&monster_index=${index}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/reward?id=${player.id}&monster_index=${index}`}`,
             {
                 method: "POST",
                 headers: {
@@ -427,7 +427,7 @@ const Game = () => {
     }
 
     async function quitGame() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/quit_game?id=${player.id}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/quit_game?id=${player.id}`}`,
             {
                 method: "POST",
                 headers: {

@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     const clearToken = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/logout?token=${authToken}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/logout?token=${authToken}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

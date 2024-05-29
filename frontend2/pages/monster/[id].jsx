@@ -26,17 +26,17 @@ const monster = () => {
 
 
     async function getPlayer() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
         return response.json();
     }
 
     async function getMonster() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/cards/${id}?player_id=${player.id}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cards/${id}?player_id=${player.id}`}`);
         return response.json();
     }
 
     async function increment(stat) {
-        const response = await fetch(`${`http://localhost:3000/api/v1/increment_card?player_id=${player.id}&stat=${stat}&id=${monster.id}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/increment_card?player_id=${player.id}&stat=${stat}&id=${monster.id}`}`,
             {
                 method: "POST",
                 headers: {
@@ -58,7 +58,7 @@ const monster = () => {
     }
 
     async function sell() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/sell_card?player_id=${player.id}&id=${monster.id}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/sell_card?player_id=${player.id}&id=${monster.id}`}`,
             {
                 method: "POST",
                 headers: {
@@ -73,7 +73,7 @@ const monster = () => {
     }
 
     async function awake() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/awake_card?player_id=${player.id}&id=${monster.id}`}`,
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/awake_card?player_id=${player.id}&id=${monster.id}`}`,
             {
                 method: "POST",
                 headers: {

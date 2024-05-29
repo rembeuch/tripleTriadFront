@@ -13,7 +13,7 @@ const NewPlayerForm = () => {
         e.preventDefault()
         const wallet_address = address
         const playerData = { name, wallet_address }
-            const response = await fetch("http://localhost:3000/api/v1/players",
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/players`,
                 {
                     method: "POST",
                     headers: {

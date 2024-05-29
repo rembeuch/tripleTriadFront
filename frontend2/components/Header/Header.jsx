@@ -25,13 +25,13 @@ const Header = ({ pvp }) => {
 
     async function getPlayer() {
         if (authToken) {
-            const response = await fetch(`${`http://localhost:3000/api/v1/find_player?token=${authToken}`}`);
+            const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
             return response.json();
         }
     }
 
     async function getPvp() {
-        const response = await fetch(`${`http://localhost:3000/api/v1/find_pvp?token=${authToken}`}`);
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_pvp?token=${authToken}`}`);
         return response.json();
     }
 
