@@ -486,7 +486,7 @@ const Game = () => {
             if (board.every(element => element !== false)) {
                 setTimeout(() => {
                     setNext(true);
-                }, 3000);
+                }, 2000);
             } else {
                 setNext(false);
             }

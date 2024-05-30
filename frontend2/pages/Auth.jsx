@@ -13,6 +13,8 @@ const Auth = () => {
     const [emailLogin, setEmailLogin] = useState('');
     const [passwordLogin, setPasswordLogin] = useState('');
     const [alert, setAlert] = useState('');
+    const [signAlert, setSignAlert] = useState('');
+
 
     const toggleForm = () => {
         setSignupFormVisibility(!isSignupFormVisible);
@@ -37,11 +39,17 @@ const Auth = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Registration failed');
+                    throw new Error('Registration failed');
             }
 
             const data = await response.json();
             setToken(data.token)
+            if (data.message != "") {
+                    setSignAlert(data.message)
+                    setTimeout(() => {
+                        setSignAlert('')
+                    }, 3000);
+            }
         } catch (error) {
             console.error('Error during registration:', error.message);
         }
@@ -89,20 +97,20 @@ const Auth = () => {
                     <div>
                         <form onSubmit={signup} style={{ textAlign: 'center', margin: '20px' }}>
                             <label>Email:</label>
-                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={inputStyle} />
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" style={inputStyle} />
 
                             <label>Password:</label>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={inputStyle} />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength="6" style={inputStyle} />
 
                             <label>Password Confirmation:</label>
                             <input type="password" value={passwordConfirmation} onChange={(e) => setPasswordConfirmation(e.target.value)} required style={inputStyle} />
 
                             <label>Name:</label>
-                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required style={inputStyle} />
+                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength="20" style={inputStyle} />
 
                             <button type="submit" style={buttonStyle}>Sign Up</button>
                         </form>
-                        <p> {alert} </p>
+                        <p> {signAlert} </p>
                     </div>
                 )}
             </div>
