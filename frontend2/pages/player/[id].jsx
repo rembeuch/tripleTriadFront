@@ -68,21 +68,21 @@ function Player() {
     }
   }
 
-  async function RecruitElite() {
+  // async function RecruitElite() {
 
-    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/elites?player_id=${player.id}`}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.ok) {
-      const responseData = await response.json();
-      setElites(responseData)
-    }
-  }
+  //   const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/elites?player_id=${player.id}`}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
+  //   if (response.ok) {
+  //     const responseData = await response.json();
+  //     setElites(responseData)
+  //   }
+  // }
 
 
   async function addCard(id) {
@@ -251,6 +251,17 @@ function Player() {
               <p>Your Team: {deck.length + elites.length}/5</p>
               <p>Elite points: {player.elite_points}</p>
               <p>Energy: {player.energy}</p>
+              <Link href="/Stats">
+                <button style={{
+                  color: "#F9DC5C",
+                  backgroundColor: "blue",
+                  padding: "10px 50px",
+                  margin: 10,
+                  transition: "background-color 0.3s ease",
+                  borderRadius: 5,
+                  textDecoration: "none"
+                }} > Stats </button>
+              </Link>
             </div>
             {removeAlert && <div>
               <Alert status='warning' width="50%">
