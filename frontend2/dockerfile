@@ -1,0 +1,31 @@
+# Étape de build
+FROM node:18-alpine AS build
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier package.json et package-lock.json (s'ils existent)
+COPY frontend2/package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le reste du code
+COPY frontend2/ ./
+
+# Builder l'application Next.js
+RUN npm run build
+
+# Étape de production
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+# Copier les fichiers buildés de l'étape précédente
+COPY --from=build /app /app
+
+# Exposer le port 3001 pour Next.js
+EXPOSE 3001
+
+# Démarrer l'application Next.js
+CMD ["npm", "start"]
