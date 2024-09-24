@@ -30,6 +30,7 @@ const Zones = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [addAlert, setAddAlert] = useState("");
   const [numberOfRounds, setNumberOfRounds] = useState(1);
+  const [zonePnj, setZonePnj] = useState(null);
 
   async function getPlayer() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
@@ -43,6 +44,11 @@ const Zones = () => {
 
   async function getMonsters() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_monsters?player_id=${player.id}`}`);
+    return response.json();
+  }
+
+  async function getZonePnj() {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_zone_pnj?player_id=${player.id}`}`);
     return response.json();
   }
 
@@ -169,6 +175,20 @@ const Zones = () => {
   }, [player]);
 
   useEffect(() => {
+    const fetchCurrentPnj = async () => {
+      try {
+        const json = await getZonePnj();
+        setZonePnj(json);
+      } catch (error) {
+        console.error("Failed to fetch the player: ", error);
+      }
+    };
+    if (player) {
+      fetchCurrentPnj();
+    }
+  }, [player]);
+
+  useEffect(() => {
     if (player) {
       setPvp(player.in_pvp);
     }
@@ -206,6 +226,10 @@ const Zones = () => {
     gap: '10px',
     margin: '5px'
   };
+
+  if (!player) return <h2>Loading...</h2>;
+  if (!zonePnj) return <h2>Loading...</h2>;
+
   return (
     <Layout pvp={pvp}>
       {player ? (
@@ -220,6 +244,13 @@ const Zones = () => {
           <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}
             {player.power_condition && player.monster_condition &&
               <p>Bonus condition (+20 energy after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition} {player.ability == player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"} </p>
+            }
+            {player && zonePnj &&
+              <div>
+                <>
+                  try: {zonePnj.try} / victory: {zonePnj.victory} / defeat: {zonePnj.defeat} / perfect: {zonePnj.perfect} / boss: {zonePnj.boss} / Monsters Awake: {zonePnj.awake}
+                </>
+              </div>
             }
           </h2>
           <p>current ability: {player.ability}

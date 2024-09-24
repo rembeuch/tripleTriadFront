@@ -5,5 +5,8 @@
     "ethers": "^5.7.2",
     "hardhat": "^2.19.3",
     "hardhat-deploy": "^0.11.45"
+  },
+  "dependencies": {
+    "react-actioncable-provider": "^2.0.0"
   }
 }
