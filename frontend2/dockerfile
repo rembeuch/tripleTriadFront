@@ -4,17 +4,18 @@ FROM node:18-alpine AS build
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Copier package.json et package-lock.json (s'ils existent)
-COPY frontend2/package*.json ./
+# Copier package.json et yarn.lock
+COPY package*.json ./
+COPY yarn.lock ./
 
 # Installer les dépendances
-RUN npm install
+RUN yarn install
 
 # Copier le reste du code
-COPY frontend2/ ./
+COPY ./ ./
 
 # Builder l'application Next.js
-RUN npm run build
+RUN yarn build
 
 # Étape de production
 FROM node:18-alpine AS production
@@ -28,4 +29,4 @@ COPY --from=build /app /app
 EXPOSE 3001
 
 # Démarrer l'application Next.js
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
