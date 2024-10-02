@@ -27,6 +27,11 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const { authToken } = useAuth();
   const { address, isConnected } = useAccount()
+  const [notFound, setNotFound] = useState(null);
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
 
   async function getPlayer() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
@@ -41,12 +46,38 @@ export default function Home() {
   async function getPvp() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_pvp?token=${authToken}`}`);
     return response.json();
-}
+  }
 
   async function getDeck() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/deck?id=${player.id}`}`);
     return response.json();
   }
+
+  async function resendConfirmationEmail(email) {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/players/confirmation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        player: { email }
+      }),
+    });
+    return response.json();
+  }
+
+  const handleResend = async () => {
+    try {
+      const response = await resendConfirmationEmail(email);
+      if (response.success) {
+        setMessage('Confirmation email resent successfully.');
+      } else {
+        setError('Error resending the confirmation email.');
+      }
+    } catch (error) {
+      setError('Failed to resend confirmation email.');
+    }
+  };
 
   async function createPvp() {
 
@@ -97,8 +128,16 @@ export default function Home() {
     const fetchCurrentPlayer = async () => {
       try {
         const json = await getPlayer();
-        setPlayer(json);
-      } catch (error) {
+        if (json.message === "Player not found.") {
+          setNotFound(null);
+        } else if (json.message === "Email not confirmed") {
+          setNotFound("Email not confirmed for ")
+          setEmail(json.email)
+        } else {
+          setPlayer(json);
+        }
+      }
+      catch (error) {
         console.error("Failed to fetch the player: ", error);
       }
     };
@@ -150,7 +189,7 @@ export default function Home() {
     }
   }, [player]);
 
-  
+
 
   return (
     <>
@@ -268,10 +307,30 @@ export default function Home() {
               }
             </div>
           </div>
-        ) : (
-          <>
+        ) : (<>
+          {notFound ? (
+            <div>
+              <h1>User not found or email not confirmed.</h1>
+              <div>
+                <button
+                  onClick={handleResend}
+                  style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "green",
+                    padding: "10px 50px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                  }} > Resend Confirmation Email </button>
+                {message && <p>{message}</p>}
+                {error && <p>{error}</p>}
+              </div>
+            </div>
+          ) : (
             <Auth />
-          </>
+          )}
+        </>
         )}
       </Layout>
     </>

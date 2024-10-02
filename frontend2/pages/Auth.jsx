@@ -82,6 +82,31 @@ const Auth = () => {
         }
     };
 
+    const forgotPassword = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/players/password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    player: {
+                        email: emailLogin,
+                    },
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send reset password email');
+            }
+
+            setAlert('An email has been sent with password reset instructions.');
+        } catch (error) {
+            console.error('Error sending reset password email:', error.message);
+            setAlert('Failed to send reset password email.');
+        }
+    };
+
     return (
         <>
             <div>
@@ -123,6 +148,10 @@ const Auth = () => {
 
                 <button type="submit" style={buttonStyle}>Login</button>
             </form>
+
+            <button onClick={forgotPassword} style={buttonStyle}>
+                Forgot Password
+            </button>
             <p> {alert} </p>
         </>
     );
