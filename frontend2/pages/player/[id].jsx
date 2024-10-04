@@ -12,6 +12,7 @@ import {
   Flex,
 } from '@chakra-ui/react'
 import Layout from '@/components/Layout/Layout';
+import CosmosBackground from '@/components/CosmosBackground';
 import Card from '@/components/Card';
 import { useAuth } from '@/contexts/authContext';
 
@@ -155,6 +156,7 @@ function Player() {
         console.error("Failed to fetch the player: ", error);
       }
     };
+    if (!authToken) return;
     fetchCurrentPlayer();
   }, [authToken]);
 
@@ -224,8 +226,7 @@ function Player() {
     borderRadius: '8px',
     textAlign: 'center',
     backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
-
-
+    color: 'black',
   };
 
   const eliteCardStyle = {
@@ -233,6 +234,7 @@ function Player() {
     padding: '20px',
     borderRadius: '8px',
     textAlign: 'center',
+    color: 'black',
     backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
   };
 
@@ -242,14 +244,13 @@ function Player() {
 
   return (
     <>
+      <CosmosBackground>
       <Layout pvp={pvp}>
         {player ? (
           <div>
             <div>
               <h2>{player.name}</h2>
-              <p>ability: {player.ability}</p>
               <p>Your Team: {deck.length + elites.length}/5</p>
-              <p>Elite points: {player.elite_points}</p>
               <p>Energy: {player.energy}</p>
               <Link href="/Stats">
                 <button style={{
@@ -274,7 +275,10 @@ function Player() {
             <hr></hr>
             {elites.length > 0 ? (
               <div style={gridContainerStyle}>
-                <h2> Your Elites:</h2>
+                <h2> Your Elites:
+                  <p>ability: {player.ability}</p>
+                  <p>Elite points: {player.elite_points}</p>
+                </h2>
                 {elites.map(card => (
                   <>
                     <div key={card.id} style={eliteCardStyle} className="card">
@@ -395,6 +399,7 @@ function Player() {
             Please, login or create account
           </Alert>)}
       </Layout>
+      </CosmosBackground>
     </>
 
   );

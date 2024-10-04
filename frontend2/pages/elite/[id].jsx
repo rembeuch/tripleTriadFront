@@ -13,6 +13,7 @@ import {
     Flex,
 } from '@chakra-ui/react'
 import Layout from '@/components/Layout/Layout';
+import CosmosBackground from '@/components/CosmosBackground';
 import Card from '@/components/Card';
 import PowerModal from '@/components/PowerModal';
 import { useAuth } from '@/contexts/authContext';
@@ -185,17 +186,18 @@ const elite = () => {
     }, [address, authToken, player]);
 
     const eliteCardStyle = {
-        height: '220px',
+        width: '30%',
+        border: '1px solid #ddd',
         padding: '20px',
         borderRadius: '8px',
         textAlign: 'center',
+        color: 'black',
         backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
-    };
+      };
 
     let playerPowerBG = (power) => {
-        if (player.ability == power) 
-        { return 'blue'} 
-        else { return 'green'}
+        if (player.ability == power) { return 'blue' }
+        else { return 'green' }
     }
 
     const buttonStyle = (power) => ({
@@ -208,7 +210,7 @@ const elite = () => {
         borderRadius: 5,
         display: 'block',
         textDecoration: "none",
-        backgroundColor: playerPowerBG(power), 
+        backgroundColor: playerPowerBG(power),
     })
 
     const greyButtonStyle = {
@@ -237,277 +239,279 @@ const elite = () => {
 
     return (
         <>
-            <Layout>
-                <div>
-                    {player.zone_position != "A1" && player.s_zone == false &&
-                        <h2>You can't do modifications when you are in zone {player.zone_position}</h2>
-                    }
-                    <h2> Your Elite:</h2>
-                    {player && elite && isConnected ?
-                        (
-                            <div>
-                                {elite.nft == false &&
-                                    <>
-                                        <h2>Mint Elite for Half of the energy needed for boost.</h2>
-                                        <button onClick={() => mintElite()}>Mint</button>
-                                    </>
-                                }
-                            </div>
-                        )
-                        :
-                        (
-                            <div>
-                                {elite.nft == false &&
-                                    <>
-                                        <h2>Mint Elite for Half of the energy needed for boost.</h2>
-                                        <ConnectButton />
-                                    </>
-                                }
-                            </div>
-                        )
-                    }
-                    <div style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {elite.name}
-                            {elite.nft && '//NFT'}
-                        </p>
-                        <Flex>
-                            <Card card={elite} />
-                        </Flex>
-                    </div>
+            <CosmosBackground>
+                <Layout>
                     <div>
-                        points: {player.elite_points} / energy: {player.energy} {addAlert}
-
-                        {elite.fight < 100 ? (
-                            <p>Fight: {elite.fight} / 100
-                                {player.elite_points > 0 &&
-                                    <>
-                                        <button onClick={() => increment(0)} style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "grey",
-                                            padding: "10px 10px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            textDecoration: "none"
-                                        }} > +
-                                        </button>
-                                        {elite.nft ? (
-                                            <span> (- {elite.fight * 5} energy )</span>
-                                        ) : (
-                                            <span> (- {elite.fight * 10} energy )</span>
-                                        )} </>
-                                }
-                                {''}Card up {elite.up} to {parseInt(elite.up) + 1} with {(parseInt(elite.up) + 1) * 10 - elite.fight} more point(s)!
-                            </p>) : (
-                            <p>
-                                Fight Max!
-                            </p>
-                        )
+                        {player.zone_position != "A1" && player.s_zone == false &&
+                            <h2>You can't do modifications when you are in zone {player.zone_position}</h2>
                         }
-                        {elite.diplomacy < 100 ? (
-                            <p>Diplomacy (right): {elite.diplomacy} / 100
-                                {player.elite_points > 0 &&
-                                    <>
-                                        <button onClick={() => increment(1)} style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "grey",
-                                            padding: "10px 10px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            textDecoration: "none"
-                                        }} > +
-                                        </button>
-                                        {elite.nft ? (
-                                            <span> (- {elite.diplomacy * 5} energy )</span>
-                                        ) : (
-                                            <span> (- {elite.diplomacy * 10} energy )</span>
-                                        )}                                    </>
-                                }
-                                {''}Card right {elite.right} to {parseInt(elite.right) + 1} with {(parseInt(elite.right) + 1) * 10 - elite.diplomacy} more point(s)!
-                            </p>) : (
-                            <p>
-                                Diplomacy Max!
-                            </p>
-                        )
+                        <h2> Your Elite:</h2>
+                        {player && elite && isConnected ?
+                            (
+                                <div>
+                                    {elite.nft == false &&
+                                        <>
+                                            <h2>Mint Elite for Half of the energy needed for boost.</h2>
+                                            <button onClick={() => mintElite()}>Mint</button>
+                                        </>
+                                    }
+                                </div>
+                            )
+                            :
+                            (
+                                <div>
+                                    {elite.nft == false &&
+                                        <>
+                                            <h2>Mint Elite for Half of the energy needed for boost.</h2>
+                                            <ConnectButton />
+                                        </>
+                                    }
+                                </div>
+                            )
                         }
-                        {elite.espionage < 100 ? (
-                            <p>Espionage (down): {elite.espionage} / 100
-                                {player.elite_points > 0 &&
-                                    <>
-                                        <button onClick={() => increment(2)} style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "grey",
-                                            padding: "10px 10px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            textDecoration: "none"
-                                        }} > +
-                                        </button>
-                                        {elite.nft ? (
-                                            <span> (- {elite.espionage * 5} energy )</span>
-                                        ) : (
-                                            <span> (- {elite.espionage * 10} energy )</span>
-                                        )}                                    </>
-                                }
-                                {''}Card down {elite.down} to {parseInt(elite.down) + 1} with {(parseInt(elite.down) + 1) * 10 - elite.espionage} more point(s)!
-
-                            </p>) : (
-                            <p>
-                                Espionage Max!
+                        <div style={eliteCardStyle} className="card">
+                            <p style={{ background: "white", margin: '5px' }}> {elite.name}
+                                {elite.nft && '//NFT'}
                             </p>
-                        )
-                        }
-                        {elite.leadership < 100 ? (
-                            <p>Leadership (left): {elite.leadership} / 100
-                                {player.elite_points > 0 &&
+                            <Flex>
+                                <Card card={elite} />
+                            </Flex>
+                        </div>
+                        <div>
+                            points: {player.elite_points} / energy: {player.energy} {addAlert}
+
+                            {elite.fight < 100 ? (
+                                <p>Fight: {elite.fight} / 100
+                                    {player.elite_points > 0 &&
+                                        <>
+                                            <button onClick={() => increment(0)} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "grey",
+                                                padding: "10px 10px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > +
+                                            </button>
+                                            {elite.nft ? (
+                                                <span> (- {elite.fight * 5} energy )</span>
+                                            ) : (
+                                                <span> (- {elite.fight * 10} energy )</span>
+                                            )} </>
+                                    }
+                                    {''} Card up {elite.up} to {parseInt(elite.up) + 1} with {(parseInt(elite.up) + 1) * 10 - elite.fight} more point(s)!
+                                </p>) : (
+                                <p>
+                                    Fight Max!
+                                </p>
+                            )
+                            }
+                            {elite.diplomacy < 100 ? (
+                                <p>Diplomacy (right): {elite.diplomacy} / 100
+                                    {player.elite_points > 0 &&
+                                        <>
+                                            <button onClick={() => increment(1)} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "grey",
+                                                padding: "10px 10px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > +
+                                            </button>
+                                            {elite.nft ? (
+                                                <span> (- {elite.diplomacy * 5} energy )</span>
+                                            ) : (
+                                                <span> (- {elite.diplomacy * 10} energy )</span>
+                                            )}                                    </>
+                                    }
+                                    {''} Card right {elite.right} to {parseInt(elite.right) + 1} with {(parseInt(elite.right) + 1) * 10 - elite.diplomacy} more point(s)!
+                                </p>) : (
+                                <p>
+                                    Diplomacy Max!
+                                </p>
+                            )
+                            }
+                            {elite.espionage < 100 ? (
+                                <p>Espionage (down): {elite.espionage} / 100
+                                    {player.elite_points > 0 &&
+                                        <>
+                                            <button onClick={() => increment(2)} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "grey",
+                                                padding: "10px 10px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > +
+                                            </button>
+                                            {elite.nft ? (
+                                                <span> (- {elite.espionage * 5} energy )</span>
+                                            ) : (
+                                                <span> (- {elite.espionage * 10} energy )</span>
+                                            )}                                    </>
+                                    }
+                                    {''} Card down {elite.down} to {parseInt(elite.down) + 1} with {(parseInt(elite.down) + 1) * 10 - elite.espionage} more point(s)!
+
+                                </p>) : (
+                                <p>
+                                    Espionage Max!
+                                </p>
+                            )
+                            }
+                            {elite.leadership < 100 ? (
+                                <p>Leadership (left): {elite.leadership} / 100
+                                    {player.elite_points > 0 &&
+                                        <>
+                                            <button onClick={() => increment(3)} style={{
+                                                color: "#F9DC5C",
+                                                backgroundColor: "grey",
+                                                padding: "10px 10px",
+                                                margin: 10,
+                                                transition: "background-color 0.3s ease",
+                                                borderRadius: 5,
+                                                textDecoration: "none"
+                                            }} > +
+                                            </button>
+
+                                            {elite.nft ? (
+                                                <span> (- {elite.leadership * 5} energy )</span>
+                                            ) : (
+                                                <span> (- {elite.leadership * 10} energy )</span>
+                                            )}                                    </>
+                                    }
+                                    {''} Card left {elite.left} to {parseInt(elite.left) + 1} with {(parseInt(elite.left) + 1) * 10 - elite.leadership} more point(s)!
+
+                                </p>) : (
+                                <p>
+                                    Leadership Max!
+                                </p>
+                            )
+                            }
+                        </div>
+                    </div>
+                    <h2>{ability && `Current power: ${ability}`} </h2>
+
+                    <div className="button-column" style={{
+                        display: "flex"
+                    }}>
+                        {/* Première colonne */}
+                        <div className="column" style={{
+                            flexDirection: "column"
+                        }}>
+                            <>
+                                {powers.filter(power => power[0] === "f").map(power => (
                                     <>
-                                        <button onClick={() => increment(3)} style={{
-                                            color: "#F9DC5C",
-                                            backgroundColor: "grey",
-                                            padding: "10px 10px",
-                                            margin: 10,
-                                            transition: "background-color 0.3s ease",
-                                            borderRadius: 5,
-                                            textDecoration: "none"
-                                        }} > +
-                                        </button>
-
-                                        {elite.nft ? (
-                                            <span> (- {elite.leadership * 5} energy )</span>
-                                        ) : (
-                                            <span> (- {elite.leadership * 10} energy )</span>
-                                        )}                                    </>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                                }
+                                            </button>
+                                        </div >
+                                    </>
+                                ))}
+                                {powers.filter(power => power[0] === "f").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)} onMouseLeave={() => handleMouseLeave("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)}>
+                                        {"fight" + `${powers.filter(power => power[0] === "f").length + 1}`}
+                                        {hoveredPower === "fight" + `${powers.filter(power => power[0] === "f").length + 1}` &&
+                                            <PowerModal power={"fight" + `${powers.filter(power => power[0] === "f").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                        }
+                                    </button>
                                 }
-                                {''}Card left {elite.left} to {parseInt(elite.left) + 1} with {(parseInt(elite.left) + 1) * 10 - elite.leadership} more point(s)!
+                            </>
+                        </div>
+                        {/* Deuxième colonne */}
+                        <div className="column" style={{
+                            flexDirection: "column"
+                        }}>
+                            <>
+                                {powers.filter(power => power[0] === "d").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                                }
+                                            </button>
 
-                            </p>) : (
-                            <p>
-                                Leadership Max!
-                            </p>
-                        )
-                        }
-                    </div>
-                </div>
-                <h2>{ability && `Current power: ${ability}`} </h2>
+                                        </div >
+                                    </>
+                                ))}
+                                {powers.filter(power => power[0] === "d").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
+                                        {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
+                                        {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
+                                            <PowerModal power={"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                        }
+                                    </button>
+                                }
+                            </>
+                        </div>
+                        {/* Troisième colonne */}
+                        <div className="column" style={{
+                            flexDirection: "column"
+                        }}>
+                            <>
+                                {powers.filter(power => power[0] === "e").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                                }
+                                            </button>
 
-                <div className="button-column" style={{
-                    display: "flex"
-                }}>
-                    {/* Première colonne */}
-                    <div className="column" style={{
-                        flexDirection: "column"
-                    }}>
-                        <>
-                            {powers.filter(power => power[0] === "f").map(power => (
-                                <>
-                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                            {power}
-                                            {hoveredPower === power &&
-                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
-                                            }
-                                        </button>
-                                    </div >
-                                </>
-                            ))}
-                            {powers.filter(power => power[0] === "f").length < 10 &&
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)} onMouseLeave={() => handleMouseLeave("fight" + `${powers.filter(power => power[0] === "f").length + 1}`)}>
-                                    {"fight" + `${powers.filter(power => power[0] === "f").length + 1}`}
-                                    {hoveredPower === "fight" + `${powers.filter(power => power[0] === "f").length + 1}` &&
-                                        <PowerModal power={"fight" + `${powers.filter(power => power[0] === "f").length + 1}`} isHovered={isHovered} isGrey={true} />
-                                    }
-                                </button>
-                            }
-                        </>
-                    </div>
-                    {/* Deuxième colonne */}
-                    <div className="column" style={{
-                        flexDirection: "column"
-                    }}>
-                        <>
-                            {powers.filter(power => power[0] === "d").map(power => (
-                                <>
-                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                            {power}
-                                            {hoveredPower === power &&
-                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
-                                            }
-                                        </button>
+                                        </div >
+                                    </>
+                                ))}
+                                {powers.filter(power => power[0] === "e").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
+                                        {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
+                                        {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
+                                            <PowerModal power={"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                        }
+                                    </button>
+                                }
+                            </>
+                        </div>
+                        {/* Quatrième colonne */}
+                        <div className="column" style={{
+                            flexDirection: "column"
+                        }}>
+                            <>
+                                {powers.filter(power => power[0] === "l").map(power => (
+                                    <>
+                                        <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
+                                            <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
+                                                {power}
+                                                {hoveredPower === power &&
+                                                    <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
+                                                }
+                                            </button>
 
-                                    </div >
-                                </>
-                            ))}
-                            {powers.filter(power => power[0] === "d").length < 10 &&
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)} onMouseLeave={() => handleMouseLeave("diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`)}>
-                                    {"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`}
-                                    {hoveredPower === "diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}` &&
-                                        <PowerModal power={"diplomacy" + `${powers.filter(power => power[0] === "d").length + 1}`} isHovered={isHovered} isGrey={true} />
-                                    }
-                                </button>
-                            }
-                        </>
+                                        </div >
+                                    </>
+                                ))}
+                                {powers.filter(power => power[0] === "l").length < 10 &&
+                                    <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
+                                        {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
+                                        {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
+                                            <PowerModal power={"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`} isHovered={isHovered} isGrey={true} />
+                                        }
+                                    </button>
+                                }
+                            </>
+                        </div>
                     </div>
-                    {/* Troisième colonne */}
-                    <div className="column" style={{
-                        flexDirection: "column"
-                    }}>
-                        <>
-                            {powers.filter(power => power[0] === "e").map(power => (
-                                <>
-                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                            {power}
-                                            {hoveredPower === power &&
-                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
-                                            }
-                                        </button>
-
-                                    </div >
-                                </>
-                            ))}
-                            {powers.filter(power => power[0] === "e").length < 10 &&
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)} onMouseLeave={() => handleMouseLeave("espionage" + `${powers.filter(power => power[0] === "e").length + 1}`)}>
-                                    {"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`}
-                                    {hoveredPower === "espionage" + `${powers.filter(power => power[0] === "e").length + 1}` &&
-                                        <PowerModal power={"espionage" + `${powers.filter(power => power[0] === "e").length + 1}`} isHovered={isHovered} isGrey={true} />
-                                    }
-                                </button>
-                            }
-                        </>
-                    </div>
-                    {/* Quatrième colonne */}
-                    <div className="column" style={{
-                        flexDirection: "column"
-                    }}>
-                        <>
-                            {powers.filter(power => power[0] === "l").map(power => (
-                                <>
-                                    <div key={powers.index} onClick={() => playerAbility(power)} className="card" >
-                                        <button className="button" style={buttonStyle(power)} onMouseEnter={() => handleMouseEnter(power)} onMouseLeave={() => handleMouseLeave(power)}>
-                                            {power}
-                                            {hoveredPower === power &&
-                                                <PowerModal power={power} isHovered={isHovered} alert={addAlert} />
-                                            }
-                                        </button>
-
-                                    </div >
-                                </>
-                            ))}
-                            {powers.filter(power => power[0] === "l").length < 10 &&
-                                <button className="button" style={greyButtonStyle} onMouseEnter={() => handleMouseEnter("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)} onMouseLeave={() => handleMouseLeave("leadership" + `${powers.filter(power => power[0] === "l").length + 1}`)}>
-                                    {"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`}
-                                    {hoveredPower === "leadership" + `${powers.filter(power => power[0] === "l").length + 1}` &&
-                                        <PowerModal power={"leadership" + `${powers.filter(power => power[0] === "l").length + 1}`} isHovered={isHovered} isGrey={true} />
-                                    }
-                                </button>
-                            }
-                        </>
-                    </div>
-                </div>
-            </Layout >
+                </Layout >
+            </CosmosBackground>
         </>
     )
 }

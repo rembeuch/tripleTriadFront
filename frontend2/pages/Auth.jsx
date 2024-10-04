@@ -162,6 +162,7 @@ const inputStyle = {
     padding: '8px',
     borderRadius: '5px',
     border: '1px solid #ccc',
+    color: 'black',
 };
 
 const buttonStyle = {

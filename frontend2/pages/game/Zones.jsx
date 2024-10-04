@@ -127,7 +127,6 @@ const Zones = () => {
 
 
   useEffect(() => {
-
     const fetchCurrentPlayer = async () => {
       try {
         const json = await getPlayer();
@@ -136,10 +135,13 @@ const Zones = () => {
         console.error("Failed to fetch the player: ", error);
       }
     };
+    if (!authToken) return;
     fetchCurrentPlayer();
-  }, [address, authToken, addAlert]);
-
+  }, [authToken]);
+  
   useEffect(() => {
+    if (!player) return;
+  
     const fetchCurrentMonsters = async () => {
       try {
         const json = await getMonsters();
@@ -150,14 +152,14 @@ const Zones = () => {
           setCopy(json.copy);
         }
       } catch (error) {
-        setMonsters(null);
-        console.error("Failed to fetch the game: ", error);
+        console.error("Failed to fetch the monsters: ", error);
       }
     };
-    if (player) {
-      fetchCurrentMonsters();
-    }
-  }, [player, addAlert]);
+  
+    fetchCurrentMonsters();
+  }, [player]);
+  
+  
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
