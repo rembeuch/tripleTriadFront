@@ -735,7 +735,7 @@ const Game = () => {
                                                                     {reward &&
                                                                         <>
                                                                             <div>{rewardMessage}</div>
-                                                                            <h2>Your Reward: Energy + {game.player_points * 10} {player.bonus && "+20 bonus"} </h2>
+                                                                            <h2>Your Reward: Cardinum + {game.player_points * 10} {player.bonus && "+20 bonus"} </h2>
                                                                             <div style={selectedCardStyle}>
                                                                                 {reward.name}:
                                                                                 <Card card={reward} />
@@ -805,7 +805,7 @@ const Game = () => {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <p>Energy + {game.player_points * 10}</p>
+                                                                    <p>Cardinum + {game.player_points * 10}</p>
                                                                     <button onClick={() => nextGame()} style={{
                                                                         color: "#F9DC5C",
                                                                         backgroundColor: "purple",

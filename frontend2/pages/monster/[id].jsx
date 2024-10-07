@@ -9,6 +9,7 @@ import {
     AlertTitle,
     AlertDescription,
     Flex,
+    Image,
 } from '@chakra-ui/react'
 import Layout from '@/components/Layout/Layout';
 import CosmosBackground from '@/components/CosmosBackground';
@@ -136,14 +137,17 @@ const monster = () => {
         fetchCurrentPlayer();
     }, [player, monster]);
 
-    const monsterCardStyle = {
+    const monsterCardStyle = (monster) => ({
         border: '1px solid #ddd',
         padding: '50px',
         borderRadius: '8px',
         textAlign: 'center',
         color: 'black',
-        backgroundImage: 'url(" https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg")',
-    };
+        backgroundImage: `
+        linear-gradient(to right, rgba(218,165,32, 0.7), rgba(139,69,19, 0.7))`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    })
 
 
     const gridContainerStyle = {
@@ -161,16 +165,23 @@ const monster = () => {
             <CosmosBackground>
                 <Layout>
                     <div style={gridContainerStyle}>
-                        <h2> Your monster:</h2>
-                        <div key={monster.id} style={monsterCardStyle} className="card">
-                            <p style={{ background: "white", margin: '5px' }}> {monster.name} rank: {monster.rank}
+                        <h2> Your spirit:</h2>
+                        <div key={monster.id} style={monsterCardStyle(monster)} className="card">
+                            <Image
+                                src={monster.image || 'https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg'}
+                                alt={monster.name}
+                                borderRadius="8px"
+                                boxSize="200px" // Taille de l'image
+                                objectFit="cover"
+                            />
+                            <p style={{ background: "white", margin: '5px' }}> {monster.name}
                             </p>
                             <Flex>
                                 <Card card={monster} />
                             </Flex>
                         </div>
                         <div>
-                            points: {monster.copy} / energy: {energy} {addAlert}
+                            points: {monster.copy} / Cardinum: {energy} {addAlert} / rank: {monster.rank}
                             {!monster.max && monster.up_points < (30 / monster.rank) ? (
                                 <p>boost up: {monster.up_points} / {30 / monster.rank}
                                     {monster.copy > 0 &&
@@ -185,7 +196,7 @@ const monster = () => {
                                                 textDecoration: "none"
                                             }} > +
                                             </button>
-                                            <span> (- {monster.up_points * 10 * monster.rank} energy )</span>
+                                            <span> (- {monster.up_points * 10 * monster.rank} Cardinum )</span>
                                         </>
                                     }
                                 </p>) : (
@@ -208,7 +219,7 @@ const monster = () => {
                                                 textDecoration: "none"
                                             }} > +
                                             </button>
-                                            <span> (- {monster.right_points * 10 * monster.rank} energy )</span>
+                                            <span> (- {monster.right_points * 10 * monster.rank} Cardinum )</span>
                                         </>
                                     }
                                 </p>
@@ -232,7 +243,7 @@ const monster = () => {
                                                 textDecoration: "none"
                                             }} > +
                                             </button>
-                                            <span> (- {monster.down_points * 10 * monster.rank} energy )</span>
+                                            <span> (- {monster.down_points * 10 * monster.rank} Cardinum )</span>
                                         </>
                                     }
                                 </p>
@@ -256,7 +267,7 @@ const monster = () => {
                                                 textDecoration: "none"
                                             }} > +
                                             </button>
-                                            <span> (- {monster.left_points * 10 * monster.rank} energy )</span>
+                                            <span> (- {monster.left_points * 10 * monster.rank} Cardinum )</span>
                                         </>
                                     }
                                 </p>
@@ -276,7 +287,7 @@ const monster = () => {
                         transition: "background-color 0.3s ease",
                         borderRadius: 5,
                         textDecoration: "none"
-                    }} > sell 1 copy (+{monster.rank * 50} energy)
+                    }} > sell 1 copy (+{monster.rank * 50} Cardinum)
                     </button>
                     }
                     {!monster.max && (monster.up_points + monster.right_points + monster.down_points + monster.left_points) == ((30 / monster.rank) * 4) &&
@@ -288,7 +299,7 @@ const monster = () => {
                             transition: "background-color 0.3s ease",
                             borderRadius: 5,
                             textDecoration: "none"
-                        }} > awake (-{(30 / monster.rank) * 4} points & -{4650 * monster.rank} energy)
+                        }} > awake (-{(30 / monster.rank) * 4} points & -{4650 * monster.rank} Cardinum)
                         </button>
                     }
                 </Layout>

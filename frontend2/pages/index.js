@@ -36,7 +36,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleNext = () => {
-    if (currentPage < dialogues.length - 1) {
+    if (currentPage < dialogues.dialogues.length - 1) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -169,9 +169,6 @@ export default function Home() {
       try {
         const json = await getDialogues();
         setDialogues(json);
-        console.log("Current Page:", currentPage);
-        console.log("dialogues:", dialogues);
-        console.log("Displaying:", dialogues[currentPage]);
 
       } catch (error) {
         console.error("Failed to fetch the game: ", error);
@@ -243,79 +240,83 @@ export default function Home() {
           {player ? (
             <div className="App">
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img
-                  src="https://res.cloudinary.com/dsiamykrd/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1728032580/Cosmos_jst1aj.webp"
-                  alt="Cosmos Avatar"
-                  style={{ width: '30%', height: 'auto' }}
-                />
-                {dialogues && (
-                  <Box
-                    bg="rgba(50, 50, 50, 0.9)"
-                    borderRadius="20px"
-                    boxShadow="0 4px 8px rgba(0, 0, 0, 0.5)"
-                    padding="20px"
-                    margin="20px"
-                    maxWidth="600px"
-                    height="200px"
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="space-between"
-                    position="relative" // Pour positionner correctement le triangle
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: "50%", // Position verticale (centrée par rapport à la hauteur)
-                      left: "-10px", // Positionné à gauche de la bulle
-                      transform: "translateY(-50%)", // Centré verticalement
-                      borderTop: "10px solid transparent",
-                      borderBottom: "10px solid transparent",
-                      borderRight: "10px solid rgba(50, 50, 50, 0.9)", // Couleur du triangle correspondant à la bulle
-                    }}
-                  >
-                    {/* Texte du dialogue actuel avec gestion du défilement si texte trop long */}
-                    <Text
-                      color="white"
-                      textAlign="center"
-                      marginBottom="20px"
-                      overflowY="auto" // Ajoute un défilement si le texte dépasse
+                {dialogues && dialogues.dialogues && dialogues.images && (
+                  <>
+                    <img
+                      src={dialogues.images[currentPage]}
+                      alt="Cosmos Avatar"
+                      style={{ width: '200px', height: '200px' }} // Hauteur et largeur fixes
+                    />
+                    <Box
+                      bg="rgba(50, 50, 50, 0.9)"
+                      borderRadius="20px"
+                      boxShadow="0 4px 8px rgba(0, 0, 0, 0.5)"
+                      padding="20px"
+                      margin="20px"
+                      maxWidth="600px"
+                      height="200px"
+                      width="300px"
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="space-between"
+                      position="relative" // Pour positionner correctement le triangle
+                      _after={{
+                        content: '""',
+                        position: "absolute",
+                        top: "50%", // Position verticale (centrée par rapport à la hauteur)
+                        left: "-10px", // Positionné à gauche de la bulle
+                        transform: "translateY(-50%)", // Centré verticalement
+                        borderTop: "10px solid transparent",
+                        borderBottom: "10px solid transparent",
+                        borderRight: "10px solid rgba(50, 50, 50, 0.9)", // Couleur du triangle correspondant à la bulle
+                      }}
                     >
-                      {dialogues[currentPage]}
-                    </Text>
-
-                    {/* Conteneur pour les boutons de navigation */}
-                    <Box display="flex" justifyContent="center" alignItems="center">
-                      {/* Bouton gauche pour la pagination */}
-                      <Button
-                        onClick={handlePrevious}
-                        disabled={currentPage === 0}
-                        marginRight="10px"
-                        bg="gray.700" // Bouton gris foncé
-                        color="white" // Texte blanc sur bouton
-                        _hover={{ bg: "gray.600" }} // Changement de couleur au hover
-                        _disabled={{ bg: "gray.500", cursor: "not-allowed" }} // Désactivation avec couleur plus claire
+                      {/* Texte du dialogue actuel avec gestion du défilement si texte trop long */}
+                      <Text
+                        color="white"
+                        textAlign="center"
+                        marginBottom="20px"
+                        overflowY="auto" // Ajoute un défilement si le texte dépasse
                       >
-                        ◀
-                      </Button>
+                        {dialogues.dialogues[currentPage]}
+                      </Text>
 
-                      {/* Bouton droit pour la pagination */}
-                      <Button
-                        onClick={handleNext}
-                        disabled={currentPage === dialogues.length - 1}
-                        marginLeft="10px"
-                        bg="gray.700" // Bouton gris foncé
-                        color="white" // Texte blanc sur bouton
-                        _hover={{ bg: "gray.600" }} // Changement de couleur au hover
-                        _disabled={{ bg: "gray.500", cursor: "not-allowed" }} // Désactivation avec couleur plus claire
-                      >
-                        ▶
-                      </Button>
+                      {/* Conteneur pour les boutons de navigation */}
+                      <Box display="flex" justifyContent="center" alignItems="center">
+                        {/* Afficher le bouton précédent uniquement si la page actuelle n'est pas la première */}
+                        {currentPage > 0 && (
+                          <Button
+                            onClick={handlePrevious}
+                            marginRight="10px"
+                            bg="gray.700"
+                            color="white"
+                            _hover={{ bg: "gray.600" }}
+                            _disabled={{ bg: "gray.500", cursor: "not-allowed" }}
+                          >
+                            ◀
+                          </Button>
+                        )}
+
+                        {/* Afficher le bouton suivant uniquement si la page actuelle n'est pas la dernière */}
+                        {currentPage < dialogues.dialogues.length - 1 && (
+                          <Button
+                            onClick={handleNext}
+                            marginLeft="10px"
+                            bg="gray.700"
+                            color="white"
+                            _hover={{ bg: "gray.600" }}
+                            _disabled={{ bg: "gray.500", cursor: "not-allowed" }}
+                          >
+                            ▶
+                          </Button>
+                        )}
+                      </Box>
                     </Box>
-                  </Box>
-
+                  </>
                 )}
               </div>
               <div>
-                {player ? (
+                {player && dialogues.dialogues ? (
                   <>
                     <Link href="/player/[id]" as={`/player/${player.id}`}>
                       <button style={{
@@ -325,7 +326,12 @@ export default function Home() {
                         margin: 10,
                         transition: "background-color 0.3s ease",
                         borderRadius: 5,
-                        textDecoration: "none"
+                        textDecoration: "none",
+                        boxShadow: dialogues.dialogues[3] === "Go check your monster!" && currentPage === 3
+                          ? "0 0 30px 10px rgba(255, 215, 0, 0.9)"
+                          : "none",
+                        opacity: dialogues.dialogues[3] === "Go check your monster!" && currentPage === 3 ? 1 : 0.8,
+
                       }} >Deck </button>
                     </Link>
                     {game && deck ? (

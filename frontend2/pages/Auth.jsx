@@ -15,7 +15,6 @@ const Auth = () => {
     const [alert, setAlert] = useState('');
     const [signAlert, setSignAlert] = useState('');
 
-
     const toggleForm = () => {
         setSignupFormVisibility(!isSignupFormVisible);
     };
@@ -39,16 +38,16 @@ const Auth = () => {
             });
 
             if (!response.ok) {
-                    throw new Error('Registration failed');
+                throw new Error('Registration failed');
             }
 
             const data = await response.json();
             setToken(data.token)
-            if (data.message != "") {
-                    setSignAlert(data.message)
-                    setTimeout(() => {
-                        setSignAlert('')
-                    }, 3000);
+            if (data.message !== "") {
+                setSignAlert(data.message)
+                setTimeout(() => {
+                    setSignAlert('')
+                }, 3000);
             }
         } catch (error) {
             console.error('Error during registration:', error.message);
@@ -67,18 +66,18 @@ const Auth = () => {
             });
 
             if (!response.ok) {
-                setAlert('Registration failed')
+                setAlert('Login failed')
                 setTimeout(() => {
                     setAlert('')
                 }, 3000);
-                throw new Error('Registration failed');
+                throw new Error('Login failed');
             }
 
             const data = await response.json();
             setToken(data.authentication_token)
 
         } catch (error) {
-            console.error('Error during registration:', error.message);
+            console.error('Error during login:', error.message);
         }
     };
 
@@ -109,6 +108,9 @@ const Auth = () => {
 
     return (
         <>
+            <div style={bannerStyle}>
+                <img src="https://res.cloudinary.com/dsiamykrd/image/upload/v1728201874/LogoCOL_cxdbws.webp" alt="Banner" style={imageStyle} />
+            </div>
             <div>
                 {isSignupFormVisible &&
                     <button style={buttonStyle} onClick={toggleForm}>
@@ -120,7 +122,7 @@ const Auth = () => {
                     <></>
                 ) : (
                     <div>
-                        <form onSubmit={signup} style={{ textAlign: 'center', margin: '20px' }}>
+                        <form onSubmit={signup} style={formStyle}>
                             <label>Email:</label>
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" style={inputStyle} />
 
@@ -135,11 +137,11 @@ const Auth = () => {
 
                             <button type="submit" style={buttonStyle}>Sign Up</button>
                         </form>
-                        <p> {signAlert} </p>
+                        <p>{signAlert}</p>
                     </div>
                 )}
             </div>
-            <form onSubmit={login} style={{ textAlign: 'center', margin: '20px' }}>
+            <form onSubmit={login} style={formStyle}>
                 <label>Email:</label>
                 <input type="email" value={emailLogin} onChange={(e) => setEmailLogin(e.target.value)} required style={inputStyle} />
 
@@ -152,7 +154,7 @@ const Auth = () => {
             <button onClick={forgotPassword} style={buttonStyle}>
                 Forgot Password
             </button>
-            <p> {alert} </p>
+            <p>{alert}</p>
         </>
     );
 };
@@ -172,6 +174,23 @@ const buttonStyle = {
     color: 'white',
     border: 'none',
     borderRadius: '5px',
+};
+
+const bannerStyle = {
+    display: 'flex',          // Utilise Flexbox pour centrer le contenu
+    justifyContent: 'center', // Centre horizontalement
+    marginBottom: '10px',    // Réduit l'écart sous l'image
+};
+
+const imageStyle = {
+    maxWidth: '40%', // S'assure que l'image ne dépasse pas la largeur de l'écran
+    height: 'auto',   // Garde le ratio de l'image
+    borderRadius: '5px',
+};
+
+const formStyle = {
+    textAlign: 'center',
+    margin: '10px 0', // Réduit la marge entre les formulaires
 };
 
 export default Auth;

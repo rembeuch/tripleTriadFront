@@ -7,12 +7,16 @@ import {
   AlertTitle,
   AlertDescription,
   Flex,
+  Box,
+  Button,
+  Text,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
 import { useAuth } from '@/contexts/authContext';
 import Card from '@/components/Card';
 import Link from 'next/link';
+import ZoneBackground from '@/components/ZoneBackground';
 
 
 
@@ -31,9 +35,28 @@ const Zones = () => {
   const [addAlert, setAddAlert] = useState("");
   const [numberOfRounds, setNumberOfRounds] = useState(1);
   const [zonePnj, setZonePnj] = useState(null);
+  const [dialogues, setDialogues] = useState([])
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const handleNext = () => {
+    if (currentPage < dialogues.dialogues.length - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   async function getPlayer() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
+    return response.json();
+  }
+
+  async function getDialogues() {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/display_pnj_dialogue?player_id=${player.id}`}`);
     return response.json();
   }
 
@@ -138,10 +161,27 @@ const Zones = () => {
     if (!authToken) return;
     fetchCurrentPlayer();
   }, [authToken]);
-  
+
   useEffect(() => {
     if (!player) return;
-  
+    const fetchCurrentDialogues = async () => {
+      try {
+        const json = await getDialogues();
+        setDialogues(json);
+
+      } catch (error) {
+        console.error("Failed to fetch the game: ", error);
+      }
+    };
+
+    if (player) {
+      fetchCurrentDialogues();
+    }
+  }, [player]);
+
+  useEffect(() => {
+    if (!player) return;
+
     const fetchCurrentMonsters = async () => {
       try {
         const json = await getMonsters();
@@ -155,11 +195,11 @@ const Zones = () => {
         console.error("Failed to fetch the monsters: ", error);
       }
     };
-  
+
     fetchCurrentMonsters();
   }, [player]);
-  
-  
+
+
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
@@ -233,52 +273,154 @@ const Zones = () => {
   if (!zonePnj) return <h2>Loading...</h2>;
 
   return (
-    <Layout pvp={pvp}>
-      {player ? (
-        <>
-          {showAlert && <div>
-            <Alert status='warning' width="50%">
-              <AlertIcon />
-              Your Team is not complete!
-            </Alert>
-          </div>
-          }
-          <h2>Name: {player.name} / Energy: {player.energy} / Elite Points: {player.elite_points} / Zone Max: {player.zones.slice(-1)[0]} / Total Monsters: {player.monsters.length}
-            {player.power_condition && player.monster_condition &&
-              <p>Bonus condition (+20 energy after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition} {player.ability == player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"} </p>
+    <ZoneBackground zonePnj={zonePnj}>
+      <Layout pvp={pvp}>
+        {player ? (
+          <>
+            {showAlert && <div>
+              <Alert status='warning' width="50%">
+                <AlertIcon />
+                Your Team is not complete!
+              </Alert>
+            </div>
             }
-            {player && zonePnj &&
-              <div>
-                <>
-                  try: {zonePnj.try} / victory: {zonePnj.victory} / defeat: {zonePnj.defeat} / perfect: {zonePnj.perfect} / boss: {zonePnj.boss} / Monsters Awake: {zonePnj.awake}
-                </>
+            <h2 style={{
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent derrière l'ensemble du texte
+              padding: "16px", // Ajoute de l'espace autour du texte
+              borderRadius: "10px",
+              textAlign: 'center' // Bordures arrondies pour un meilleur style
+            }}
+            >
+              🌍 Current zone: {player.zone_position} / Cardinum ⚡ : {player.energy} / 💎 Elite Points: {player.elite_points}
+              <br />
+
+              {player.zones.includes(player.zone_position) && (
+                <span>
+                  🧭 Spirits Sealed in this zone: {monsters}
+                </span>
+              )}
+              {player.power_condition && player.monster_condition &&
+                <p>Bonus condition (+20 Cardinum after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition} {player.ability == player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"} </p>
+              }
+              {player.power_condition && player.monster_condition && (
+                <p>
+                  ✨ Bonus condition (+20 Cardinum after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition}{" "}
+                  {player.ability === player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"}
+                </p>
+              )}
+
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {dialogues && dialogues.dialogues && dialogues.images && (
+                  <>
+                    <img
+                      src={dialogues.images[currentPage]}
+                      alt="Cosmos Avatar"
+                      style={{ width: '200px', height: '200px' }} // Hauteur et largeur fixes
+                    />
+                    <Box
+                      bg="rgba(50, 50, 50, 0.9)"
+                      borderRadius="20px"
+                      boxShadow="0 4px 8px rgba(0, 0, 0, 0.5)"
+                      padding="20px"
+                      margin="20px"
+                      maxWidth="600px"
+                      height="200px"
+                      width="300px"
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="space-between"
+                      position="relative" // Pour positionner correctement le triangle
+                      _after={{
+                        content: '""',
+                        position: "absolute",
+                        top: "50%", // Position verticale (centrée par rapport à la hauteur)
+                        left: "-10px", // Positionné à gauche de la bulle
+                        transform: "translateY(-50%)", // Centré verticalement
+                        borderTop: "10px solid transparent",
+                        borderBottom: "10px solid transparent",
+                        borderRight: "10px solid rgba(50, 50, 50, 0.9)", // Couleur du triangle correspondant à la bulle
+                      }}
+                    >
+                      {/* Texte du dialogue actuel avec gestion du défilement si texte trop long */}
+                      <Text
+                        color="white"
+                        textAlign="center"
+                        marginBottom="20px"
+                        overflowY="auto" // Ajoute un défilement si le texte dépasse
+                      >
+                        {dialogues.dialogues[currentPage]}
+                      </Text>
+
+                      {/* Conteneur pour les boutons de navigation */}
+                      <Box display="flex" justifyContent="center" alignItems="center">
+                        {/* Afficher le bouton précédent uniquement si la page actuelle n'est pas la première */}
+                        {currentPage > 0 && (
+                          <Button
+                            onClick={handlePrevious}
+                            marginRight="10px"
+                            bg="gray.700"
+                            color="white"
+                            _hover={{ bg: "gray.600" }}
+                            _disabled={{ bg: "gray.500", cursor: "not-allowed" }}
+                          >
+                            ◀
+                          </Button>
+                        )}
+
+                        {/* Afficher le bouton suivant uniquement si la page actuelle n'est pas la dernière */}
+                        {currentPage < dialogues.dialogues.length - 1 && (
+                          <Button
+                            onClick={handleNext}
+                            marginLeft="10px"
+                            bg="gray.700"
+                            color="white"
+                            _hover={{ bg: "gray.600" }}
+                            _disabled={{ bg: "gray.500", cursor: "not-allowed" }}
+                          >
+                            ▶
+                          </Button>
+                        )}
+                      </Box>
+                    </Box>
+                  </>
+                )}
               </div>
-            }
-          </h2>
-          <p>current ability: {player.ability}
-            {player.zone_position == "A1" && player.in_pvp == "false" && player.in_game == false &&
-              <Link href="/player/[id]" as={`/player/${player.id}`}>
+            </h2>
+            <p style={{
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Fond semi-transparent derrière l'ensemble du texte
+              padding: "12px", // Ajoute de l'espace autour du texte
+              borderRadius: "10px", // Bordures arrondies pour un meilleur style
+            }}
+            > 🎯 Current ability: {player.ability}
+              {player.zone_position == "A1" && player.in_pvp == "false" && player.in_game == false &&
+                <Link href="/player/[id]" as={`/player/${player.id}`}>
+                  <button style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "blue",
+                    padding: "10px 50px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                  }} > Change Spirits</button>
+                </Link>
+              }
+            </p>
+
+            {game ? (
+              <Link href="/game/[id]" as={`/game/${game.id}`}>
                 <button style={{
                   color: "#F9DC5C",
-                  backgroundColor: "blue",
+                  backgroundColor: "green",
                   padding: "10px 50px",
                   margin: 10,
                   transition: "background-color 0.3s ease",
                   borderRadius: 5,
                   textDecoration: "none"
-                }} > Change Deck</button>
+                }} > Current Fight </button>
               </Link>
-            }
-            <br />
-            current zone: {player.zone_position}
-            {player.zones.includes(player.zone_position) &&
-              <p>Monsters in this zone {monsters} / {zoneMonsters}</p>
-            }
-          </p>
-
-          {game ? (
-            <Link href="/game/[id]" as={`/game/${game.id}`}>
-              <button style={{
+            ) : (
+              <button onClick={() => createGame()} style={{
                 color: "#F9DC5C",
                 backgroundColor: "green",
                 padding: "10px 50px",
@@ -286,111 +428,101 @@ const Zones = () => {
                 transition: "background-color 0.3s ease",
                 borderRadius: 5,
                 textDecoration: "none"
-              }} > Current Fight </button>
-            </Link>
-          ) : (
-            <button onClick={() => createGame()} style={{
-              color: "#F9DC5C",
-              backgroundColor: "green",
-              padding: "10px 50px",
-              margin: 10,
-              transition: "background-color 0.3s ease",
-              borderRadius: 5,
-              textDecoration: "none"
-            }} > Start Game {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
-          )}
-          {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
-            <>
-              <h2>Market</h2>
-              {addAlert}
-              <div style={{ display: 'flex' }}>
-                <div style={gridContainerStyle}>
-                  {sMonsters.slice(0, 2).map((card, index) => (
-                    <>
-                      <div key={card.id} style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}` : "not in your deck")}</p>
-                        <Flex>
-                          <Card card={card} />
-                        </Flex>
-                        <button onClick={() => buyMarket(index)} style={{
-                          color: "#F9DC5C",
-                          backgroundColor: "blue",
-                          padding: "10px 10px",
-                          margin: 10,
-                          transition: "background-color 0.3s ease",
-                          borderRadius: 5,
-                          textDecoration: "none"
-                        }} >
-                          <p style={{ margin: '5px' }}> Buy for {' '}
-                            {card.rank * 100 + (player.monsters.includes(card.name) ? 100 : 200)} energy
-                          </p>
-                        </button>
-                      </div>
-                    </>
-                  ))}
-                </div >
-                <div style={gridContainerStyle}>
-                  {sMonsters.slice(2, 4).map((card, index) => (
-                    <>
-                      <div key={card.id} style={eliteCardStyle} className="card">
-                        <p style={{ background: "white", margin: '5px' }}> {card.name} / copy {copy[index + 2]}</p>
-                        <Flex>
-                          <Card card={card} />
-                        </Flex>
-                        <button onClick={() => sellMarket(index + 2)} style={{
-                          color: "#F9DC5C",
-                          backgroundColor: "purple",
-                          padding: "10px 10px",
-                          margin: 10,
-                          transition: "background-color 0.3s ease",
-                          borderRadius: 5,
-                          textDecoration: "none"
-                        }} > sell 1 copy (+{card.rank * 100} energy)
-                        </button>
-                      </div>
-                    </>
-                  ))}
+              }} > Hunt Spirit {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+            )}
+            {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
+              <>
+                <h2>Market</h2>
+                {addAlert}
+                <div style={{ display: 'flex' }}>
+                  <div style={gridContainerStyle}>
+                    {sMonsters.slice(0, 2).map((card, index) => (
+                      <>
+                        <div key={card.id} style={eliteCardStyle} className="card">
+                          <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}` : "not in your deck")}</p>
+                          <Flex>
+                            <Card card={card} />
+                          </Flex>
+                          <button onClick={() => buyMarket(index)} style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "blue",
+                            padding: "10px 10px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} >
+                            <p style={{ margin: '5px' }}> Buy for {' '}
+                              {card.rank * 100 + (player.monsters.includes(card.name) ? 100 : 200)} Cardinum
+                            </p>
+                          </button>
+                        </div>
+                      </>
+                    ))}
+                  </div >
+                  <div style={gridContainerStyle}>
+                    {sMonsters.slice(2, 4).map((card, index) => (
+                      <>
+                        <div key={card.id} style={eliteCardStyle} className="card">
+                          <p style={{ background: "white", margin: '5px' }}> {card.name} / copy {copy[index + 2]}</p>
+                          <Flex>
+                            <Card card={card} />
+                          </Flex>
+                          <button onClick={() => sellMarket(index + 2)} style={{
+                            color: "#F9DC5C",
+                            backgroundColor: "purple",
+                            padding: "10px 10px",
+                            margin: 10,
+                            transition: "background-color 0.3s ease",
+                            borderRadius: 5,
+                            textDecoration: "none"
+                          }} > sell 1 copy (+{card.rank * 100} Cardinum)
+                          </button>
+                        </div>
+                      </>
+                    ))}
 
-                </div >
-              </div>
-            </>
-          }
-          {player.zone_position != "A1" &&
-            <>
-              <div style={{ display: 'flex' }}>
-                <button onClick={() => quitGame()} style={{
-                  color: "#F9DC5C",
-                  backgroundColor: "red",
-                  padding: "10px 50px",
-                  margin: 10,
-                  transition: "background-color 0.3s ease",
-                  borderRadius: 5,
-                  textDecoration: "none"
-                }} > Quit and Back to A1 </button>
-                {player.s_zone && player.in_pvp == "false" && player.in_game == false &&
-                  <Link href="/player/[id]" as={`/player/${player.id}`}>
-                    <button style={{
-                      color: "#F9DC5C",
-                      backgroundColor: "blue",
-                      padding: "10px 50px",
-                      margin: 10,
-                      transition: "background-color 0.3s ease",
-                      borderRadius: 5,
-                      textDecoration: "none"
-                    }} > Boost Team </button>
-                  </Link>
-                }
-              </div>
-            </>
-          }
-        </>
-      ) : (
-        <Alert status='warning' width="50%">
-          <AlertIcon />
-          Loading
-        </Alert>
-      )}
-    </Layout>
+                  </div >
+                </div>
+              </>
+            }
+            {player.zone_position != "A1" &&
+              <>
+                <div style={{ display: 'flex' }}>
+                  <button onClick={() => quitGame()} style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "red",
+                    padding: "10px 50px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                  }} > Quit and Back to the sanctuary </button>
+                  {player.s_zone && player.in_pvp == "false" && player.in_game == false &&
+                    <Link href="/player/[id]" as={`/player/${player.id}`}>
+                      <button style={{
+                        color: "#F9DC5C",
+                        backgroundColor: "blue",
+                        padding: "10px 50px",
+                        margin: 10,
+                        transition: "background-color 0.3s ease",
+                        borderRadius: 5,
+                        textDecoration: "none"
+                      }} > Boost Spirit </button>
+                    </Link>
+                  }
+                </div>
+              </>
+            }
+          </>
+        ) : (
+          <Alert status='warning' width="50%">
+            <AlertIcon />
+            Loading
+          </Alert>
+        )}
+      </Layout>
+    </ZoneBackground>
   )
 }
 

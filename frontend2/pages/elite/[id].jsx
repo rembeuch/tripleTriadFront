@@ -186,7 +186,7 @@ const elite = () => {
     }, [address, authToken, player]);
 
     const eliteCardStyle = {
-        width: '30%',
+        width: '300px',
         border: '1px solid #ddd',
         padding: '20px',
         borderRadius: '8px',
@@ -251,7 +251,7 @@ const elite = () => {
                                 <div>
                                     {elite.nft == false &&
                                         <>
-                                            <h2>Mint Elite for Half of the energy needed for boost.</h2>
+                                            <h2>Mint Elite for Half of the Cardinum needed for boost.</h2>
                                             <button onClick={() => mintElite()}>Mint</button>
                                         </>
                                     }
@@ -262,7 +262,7 @@ const elite = () => {
                                 <div>
                                     {elite.nft == false &&
                                         <>
-                                            <h2>Mint Elite for Half of the energy needed for boost.</h2>
+                                            <h2>Mint Elite for Half of the Cardinum needed for boost.</h2>
                                             <ConnectButton />
                                         </>
                                     }
@@ -278,7 +278,7 @@ const elite = () => {
                             </Flex>
                         </div>
                         <div>
-                            points: {player.elite_points} / energy: {player.energy} {addAlert}
+                            points: {player.elite_points} / Cardinum ⚡: {player.energy} {addAlert}
 
                             {elite.fight < 100 ? (
                                 <p>Fight: {elite.fight} / 100
@@ -295,9 +295,9 @@ const elite = () => {
                                             }} > +
                                             </button>
                                             {elite.nft ? (
-                                                <span> (- {elite.fight * 5} energy )</span>
+                                                <span> (- {elite.fight * 5} Cardinum )</span>
                                             ) : (
-                                                <span> (- {elite.fight * 10} energy )</span>
+                                                <span> (- {elite.fight * 10} Cardinum )</span>
                                             )} </>
                                     }
                                     {''} Card up {elite.up} to {parseInt(elite.up) + 1} with {(parseInt(elite.up) + 1) * 10 - elite.fight} more point(s)!
@@ -322,9 +322,9 @@ const elite = () => {
                                             }} > +
                                             </button>
                                             {elite.nft ? (
-                                                <span> (- {elite.diplomacy * 5} energy )</span>
+                                                <span> (- {elite.diplomacy * 5} Cardinum )</span>
                                             ) : (
-                                                <span> (- {elite.diplomacy * 10} energy )</span>
+                                                <span> (- {elite.diplomacy * 10} Cardinum )</span>
                                             )}                                    </>
                                     }
                                     {''} Card right {elite.right} to {parseInt(elite.right) + 1} with {(parseInt(elite.right) + 1) * 10 - elite.diplomacy} more point(s)!
@@ -349,9 +349,9 @@ const elite = () => {
                                             }} > +
                                             </button>
                                             {elite.nft ? (
-                                                <span> (- {elite.espionage * 5} energy )</span>
+                                                <span> (- {elite.espionage * 5} Cardinum )</span>
                                             ) : (
-                                                <span> (- {elite.espionage * 10} energy )</span>
+                                                <span> (- {elite.espionage * 10} Cardinum )</span>
                                             )}                                    </>
                                     }
                                     {''} Card down {elite.down} to {parseInt(elite.down) + 1} with {(parseInt(elite.down) + 1) * 10 - elite.espionage} more point(s)!
@@ -378,9 +378,9 @@ const elite = () => {
                                             </button>
 
                                             {elite.nft ? (
-                                                <span> (- {elite.leadership * 5} energy )</span>
+                                                <span> (- {elite.leadership * 5} Cardinum )</span>
                                             ) : (
-                                                <span> (- {elite.leadership * 10} energy )</span>
+                                                <span> (- {elite.leadership * 10} Cardinum )</span>
                                             )}                                    </>
                                     }
                                     {''} Card left {elite.left} to {parseInt(elite.left) + 1} with {(parseInt(elite.left) + 1) * 10 - elite.leadership} more point(s)!

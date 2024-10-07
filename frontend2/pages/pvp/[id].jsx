@@ -546,7 +546,7 @@ const Pvp = () => {
                                                         </div>
                                                     }
 
-                                                    <p>Energy +  {playerNumber == 1 ? (
+                                                    <p>Cardinum +  {playerNumber == 1 ? (
                                                         <span>
                                                             {pvp.player1_points * 10}
                                                         </span>

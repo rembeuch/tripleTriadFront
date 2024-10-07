@@ -1,17 +1,21 @@
-import React from 'react'
-const Card = ({ card, played, reveal }) => {
+import React from 'react';
 
+const Card = ({ card, played, reveal }) => {
     const circleStyle = {
         width: '120px',
         height: '120px',
         borderRadius: '50%',
-        backgroundColor: '#ccc',
+        backgroundImage: 'url("https://res.cloudinary.com/dsiamykrd/image/upload/v1728113281/compass_b9qu84.webp")',
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center', 
+        backgroundRepeat: 'no-repeat', 
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         margin: "auto",
+        border: '1px solid black', 
     };
 
     const tyleStyle = {
@@ -30,6 +34,9 @@ const Card = ({ card, played, reveal }) => {
 
     const valueStyle = {
         position: 'absolute',
+        backgroundColor: '#fff', // Fond opaque pour les chiffres
+        padding: '5px 10px', // Espacement autour des chiffres
+        borderRadius: '5px', // Coins arrondis pour un meilleur look
     };
 
     const upStyle = {
@@ -53,6 +60,7 @@ const Card = ({ card, played, reveal }) => {
         left: '5%',
         transform: 'translateY(-20%)',
     };
+
     return (
         <>
             {reveal ? (
@@ -65,44 +73,43 @@ const Card = ({ card, played, reveal }) => {
             ) : (
                 <>
                     <div style={played ? tyleStyle : circleStyle}>
-                        {played &&
-                            <>  
-                                <p style={upStyle}>{card.up}</p>
-                                <p style={rightStyle}>{card.right}</p>
-                                <p style={downStyle}>{card.down}</p>
-                                <p style={leftStyle}>{card.left}</p>
-                            </>
-                        }
-                        {!card.computer &&
+                        {played && (
                             <>
                                 <p style={upStyle}>{card.up}</p>
                                 <p style={rightStyle}>{card.right}</p>
                                 <p style={downStyle}>{card.down}</p>
                                 <p style={leftStyle}>{card.left}</p>
                             </>
-                        }
-                        {!card.hide &&
+                        )}
+                        {!card.computer && (
                             <>
                                 <p style={upStyle}>{card.up}</p>
                                 <p style={rightStyle}>{card.right}</p>
                                 <p style={downStyle}>{card.down}</p>
                                 <p style={leftStyle}>{card.left}</p>
                             </>
-                        }
-                        {card.hide && card.computer && !played &&
+                        )}
+                        {!card.hide && (
+                            <>
+                                <p style={upStyle}>{card.up}</p>
+                                <p style={rightStyle}>{card.right}</p>
+                                <p style={downStyle}>{card.down}</p>
+                                <p style={leftStyle}>{card.left}</p>
+                            </>
+                        )}
+                        {card.hide && card.computer && !played && (
                             <>
                                 <p style={upStyle}>?</p>
                                 <p style={rightStyle}>?</p>
                                 <p style={downStyle}>?</p>
                                 <p style={leftStyle}>?</p>
                             </>
-                        }
+                        )}
                     </div>
                 </>
             )}
-
         </>
-    )
-}
+    );
+};
 
-export default Card
+export default Card;
