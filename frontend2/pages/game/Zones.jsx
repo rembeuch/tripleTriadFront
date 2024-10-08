@@ -28,7 +28,6 @@ const Zones = () => {
   const [pvp, setPvp] = useState(null);
   const [game, setGame] = useState(null);
   const [monsters, setMonsters] = useState(null);
-  const [zoneMonsters, setZoneMonsters] = useState(null);
   const [sMonsters, setSMonsters] = useState(null);
   const [copy, setCopy] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -186,7 +185,6 @@ const Zones = () => {
       try {
         const json = await getMonsters();
         setMonsters(json.monsters);
-        setZoneMonsters(json.zone_monsters);
         if (player.s_zone) {
           setSMonsters(json.s_monsters);
           setCopy(json.copy);
@@ -198,8 +196,6 @@ const Zones = () => {
 
     fetchCurrentMonsters();
   }, [player]);
-
-
 
   useEffect(() => {
     const fetchCurrentGame = async () => {
@@ -291,7 +287,7 @@ const Zones = () => {
               textAlign: 'center' // Bordures arrondies pour un meilleur style
             }}
             >
-              🌍 Current zone: {player.zone_position} / Cardinum ⚡ : {player.energy} / 💎 Elite Points: {player.elite_points}
+              🌍 Current zone: {player.zone_position} / Cardinum ⚡ : {player.energy} / Diamonds 💎: {player.elite_points}
               <br />
 
               {player.zones.includes(player.zone_position) && (

@@ -332,7 +332,7 @@ export default function Home() {
                           : "none",
                         opacity: dialogues.dialogues[3] === "Go check your monster!" && currentPage === 3 ? 1 : 0.8,
 
-                      }} >Deck </button>
+                      }} >Spirits </button>
                     </Link>
                     {game && deck ? (
                       <Link href="/game/[id]" as={`/game/${game.id}`}>

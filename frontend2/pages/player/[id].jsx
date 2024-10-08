@@ -306,7 +306,7 @@ function Player() {
                   <h2>
                     <p>Cardinum ⚡: {player.energy}</p>
                     <p>ability: {player.ability}</p>
-                    <p>Elite points: {player.elite_points}</p>
+                    <p>Diamonds 💎: {player.elite_points}</p>
                     <Link href="/Stats">
                       <button style={{
                         color: "#F9DC5C",

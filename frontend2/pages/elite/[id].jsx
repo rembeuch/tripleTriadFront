@@ -278,7 +278,7 @@ const elite = () => {
                             </Flex>
                         </div>
                         <div>
-                            points: {player.elite_points} / Cardinum ⚡: {player.energy} {addAlert}
+                        Diamonds 💎: {player.elite_points} / Cardinum ⚡: {player.energy} {addAlert}
 
                             {elite.fight < 100 ? (
                                 <p>Fight: {elite.fight} / 100

@@ -440,6 +440,7 @@ const Game = () => {
 
 
     useEffect(() => {
+        if (!authToken) return;
 
         const fetchCurrentPlayer = async () => {
             try {
@@ -453,6 +454,7 @@ const Game = () => {
     }, [authToken, reward]);
 
     useEffect(() => {
+        if (!player) return;
         const fetchCurrentGame = async () => {
             try {
                 const json = await getGame();

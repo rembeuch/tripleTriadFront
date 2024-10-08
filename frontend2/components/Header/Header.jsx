@@ -165,7 +165,7 @@ const Header = ({ pvp }) => {
                 >
                     {player &&
                         <Link href="/player/[id]" as={`/player/${player.id}`}>
-                            Deck
+                            Spirits
                         </Link>
                     }
                 </Text>
