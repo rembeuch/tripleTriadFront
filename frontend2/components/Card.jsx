@@ -16,6 +16,7 @@ const Card = ({ card, played, reveal }) => {
         position: 'relative',
         margin: "auto",
         border: '1px solid black', 
+        color: 'black',
     };
 
     const tyleStyle = {
@@ -30,6 +31,7 @@ const Card = ({ card, played, reveal }) => {
         position: 'relative',
         margin: "auto",
         marginTop: '30px',
+        color: 'black'
     };
 
     const valueStyle = {

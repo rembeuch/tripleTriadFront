@@ -12,6 +12,7 @@ import {
 import SuperPowerModal from '@/components/SuperPowerModal';
 import { useAuth } from '@/contexts/authContext';
 import Layout from '@/components/Layout/Layout';
+import ZoneBackground from '@/components/ZoneBackground';
 
 
 
@@ -43,6 +44,7 @@ const Game = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [superPowerCard, setSuperPowerCard] = useState(null);
     const [superPowerCardInfo, setSuperPowerCardInfo] = useState([]);
+    const [zonePnj, setZonePnj] = useState(null);
 
 
 
@@ -57,6 +59,11 @@ const Game = () => {
         const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_game?id=${player.id}`}`);
         return response.json();
     }
+
+    async function getZonePnj() {
+        const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_zone_pnj?player_id=${player.id}`}`);
+        return response.json();
+      }
 
     async function fetchPlayerDeck() {
         try {
@@ -187,17 +194,15 @@ const Game = () => {
             document.querySelector('#alertPlayer').innerText = responseData.message
             if (responseData.message != '') {
                 if (responseData.cards_updated != []) {
-                    for (const card_id of responseData.cards_updated) {
-                        await processUpdatedCards(card_id);
-                    }
+                    await processUpdatedCards(responseData.cards_updated);
                 }
 
             }
         }
     }
 
-    async function processUpdatedCards(card_id) {
-        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player_combo?id=${player.id}&card_id=${card_id}`}`, {
+    async function processUpdatedCards(card_ids) {
+        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/player_combo?id=${player.id}&card_ids=${card_ids}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -217,17 +222,15 @@ const Game = () => {
             document.querySelector('#alertComputer').innerText = responseComputer.message
             if (responseComputer.message != "") {
                 if (responseComputer.cards_updated != []) {
-                    for (const card_id of responseComputer.cards_updated) {
-                        await processUpdatedCardsComputer(card_id);
-                    }
+                        await processUpdatedCardsComputer(responseComputer.cards_updated);
                 }
             }
         }
     }
 
-    async function processUpdatedCardsComputer(card_id) {
+    async function processUpdatedCardsComputer(card_ids) {
 
-        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/computer_combo?id=${player.id}&card_id=${card_id}`}`, {
+        const responseCombo = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/computer_combo?id=${player.id}&card_ids=${card_ids}`}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -338,15 +341,15 @@ const Game = () => {
 
     const pushSuperPowerCards = (info) => {
         const isTurnInfo = typeof info === 'string' && info.includes('turn');
-    
+
         let updatedSuperPowerCardInfo = superPowerCardInfo.filter(element => {
             return !(typeof element === 'string' && element.includes('turn'));
         });
-    
+
         if (isTurnInfo || !superPowerCardInfo.includes(info)) {
             updatedSuperPowerCardInfo = [...updatedSuperPowerCardInfo, info];
         }
-    
+
         setSuperPowerCardInfo(updatedSuperPowerCardInfo);
     };
 
@@ -469,6 +472,23 @@ const Game = () => {
             fetchCurrentGame();
         }
     }, [authToken, player, endgame]);
+
+    useEffect(() => {
+    if (!player) return;
+        const fetchCurrentPnj = async () => {
+          try {
+            const json = await getZonePnj();
+            console.log(json.zone)
+            setZonePnj(json.zone_pnj);
+            setZone(json.zone)
+          } catch (error) {
+            console.error("Failed to fetch the player: ", error);
+          }
+        };
+        if (player) {
+          fetchCurrentPnj();
+        }
+      }, [player]);
 
     useEffect(() => {
         if (player) {
@@ -661,9 +681,12 @@ const Game = () => {
     if (!player) return <h2>Loading...</h2>;
     if (!leftCards) return <h2>Loading...</h2>;
     if (!board) return <h2>Loading...</h2>;
+    if (!zonePnj) return <h2>Loading...</h2>;
+
 
     return (
         <>
+        <ZoneBackground zonePnj={zonePnj}>
             <Layout pvp={player.in_pvp}>
 
 
@@ -1076,7 +1099,7 @@ const Game = () => {
                                                             <p style={{}}>
                                                                 {!card.hide && card.name}
                                                             </p>
-                                                            <Card reveal={card.hide? true : false} card={card.hide? null : card} />
+                                                            <Card reveal={card.hide ? true : false} card={card.hide ? null : card} />
                                                         </div>
                                                     </>
                                                 ))}
@@ -1129,6 +1152,7 @@ const Game = () => {
                 )
                 }
             </Layout>
+        </ZoneBackground>
         </>
     );
 };

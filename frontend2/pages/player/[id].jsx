@@ -289,7 +289,7 @@ function Player() {
             <div>
               <div>
                 <h2>{player.name}</h2>
-                <p>Your Team: {deck.length + elites.length}/5</p>
+                <p>Spirits in your Compass: {deck.length}/4</p>
 
               </div>
               {removeAlert && <div>

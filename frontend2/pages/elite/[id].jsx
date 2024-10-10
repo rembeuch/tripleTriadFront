@@ -281,7 +281,7 @@ const elite = () => {
                         Diamonds 💎: {player.elite_points} / Cardinum ⚡: {player.energy} {addAlert}
 
                             {elite.fight < 100 ? (
-                                <p>Fight: {elite.fight} / 100
+                                <p>Fight (up): {elite.fight} / 100
                                     {player.elite_points > 0 &&
                                         <>
                                             <button onClick={() => increment(0)} style={{

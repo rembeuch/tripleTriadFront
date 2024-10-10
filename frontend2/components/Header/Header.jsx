@@ -94,7 +94,8 @@ const Header = ({ pvp }) => {
 
 
     return (
-        <Flex justifyContent="space-between" alignItems="center" height="10vh" width="100%" p="2rem">
+        <Flex backgroundImage="
+        linear-gradient(to right, rgba(218,165,32, 0.7), rgba(139,69,19, 0.7))" color='black' justifyContent="space-between" alignItems="center" height="6vh" width="100%" p="2rem">
             {authToken &&
                 <div>
                     <button className='' onClick={clearToken}>LogOut</button>
@@ -180,6 +181,20 @@ const Header = ({ pvp }) => {
                     {player &&
                         <Link href="/game/Zones">
                             Zones
+                        </Link>
+                    }
+                </Text>
+                <Text
+                    fontWeight="bold"
+                    sx={{
+                        ':hover': {
+                            textDecoration: 'underline',
+                        },
+                    }}
+                >
+                    {player &&
+                        <Link href="/Stats">
+                            Stats
                         </Link>
                     }
                 </Text>

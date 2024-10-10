@@ -27,6 +27,7 @@ const Zones = () => {
   const [player, setPlayer] = useState(null);
   const [pvp, setPvp] = useState(null);
   const [game, setGame] = useState(null);
+  const [deck, setDeck] = useState([]);
   const [monsters, setMonsters] = useState(null);
   const [sMonsters, setSMonsters] = useState(null);
   const [copy, setCopy] = useState(null);
@@ -34,6 +35,7 @@ const Zones = () => {
   const [addAlert, setAddAlert] = useState("");
   const [numberOfRounds, setNumberOfRounds] = useState(1);
   const [zonePnj, setZonePnj] = useState(null);
+  const [zone, setZone] = useState(null);
   const [dialogues, setDialogues] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -61,6 +63,11 @@ const Zones = () => {
 
   async function getGame() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_game?id=${player.id}`}`);
+    return response.json();
+  }
+
+  async function getDeck() {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/deck?id=${player.id}`}`);
     return response.json();
   }
 
@@ -180,6 +187,21 @@ const Zones = () => {
 
   useEffect(() => {
     if (!player) return;
+    const fetchDeck = async () => {
+      try {
+        const json = await getDeck();
+        setDeck(json);
+      } catch (error) {
+        console.error("Failed to fetch the player: ", error);
+      }
+    };
+    if (player) {
+      fetchDeck();
+    }
+  }, [player]);
+
+  useEffect(() => {
+    if (!player) return;
 
     const fetchCurrentMonsters = async () => {
       try {
@@ -216,7 +238,9 @@ const Zones = () => {
     const fetchCurrentPnj = async () => {
       try {
         const json = await getZonePnj();
-        setZonePnj(json);
+        console.log(json.zone)
+        setZonePnj(json.zone_pnj);
+        setZone(json.zone)
       } catch (error) {
         console.error("Failed to fetch the player: ", error);
       }
@@ -287,7 +311,7 @@ const Zones = () => {
               textAlign: 'center' // Bordures arrondies pour un meilleur style
             }}
             >
-              🌍 Current zone: {player.zone_position} / Cardinum ⚡ : {player.energy} / Diamonds 💎: {player.elite_points}
+              🌍 Current zone: {zone} / Cardinum ⚡ : {player.energy} / Diamonds 💎: {player.elite_points}
               <br />
 
               {player.zones.includes(player.zone_position) && (
@@ -295,9 +319,6 @@ const Zones = () => {
                   🧭 Spirits Sealed in this zone: {monsters}
                 </span>
               )}
-              {player.power_condition && player.monster_condition &&
-                <p>Bonus condition (+20 Cardinum after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition} {player.ability == player.power_condition && player.decks.includes(player.monster_condition) ? "✅" : "❌"} </p>
-              }
               {player.power_condition && player.monster_condition && (
                 <p>
                   ✨ Bonus condition (+20 Cardinum after each zone) ability: {player.power_condition} & monster in your deck: {player.monster_condition}{" "}
@@ -416,7 +437,9 @@ const Zones = () => {
                 }} > Current Fight </button>
               </Link>
             ) : (
-              <button onClick={() => createGame()} style={{
+              <>
+              {deck.length == 4 ? (
+                <button onClick={() => createGame()} style={{
                 color: "#F9DC5C",
                 backgroundColor: "green",
                 padding: "10px 50px",
@@ -425,6 +448,14 @@ const Zones = () => {
                 borderRadius: 5,
                 textDecoration: "none"
               }} > Hunt Spirit {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+            
+              ) : 
+              (
+                <div>
+                  You need 4 spirits in your Compass!
+                </div>
+              )}
+            </>
             )}
             {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
               <>
