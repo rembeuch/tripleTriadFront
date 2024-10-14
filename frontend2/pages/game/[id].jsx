@@ -580,6 +580,7 @@ const Game = () => {
         ...cardStyle,
         marginRight: "25px",
         backgroundColor: getBackGroundLeftCard(card),
+        color: 'black',
 
     });
 
@@ -713,7 +714,7 @@ const Game = () => {
                                             <p>Score: {playerScore}</p>
                                             {endAlert != "" &&
                                                 <div>
-                                                    <Alert status='warning' width="100%">
+                                                    <Alert status='warning' width="100%" color='black'>
                                                         <AlertIcon />
                                                         {endAlert}!
                                                     </Alert>

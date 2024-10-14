@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/authContext';
 import Card from '@/components/Card';
 import Link from 'next/link';
 import ZoneBackground from '@/components/ZoneBackground';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@chakra-ui/react';
 
 
 
@@ -37,7 +38,18 @@ const Zones = () => {
   const [zonePnj, setZonePnj] = useState(null);
   const [zone, setZone] = useState(null);
   const [dialogues, setDialogues] = useState([])
+  const [objectives, setObjectives] = useState(null)
+  const [currentStats, setCurrentStats] = useState(null)
   const [currentPage, setCurrentPage] = useState(0);
+  const [isOpen, setIsOpen] = useState(false); // État pour ouvrir/fermer le modal
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
 
   const handleNext = () => {
     if (currentPage < dialogues.dialogues.length - 1) {
@@ -53,11 +65,6 @@ const Zones = () => {
 
   async function getPlayer() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_player?token=${authToken}`}`);
-    return response.json();
-  }
-
-  async function getDialogues() {
-    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/display_pnj_dialogue?player_id=${player.id}`}`);
     return response.json();
   }
 
@@ -78,6 +85,16 @@ const Zones = () => {
 
   async function getZonePnj() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_zone_pnj?player_id=${player.id}`}`);
+    return response.json();
+  }
+
+  async function getDialogues() {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/display_pnj_dialogue?player_id=${player.id}`}`);
+    return response.json();
+  }
+
+  async function getObjectives(zone_pnj) {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_pnj_objectives?player_id=${player.id}&pnj_id=${zone_pnj.id}`}`);
     return response.json();
   }
 
@@ -151,6 +168,25 @@ const Zones = () => {
         setAddAlert("")
       }, 3000);
 
+    }
+  }
+
+  async function checkObjective(current, objective_id) {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/check_objective?player_id=${player.id}&current=${current}&objective_id=${objective_id}`}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const responseData = await response.json();
+      setIsOpen(false);
+      setDialogues(prevState => ({
+        ...prevState,  // Copie tout l'état précédent
+        dialogues: [responseData.dialogue, ...prevState.dialogues]  // Mise à jour de dialogues.dialogues
+      }));
     }
   }
 
@@ -238,7 +274,6 @@ const Zones = () => {
     const fetchCurrentPnj = async () => {
       try {
         const json = await getZonePnj();
-        console.log(json.zone)
         setZonePnj(json.zone_pnj);
         setZone(json.zone)
       } catch (error) {
@@ -249,6 +284,23 @@ const Zones = () => {
       fetchCurrentPnj();
     }
   }, [player]);
+
+  useEffect(() => {
+    if (!zonePnj) return;
+    const fetchCurrentObjectives = async () => {
+      try {
+        const json = await getObjectives(zonePnj);
+        console.log("Objectives loaded:", json)
+        setObjectives(json.objectives)
+        setCurrentStats(json.current_stat)
+      } catch (error) {
+        console.error("Failed to fetch the player: ", error);
+      }
+    };
+    if (zonePnj) {
+      fetchCurrentObjectives();
+    }
+  }, [zonePnj]);
 
   useEffect(() => {
     if (player) {
@@ -329,9 +381,26 @@ const Zones = () => {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {dialogues && dialogues.dialogues && dialogues.images && (
                   <>
+                    {objectives && objectives.length > 0 ? (
+                      <Button
+                        aria-label="View Objectives"
+                        onClick={handleOpenModal}
+                        style={{
+                          backgroundColor: '#FFD700',
+                          color: 'black',
+                          borderRadius: '50%',
+                          padding: '10px',
+                          zIndex: 1
+                        }}
+                      >
+                        Objectives 🏆
+                      </Button>
+                    ) : (
+                      <p>No objectives to display</p>
+                    )}
                     <img
                       src={dialogues.images[currentPage]}
-                      alt="Cosmos Avatar"
+                      alt="Avatar"
                       style={{ width: '200px', height: '200px' }} // Hauteur et largeur fixes
                     />
                     <Box
@@ -438,24 +507,24 @@ const Zones = () => {
               </Link>
             ) : (
               <>
-              {deck.length == 4 ? (
-                <button onClick={() => createGame()} style={{
-                color: "#F9DC5C",
-                backgroundColor: "green",
-                padding: "10px 50px",
-                margin: 10,
-                transition: "background-color 0.3s ease",
-                borderRadius: 5,
-                textDecoration: "none"
-              }} > Hunt Spirit {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
-            
-              ) : 
-              (
-                <div>
-                  You need 4 spirits in your Compass!
-                </div>
-              )}
-            </>
+                {deck.length == 4 ? (
+                  <button onClick={() => createGame()} style={{
+                    color: "#F9DC5C",
+                    backgroundColor: "green",
+                    padding: "10px 50px",
+                    margin: 10,
+                    transition: "background-color 0.3s ease",
+                    borderRadius: 5,
+                    textDecoration: "none"
+                  }} > Hunt Spirit {player.zone_position[player.zone_position.length - 1] == "5" && player.zone_position[0] == "A" && "💀"} {player.zone_position[player.zone_position.length - 1] == "0" && player.zone_position[0] == "A" && "💀"} {player.zones[0].slice(0, 5) == "bossA" && "💀"}  {player.zones[0].slice(0, 5) == "bossB" && "💀"} {player.zones.length > 1 && player.zones[1].slice(0, 5) == "bossB" && player.zone_position[0] == "B" && "💀"}</button>
+
+                ) :
+                  (
+                    <div>
+                      You need 4 spirits in your Compass!
+                    </div>
+                  )}
+              </>
             )}
             {player.s_zone && player.in_pvp == "false" && player.in_game == false && sMonsters && copy &&
               <>
@@ -466,7 +535,7 @@ const Zones = () => {
                     {sMonsters.slice(0, 2).map((card, index) => (
                       <>
                         <div key={card.id} style={eliteCardStyle} className="card">
-                          <p style={{ background: "white", margin: '5px' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}` : "not in your deck")}</p>
+                          <p style={{ background: "white", margin: '5px', color: 'black' }}> {card.name} /  {(player.monsters.includes(card.name) ? `copy ${copy[index]}` : "not in your deck")}</p>
                           <Flex>
                             <Card card={card} />
                           </Flex>
@@ -491,7 +560,7 @@ const Zones = () => {
                     {sMonsters.slice(2, 4).map((card, index) => (
                       <>
                         <div key={card.id} style={eliteCardStyle} className="card">
-                          <p style={{ background: "white", margin: '5px' }}> {card.name} / copy {copy[index + 2]}</p>
+                          <p style={{ background: "white", margin: '5px', color: 'black' }}> {card.name} / copy {copy[index + 2]}</p>
                           <Flex>
                             <Card card={card} />
                           </Flex>
@@ -541,6 +610,38 @@ const Zones = () => {
                 </div>
               </>
             }
+            <Modal isOpen={isOpen} onClose={handleCloseModal}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Objectives</ModalHeader>
+                <ModalBody>
+                  {objectives && objectives.length > 0 ? (
+                    <ul>
+                      {objectives.map((objective, index) => (
+                        <li key={index}>
+                          <strong>{objective.name}</strong> - {currentStats[index]} / {objective.condition} -
+                          {objective.completed ? '✅' :
+                            <button
+                              onClick={() => checkObjective(currentStats[index], objective.id)}
+                              disabled={objective.completed}
+                            >
+                              Check Objective 🔒
+                            </button>
+                          }
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No objectives available.</p>
+                  )}
+                </ModalBody>
+                <ModalFooter>
+                  <Button colorScheme="blue" onClick={handleCloseModal}>
+                    Close
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </>
         ) : (
           <Alert status='warning' width="50%">
@@ -549,7 +650,7 @@ const Zones = () => {
           </Alert>
         )}
       </Layout>
-    </ZoneBackground>
+    </ZoneBackground >
   )
 }
 

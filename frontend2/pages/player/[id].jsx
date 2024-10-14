@@ -289,7 +289,6 @@ function Player() {
             <div>
               <div>
                 <h2>{player.name}</h2>
-                <p>Spirits in your Compass: {deck.length}/4</p>
 
               </div>
               {removeAlert && <div>
@@ -413,6 +412,7 @@ function Player() {
 
               }
               <hr></hr>
+              <p>Spirits in your Compass: {deck.length}/4</p>
               <div style={gridContainerStyle}>
                 {deck.length >= 1 && deck.map(card => (
                   <div key={card.id} style={cardStyle(card)} className="card">
@@ -453,54 +453,76 @@ function Player() {
 
               <div style={gridContainerStyle}>
                 {cards.map(card => (
-                  <div key={card.id} style={cardStyle(card)} className="card">
-                    <Image
-                      src={card.image || 'https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg'}
-                      alt={card.name}
-                      borderRadius="8px"
-                      boxSize="200px" // Taille de l'image
-                      objectFit="cover"
-                    />
-                    <p style={{ background: "white", margin: '5px' }}> {card.name} rank:{card.rank} 👾:{card.copy}</p>
-                    <Flex>
-                      <Card card={card} />
-                    </Flex>
-                    {addAlert && selectedCardId == card.id && <div>
-                      <Alert status='warning' width="50%">
-                        <AlertIcon />
-                        {addAlert}
-                      </Alert>
-                    </div>
-                    }
-                    <Link href="/monster/[id]" as={`/monster/${card.id}`}>
-                      <button style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "green",
-                        padding: "10px 50px",
-                        margin: 5,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                      }} > Details </button>
-                    </Link>
-                    {!card.max &&
-                      <button onClick={() => addCard(card.id)} style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "blue",
-                        padding: "10px 10px",
-                        marginTop: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none",
-                        boxShadow: currentPage === 1 && deck.length < 1
-                          ? "0 0 30px 10px rgba(255, 215, 0, 0.9)"
-                          : "none",
-                        opacity: currentPage === 1 && deck.length < 1 ? 1 : 0.8,
-
-                      }} > Add
-                      </button>
-                    }
-                  </div>
+                 <div key={card.id} style={{ ...cardStyle(card), position: 'relative' }} className="card">
+                 {/* Logo "NEW" en haut à droite */}
+                 {card.new && (
+                   <span style={{
+                     position: 'absolute',
+                     top: '10px',
+                     right: '10px',
+                     backgroundColor: 'red',
+                     color: 'white',
+                     borderRadius: '5px',
+                     padding: '5px 10px',
+                     fontSize: '12px',
+                     fontWeight: 'bold',
+                     zIndex: 1
+                   }}>
+                     NEW!
+                   </span>
+                 )}
+               
+                 <Image
+                   src={card.image || 'https://t4.ftcdn.net/jpg/01/68/49/67/240_F_168496711_iFQUk2vqAnnDpVzGm2mtp8u2gqgwZrY7.jpg'}
+                   alt={card.name}
+                   borderRadius="8px"
+                   boxSize="200px"
+                   objectFit="cover"
+                 />
+                 <p style={{ background: "white", margin: '5px' }}>
+                   {card.name} rank: {card.rank} 👾:{card.copy}
+                 </p>
+                 <Flex>
+                   <Card card={card} />
+                 </Flex>
+                 {addAlert && selectedCardId == card.id && (
+                   <div>
+                     <Alert status='warning' width="50%">
+                       <AlertIcon />
+                       {addAlert}
+                     </Alert>
+                   </div>
+                 )}
+                 <Link href="/monster/[id]" as={`/monster/${card.id}`}>
+                   <button style={{
+                     color: "#F9DC5C",
+                     backgroundColor: "green",
+                     padding: "10px 50px",
+                     margin: 5,
+                     transition: "background-color 0.3s ease",
+                     borderRadius: 5,
+                     textDecoration: "none"
+                   }}> Details </button>
+                 </Link>
+                 {!card.max && (
+                   <button onClick={() => addCard(card.id)} style={{
+                     color: "#F9DC5C",
+                     backgroundColor: "blue",
+                     padding: "10px 10px",
+                     marginTop: 10,
+                     transition: "background-color 0.3s ease",
+                     borderRadius: 5,
+                     textDecoration: "none",
+                     boxShadow: currentPage === 1 && deck.length < 1
+                       ? "0 0 30px 10px rgba(255, 215, 0, 0.9)"
+                       : "none",
+                     opacity: currentPage === 1 && deck.length < 1 ? 1 : 0.8,
+                   }}>
+                     Add
+                   </button>
+                 )}
+               </div>
+               
                 ))}
                 {currentPage === 1 && deck.length < 1 &&
                   <Box
