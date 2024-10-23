@@ -164,6 +164,11 @@ const monster = () => {
         <>
             <CosmosBackground>
                 <Layout>
+                    {player &&
+                        <Link href="/player/[id]" as={`/player/${player.id}`}>
+                            Back
+                        </Link>
+                    }
                     <div style={gridContainerStyle}>
                         <h2> Your spirit:</h2>
                         <div key={monster.id} style={monsterCardStyle(monster)} className="card">

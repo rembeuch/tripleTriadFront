@@ -34,6 +34,8 @@ export default function Home() {
   const [error, setError] = useState('');
   const [dialogues, setDialogues] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
+  const [zonePnj, setZonePnj] = useState(null);
+
 
   const handleNext = () => {
     if (currentPage < dialogues.dialogues.length - 1) {
@@ -59,6 +61,11 @@ export default function Home() {
 
   async function getGame() {
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_game?id=${player.id}`}`);
+    return response.json();
+  }
+
+  async function getZonePnj() {
+    const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/find_zone_pnj?player_id=${player.id}`}`);
     return response.json();
   }
 
@@ -138,7 +145,7 @@ export default function Home() {
     if (deck.length == 4) {
       router.push("/game/Zones");
     } else {
-      alert("You need a team with 5 members");
+      alert("You need 4 Spirits in your Compass");
     }
   };
 
@@ -177,6 +184,21 @@ export default function Home() {
 
     if (player) {
       fetchCurrentDialogues();
+    }
+  }, [player]);
+
+  useEffect(() => {
+    const fetchCurrentPnj = async () => {
+      try {
+        const json = await getZonePnj();
+        setZonePnj(json.zone_pnj);
+        setZone(json.zone)
+      } catch (error) {
+        console.error("Failed to fetch the player: ", error);
+      }
+    };
+    if (player) {
+      fetchCurrentPnj();
     }
   }, [player]);
 
@@ -245,7 +267,7 @@ export default function Home() {
                     <img
                       src={dialogues.images[currentPage]}
                       alt="Cosmos Avatar"
-                      style={{ width: '200px', height: '200px' }} // Hauteur et largeur fixes
+                      style={{ width: '200px', height: '200px' }}
                     />
                     <Box
                       bg="rgba(50, 50, 50, 0.9)"
@@ -317,55 +339,130 @@ export default function Home() {
               </div>
               <div>
                 {player && dialogues.dialogues ? (
-                  <>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
                     <Link href="/player/[id]" as={`/player/${player.id}`}>
-                      <button style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "blue",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none",
-                        boxShadow: dialogues.dialogues[3] === "Go check your monster!" && currentPage === 3
-                          ? "0 0 30px 10px rgba(255, 215, 0, 0.9)"
-                          : "none",
-                        opacity: dialogues.dialogues[3] === "Go check your monster!" && currentPage === 3 ? 1 : 0.8,
+                      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <div style={{
+                          border: '2px solid #F9DC5C',
+                          borderRadius: '15px',
+                          padding: '20px',
+                          boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+                          display: 'inline-block',
+                          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                          boxShadow: dialogues.dialogues[3] === "Go check your Spirits!" && currentPage === 3
+                            ? "0 0 30px 10px rgba(255, 215, 0, 0.9)"
+                            : "none",
+                          opacity: dialogues.dialogues[3] === "Go check your Spirits!" && currentPage === 3 ? 1 : 0.8,
+                        }}>
+                          <h2 style={{
+                            color: "#F9DC5C",
+                            marginBottom: '10px',
+                            fontSize: '24px',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                            textAlign: 'center'
+                          }}>
+                            Spirits
+                          </h2>
 
-                      }} >Spirits </button>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',   // Aligne les cartes en haut pour éviter qu'elles ne chevauchent le titre
+                            gap: '10px',                // Espacement entre les cartes
+                          }}>
+                            {deck && deck.length > 0 ? (
+                              deck.map((card, index) => (
+                                <img
+                                  key={index}
+                                  src={card.image} // Accède à la propriété 'image' de chaque carte
+                                  alt={`Card ${index + 1}`}
+                                  style={{
+                                    width: '80px',
+                                    height: '120px',
+                                    transition: 'transform 0.3s ease', // Effet au survol
+                                    cursor: 'pointer'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} // Zoom au survol
+                                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} // Retour à la taille d'origine
+                                />
+                              ))
+                            ) : (
+                              <img
+                                src={"https://res.cloudinary.com/dsiamykrd/image/upload/v1728113281/compass_b9qu84.webp"}
+                                alt={`Empty card`}
+                                style={{
+                                  width: '200px',
+                                  height: '220px',
+                                  transition: 'transform 0.3s ease', // Effet au survol
+                                  cursor: 'pointer'
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </Link>
+
                     {game && deck ? (
                       <Link href="/game/[id]" as={`/game/${game.id}`}>
                         <button style={{
-                          color: "#F9DC5C",
-                          backgroundColor: "green",
-                          padding: "10px 50px",
-                          margin: 10,
-                          transition: "background-color 0.3s ease",
-                          borderRadius: 5,
-                          textDecoration: "none"
+                          border: '2px solid #F9DC5C',
+                          borderRadius: '15px',
+                          padding: '20px',
+                          boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+                          display: 'inline-block',
+                          backgroundColor: 'rgba(0, 0, 0, 0.7)',
                         }} > Fight </button>
                       </Link>
                     ) : (
                       <>
-                        {deck &&
-                          <>
-                            <button
-                              onClick={redirectZones}
+                        {deck && zonePnj && (
+                          <div
+                            onClick={redirectZones} // Redirection lors du clic
+                            style={{
+                              position: 'relative',
+                              border: '2px solid #F9DC5C',
+                              borderRadius: '15px',
+                              padding: '20px',
+                              boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+                              display: 'inline-block',
+                              backgroundImage: `url(${zonePnj.zone_image})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              width: '200px',  // Ajuste la largeur si besoin
+                              height: '300px', // Ajuste la hauteur si besoin
+                              cursor: 'pointer',
+                              transition: 'transform 0.3s ease',
+                              display: 'flex',  // Permet d'aligner le titre et le contenu de la div
+                              flexDirection: 'column',
+                              justifyContent: 'flex-start',  // Positionne le titre en haut
+                              alignItems: 'center',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'} // Zoom au survol
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}  // Retour à la taille d'origine
+                          >
+                            {/* Titre "Play" en haut de la div, au-dessus du fond */}
+                            <h2
                               style={{
-                                color: "#F9DC5C",
-                                backgroundColor: "green",
-                                padding: "10px 50px",
-                                margin: 10,
-                                transition: "background-color 0.3s ease",
-                                borderRadius: 5,
-                                textDecoration: "none"
-                              }} > Play </button>
-                          </>
-                        }
+                                color: '#F9DC5C',
+                                fontSize: '24px',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                                marginBottom: '10px',
+                                backgroundColor: 'rgba(0, 0, 0, 0.6)', // Optionnel: ajoute un fond semi-transparent pour améliorer la lisibilité
+                                padding: '5px 10px',  // Un peu d'espace autour du texte
+                                borderRadius: '10px',  // Arrondit les bords
+                                zIndex: 1,  // Assure que le titre est au-dessus de l'image de fond
+                              }}
+                            >
+                              Play
+                            </h2>
+
+                            {/* Autres éléments à l'intérieur de la div si besoin */}
+                          </div>
+
+                        )}
                       </>
-                    )
-                    }
+                    )}
                     {/* {deck &&
                     <>
                       {
@@ -409,7 +506,7 @@ export default function Home() {
                         </Link>
                       }
                     </>
-                  } */}
+                   } */}
                     {showAlert && <div>
                       <Alert status='warning' width="50%">
                         <AlertIcon />
@@ -417,7 +514,7 @@ export default function Home() {
                       </Alert>
                     </div>
                     }
-                  </>
+                  </div>
                 ) :
                   <></>
                 }

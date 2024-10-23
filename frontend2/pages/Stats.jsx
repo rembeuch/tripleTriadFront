@@ -8,6 +8,7 @@ import {
     Text,
     Button,
 } from '@chakra-ui/react';
+import Link from 'next/link';
 import { useEffect, useState } from "react";
 import { useAuth } from '@/contexts/authContext';
 import ZoneBackground from "@/components/ZoneBackground";
@@ -93,6 +94,11 @@ export default function Stats() {
         <CosmosBackground>
             <ZoneBackground zonePnj={pnjs[currentPnjIndex]}>
                 <Layout>
+            {player &&
+                <Link href="/player/[id]" as={`/player/${player.id}`}>
+                    Back
+                </Link>
+            }
                     {Array.isArray(pnjs) && pnjs.length > 0 ? (
                         <Box
                             bg="rgba(50, 50, 50, 0.9)"  // Fond similaire avec opacité

@@ -94,124 +94,125 @@ const Header = ({ pvp }) => {
 
 
     return (
-        <Flex backgroundImage="
-        linear-gradient(to right, rgba(218,165,32, 0.7), rgba(139,69,19, 0.7))" color='black' justifyContent="space-between" alignItems="center" height="6vh" width="100%" p="2rem">
+        <>
             {authToken &&
-                <div>
-                    <button className='' onClick={clearToken}>LogOut</button>
-                </div>
-            }
-            {player && pvp == 'wait' && pvpMessage == false ? (
-                <div>
-                    <button>PvP: waiting List</button>
-                </div>
-            )
-                :
-                (
-                    <>
-                        {playerPvp && pvp == "wait" &&
+                <Flex backgroundImage="linear-gradient(to right, rgba(218,165,32, 0.7), rgba(139,69,19, 0.7))" color='black' justifyContent="space-between" alignItems="center" height="6vh" width="100%" p="2rem">
+                    <div>
+                        <button className='' onClick={clearToken}>LogOut</button>
+                    </div>
+                    {player && pvp == 'wait' && pvpMessage == false ? (
+                        <div>
+                            <button>PvP: waiting List</button>
+                        </div>
+                    )
+                        :
+                        (
+                            <>
+                                {playerPvp && pvp == "wait" &&
 
-                            <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
-                                <button style={{
-                                    color: "#F9DC5C",
-                                    backgroundColor: "purple",
-                                    padding: "10px 50px",
-                                    margin: 10,
-                                    transition: "background-color 0.3s ease",
-                                    borderRadius: 5,
-                                    textDecoration: "none"
-                                }} > PVP Fight </button>
+                                    <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
+                                        <button style={{
+                                            color: "#F9DC5C",
+                                            backgroundColor: "purple",
+                                            padding: "10px 50px",
+                                            margin: 10,
+                                            transition: "background-color 0.3s ease",
+                                            borderRadius: 5,
+                                            textDecoration: "none"
+                                        }} > PVP Fight </button>
+                                    </Link>
+                                }
+                            </>
+                        )
+
+                    }
+                    {player && pvp == 'true' && playerPvp &&
+                        <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
+                            <button style={{
+                                color: "#F9DC5C",
+                                backgroundColor: "purple",
+                                padding: "10px 50px",
+                                margin: 10,
+                                transition: "background-color 0.3s ease",
+                                borderRadius: 5,
+                                textDecoration: "none"
+                            }} > PVP Fight </button>
+                        </Link>
+                    }
+                    <div status='warning' width="100%" id="alert">
+                    </div>
+
+                    <Flex width="30%" justifyContent="space-between" alignItems="center">
+                        <Text
+                            fontWeight="bold"
+                            sx={{
+                                ':hover': {
+                                    textDecoration: 'underline',
+                                },
+                            }}
+                        >
+                            <Link href="/" passHref>
+                                Home
                             </Link>
-                        }
-                    </>
-                )
-
+                        </Text>
+                        <Text
+                            fontWeight="bold"
+                            sx={{
+                                ':hover': {
+                                    textDecoration: 'underline',
+                                },
+                            }}
+                        >
+                            {player &&
+                                <Link href="/player/[id]" as={`/player/${player.id}`}>
+                                    Spirits
+                                </Link>
+                            }
+                        </Text>
+                        <Text
+                            fontWeight="bold"
+                            sx={{
+                                ':hover': {
+                                    textDecoration: 'underline',
+                                },
+                            }}
+                        >
+                            {player &&
+                                <Link href="/game/Zones">
+                                    Zones
+                                </Link>
+                            }
+                        </Text>
+                        <Text
+                            fontWeight="bold"
+                            sx={{
+                                ':hover': {
+                                    textDecoration: 'underline',
+                                },
+                            }}
+                        >
+                            {player &&
+                                <Link href="/Stats">
+                                    Stats
+                                </Link>
+                            }
+                        </Text>
+                        <Text
+                            fontWeight="bold"
+                            sx={{
+                                ':hover': {
+                                    textDecoration: 'underline',
+                                },
+                            }}
+                        >
+                            <Link href="/Rules" passHref>
+                                Rules
+                            </Link>
+                        </Text>
+                    </Flex>
+                </Flex>
             }
-            {player && pvp == 'true' && playerPvp &&
-                <Link href="/pvp/[id]" as={`/pvp/${playerPvp.id}`}>
-                    <button style={{
-                        color: "#F9DC5C",
-                        backgroundColor: "purple",
-                        padding: "10px 50px",
-                        margin: 10,
-                        transition: "background-color 0.3s ease",
-                        borderRadius: 5,
-                        textDecoration: "none"
-                    }} > PVP Fight </button>
-                </Link>
-            }
-            <div status='warning' width="100%" id="alert">
-            </div>
-
-            <Flex width="30%" justifyContent="space-between" alignItems="center">
-                <Text
-                    fontWeight="bold"
-                    sx={{
-                        ':hover': {
-                            textDecoration: 'underline',
-                        },
-                    }}
-                >
-                    <Link href="/" passHref>
-                        Home
-                    </Link>
-                </Text>
-                <Text
-                    fontWeight="bold"
-                    sx={{
-                        ':hover': {
-                            textDecoration: 'underline',
-                        },
-                    }}
-                >
-                    {player &&
-                        <Link href="/player/[id]" as={`/player/${player.id}`}>
-                            Spirits
-                        </Link>
-                    }
-                </Text>
-                <Text
-                    fontWeight="bold"
-                    sx={{
-                        ':hover': {
-                            textDecoration: 'underline',
-                        },
-                    }}
-                >
-                    {player &&
-                        <Link href="/game/Zones">
-                            Zones
-                        </Link>
-                    }
-                </Text>
-                <Text
-                    fontWeight="bold"
-                    sx={{
-                        ':hover': {
-                            textDecoration: 'underline',
-                        },
-                    }}
-                >
-                    {player &&
-                        <Link href="/Stats">
-                            Stats
-                        </Link>
-                    }
-                </Text>
-                <Text
-                    fontWeight="bold"
-                    sx={{
-                        ':hover': {
-                            textDecoration: 'underline',
-                        },
-                    }}
-                >
-                    <Link href="/Rules" passHref>
-                        Rules
-                    </Link>
-                </Text>
-            </Flex>
-        </Flex>
+        </>
     )
 }
 

@@ -172,6 +172,7 @@ const Zones = () => {
   }
 
   async function checkObjective(current, objective_id) {
+    setIsOpen(false);
     const response = await fetch(`${`${process.env.NEXT_PUBLIC_API_URL}/api/v1/check_objective?player_id=${player.id}&current=${current}&objective_id=${objective_id}`}`,
       {
         method: "POST",
@@ -182,7 +183,6 @@ const Zones = () => {
     );
     if (response.ok) {
       const responseData = await response.json();
-      setIsOpen(false);
       setDialogues(prevState => ({
         ...prevState,  // Copie tout l'état précédent
         dialogues: [responseData.dialogue, ...prevState.dialogues]  // Mise à jour de dialogues.dialogues
@@ -290,7 +290,6 @@ const Zones = () => {
     const fetchCurrentObjectives = async () => {
       try {
         const json = await getObjectives(zonePnj);
-        console.log("Objectives loaded:", json)
         setObjectives(json.objectives)
         setCurrentStats(json.current_stat)
       } catch (error) {
@@ -396,7 +395,7 @@ const Zones = () => {
                         Objectives 🏆
                       </Button>
                     ) : (
-                      <p>No objectives to display</p>
+                      <p></p>
                     )}
                     <img
                       src={dialogues.images[currentPage]}
@@ -632,7 +631,7 @@ const Zones = () => {
                       ))}
                     </ul>
                   ) : (
-                    <p>No objectives available.</p>
+                    <p></p>
                   )}
                 </ModalBody>
                 <ModalFooter>

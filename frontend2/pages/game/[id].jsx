@@ -1095,7 +1095,7 @@ const Game = () => {
                                                         <div
                                                             key={card.id}
                                                             style={rightCardStyle(card)}
-                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("right") ? () => handleSuperPowerCard(card) : () => handleCardClick(card)}
+                                                            onClick={typeof superPowerCard === 'string' && superPowerCard.includes("right") ? () => handleSuperPowerCard(card) : () => handleSuperPowerCard()}
                                                         >
                                                             <p style={{}}>
                                                                 {!card.hide && card.name}

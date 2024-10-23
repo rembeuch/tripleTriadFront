@@ -177,20 +177,21 @@ const buttonStyle = {
 };
 
 const bannerStyle = {
-    display: 'flex',          // Utilise Flexbox pour centrer le contenu
-    justifyContent: 'center', // Centre horizontalement
-    marginBottom: '10px',    // Réduit l'écart sous l'image
+    display: 'flex',          
+    justifyContent: 'center', 
+    marginBottom: '10px',   
 };
 
 const imageStyle = {
-    maxWidth: '40%', // S'assure que l'image ne dépasse pas la largeur de l'écran
-    height: 'auto',   // Garde le ratio de l'image
+    margin: '20px',
+    maxWidth: '40%', 
+    height: 'auto',
     borderRadius: '5px',
 };
 
 const formStyle = {
     textAlign: 'center',
-    margin: '10px 0', // Réduit la marge entre les formulaires
+    margin: '10px 0',
 };
 
 export default Auth;
